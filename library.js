@@ -1,107 +1,127 @@
 
-import { loadCapsule, loadProgress, saveProgress } from './storage.js';
-import { escapeHTML } from './utils.js';
+import { loadIndex, loadCapsule, deleteCapsule, saveCapsule } from './storage.js';
+import { escapeHTML, timeAgo, generateId } from './utils.js';
 
-export function renderLearn(id){
-  const container = document.getElementById('learn');
-  const capsule = loadCapsule(id);
-  if(!capsule){ container.innerHTML = '<div class="alert alert-danger">Capsule not found</div>'; return; }
+export function renderLibrary(){
+  const container = document.getElementById('library');
+  const index = loadIndex();
 
-  container.innerHTML = `
-    <div class="mb-3 d-flex justify-content-between align-items-start">
+  let html = `
+    <div class="d-flex justify-content-between align-items-center mb-3 top-controls">
       <div>
-        <h3 class="mb-0"><i class="bi bi-book-half"></i> ${escapeHTML(capsule.meta.title)}</h3>
-        <div class="small-muted">${escapeHTML(capsule.meta.subject)} • <span class="badge bg-info">${escapeHTML(capsule.meta.level)}</span></div>
+        <h3 class="mb-0"><i class="bi bi-card-list"></i> Library</h3>
+        <div class="small-muted">Your saved learning capsules</div>
       </div>
-      <div class="text-end small-muted">Updated: ${escapeHTML(capsule.updatedAt||'')}</div>
+      <div>
+        <button id="btn-new" class="btn btn-success me-2"><i class="bi bi-plus-lg"></i> New Capsule</button>
+        <button id="btn-import" class="btn btn-primary me-2"><i class="bi bi-upload"></i> Import</button>
+        <input id="import-file" type="file" accept=".json" class="d-none" />
+      </div>
     </div>
-
-    <div class="btn-group mb-3" role="group">
-      <button class="btn btn-outline-primary active" data-mode="notes">Notes</button>
-      <button class="btn btn-outline-primary" data-mode="flashcards">Flashcards</button>
-      <button class="btn btn-outline-primary" data-mode="quiz">Quiz</button>
-    </div>
-
-    <div id="learn-body"></div>
   `;
 
-  const body = container.querySelector('#learn-body');
-  let mode = 'notes';
-  showNotes();
+  if(index.length === 0){
+    html += `
+      <div class="card p-4 text-center">
+        <h5>No capsules yet</h5>
+        <p class="text-muted">Create your first capsule with the Author tab or import a sample JSON.</p>
+        <div class="mt-3"><button id="empty-new" class="btn btn-success"><i class="bi bi-plus-lg"></i> New Capsule</button></div>
+      </div>
+    `;
+    container.innerHTML = html;
+  } else {
+    html += `<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">`;
+    for(const item of index){
+      html += `
+        <div class="col">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h5 class="card-title mb-1">${escapeHTML(item.title)}</h5>
+                  <div class="small-muted">${escapeHTML(item.subject)}</div>
+                </div>
+                <div class="text-end">
+                  <span class="badge bg-info">${escapeHTML(item.level)}</span>
+                  <div class="small-muted mt-1">${timeAgo(item.updatedAt)}</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer d-flex gap-2 justify-content-between">
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary" data-action="learn" data-id="${item.id}" title="Learn"><i class="bi bi-book"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" data-action="edit" data-id="${item.id}" title="Edit"><i class="bi bi-pencil"></i></button>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-success" data-action="export" data-id="${item.id}" title="Export"><i class="bi bi-download"></i></button>
+                <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${item.id}" title="Delete"><i class="bi bi-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    html += `</div>`;
+    container.innerHTML = html;
+  }
 
-  container.querySelectorAll('[data-mode]').forEach(btn=>{
+  // events
+  const btnNew = document.getElementById('btn-new');
+  if(btnNew) btnNew.addEventListener('click', ()=> window.dispatchEvent(new CustomEvent('pc:openAuthor',{detail:{id:null}})));
+  const emptyNew = document.getElementById('empty-new');
+  if(emptyNew) emptyNew.addEventListener('click', ()=> window.dispatchEvent(new CustomEvent('pc:openAuthor',{detail:{id:null}})));
+  const btnImport = document.getElementById('btn-import');
+  const importFile = document.getElementById('import-file');
+  if(btnImport) btnImport.addEventListener('click', ()=> importFile.click());
+  if(importFile) importFile.addEventListener('change', handleImport);
+
+  container.querySelectorAll('[data-action]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      container.querySelectorAll('[data-mode]').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      mode = btn.dataset.mode;
-      if(mode==='notes') showNotes();
-      if(mode==='flashcards') showFlashcards();
-      if(mode==='quiz') showQuiz();
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      if(action === 'learn') window.dispatchEvent(new CustomEvent('pc:openLearn',{detail:{id}}));
+      if(action === 'edit') window.dispatchEvent(new CustomEvent('pc:openAuthor',{detail:{id}}));
+      if(action === 'delete') {
+        if(confirm('Delete this capsule?')){ deleteCapsule(id); renderLibrary(); }
+      }
+      if(action === 'export') {
+        const capsule = loadCapsule(id);
+        if(!capsule){ alert('Capsule not found'); return; }
+        const blob = new Blob([JSON.stringify(capsule,null,2)], {type:'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = (capsule.meta && capsule.meta.title ? capsule.meta.title.replace(/\s+/g,'_') : 'capsule') + '.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
     });
   });
 
-  // NOTES
-  function showNotes(){
-    if(!capsule.notes || capsule.notes.length === 0){ body.innerHTML = '<p>No notes available.</p>'; return; }
-    body.innerHTML = `
-      <input id="note-search" class="form-control mb-2" placeholder="Search notes...">
-      <ul class="list-group" id="note-list">
-        ${capsule.notes.map(n=>`<li class="list-group-item">${escapeHTML(n)}</li>`).join('')}
-      </ul>
-    `;
-    body.querySelector('#note-search').addEventListener('input', e=>{
-      const q = e.target.value.toLowerCase();
-      body.querySelectorAll('#note-list li').forEach(li=> li.style.display = li.textContent.toLowerCase().includes(q) ? '' : 'none');
-    });
+  function handleImport(e){
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try{
+        const json = JSON.parse(ev.target.result);
+        if(!json.schema) json.schema = 'pocket-classroom/v1';
+        // basic validation
+        if(!json.meta || !json.meta.title) throw new Error('Missing meta.title');
+        // ensure id uniqueness
+        const id = generateId();
+        json.id = id;
+        saveCapsule(json);
+        alert('Imported: ' + json.meta.title);
+        renderLibrary();
+      }catch(err){
+        alert('Import failed: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   }
-
-  // FLASHCARDS
-  function showFlashcards(){
-    if(!capsule.flashcards || capsule.flashcards.length === 0){ body.innerHTML = '<p>No flashcards available.</p>'; return; }
-    let idx = 0;
-    const progress = loadProgress(capsule.id) || {};
-    const knownSet = new Set(progress.knownCards || []);
-
-    renderCard();
-
-    function renderCard(){
-      const fc = capsule.flashcards[idx];
-      body.innerHTML = `
-        <div class="card p-3 text-center">
-          <div id="flashcard" class="flashcard mb-3">
-            <div class="flashcard-inner ${knownSet.has(idx)?'known':''}">
-              <div class="flashcard-face card flashcard-front">${escapeHTML(fc.front)}</div>
-              <div class="flashcard-face card flashcard-back">${escapeHTML(fc.back)}</div>
-            </div>
-          </div>
-          <div class="d-flex justify-content-center gap-2">
-            <button id="prev" class="btn btn-outline-secondary btn-sm"><i class="bi bi-skip-start"></i></button>
-            <button id="flip" class="btn btn-outline-primary btn-sm"><i class="bi bi-arrow-repeat"></i> Flip</button>
-            <button id="next" class="btn btn-outline-secondary btn-sm"><i class="bi bi-skip-end"></i></button>
-          </div>
-          <div class="mt-2 d-flex justify-content-center gap-2">
-            <button id="mark-known" class="btn btn-success btn-sm"><i class="bi bi-check-circle"></i> Known</button>
-            <button id="mark-unknown" class="btn btn-warning btn-sm"><i class="bi bi-x-circle"></i> Unknown</button>
-          </div>
-          <p class="mt-2 small-muted">Card ${idx+1} of ${capsule.flashcards.length}</p>
-        </div>
-      `;
-
-      const flash = body.querySelector('#flashcard');
-      const inner = flash.querySelector('.flashcard-inner');
-      flash.querySelector('#flip').addEventListener('click', ()=> inner.classList.toggle('flipped'));
-      flash.addEventListener('click', ()=> inner.classList.toggle('flipped'));
-
-      body.querySelector('#prev').addEventListener('click', ()=> {
-        idx = (idx - 1 + capsule.flashcards.length) % capsule.flashcards.length;
-        renderCard();
-      });
-      body.querySelector('#next').addEventListener('click', ()=> {
-        idx = (idx + 1) % capsule.flashcards.length;
-        renderCard();
-      });
-      body.querySelector('#mark-known').addEventListener('click', ()=>{
-        knownSet.add(idx);
+}
         saveProgress(capsule.id, { ...(progress||{}), knownCards: Array.from(knownSet) });
         renderCard();
       });
