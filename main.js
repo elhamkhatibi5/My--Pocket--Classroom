@@ -1,15 +1,15 @@
-// ---------- داده اولیه ----------
+// نمونه داده اولیه
 let capsules = JSON.parse(localStorage.getItem('pc_capsules')) || [];
 
 if(capsules.length === 0){
   capsules = [
-    {id:'1',title:'Math Basics',subject:'Math',level:'Beginner',updatedAt:'2025-10-02', notes:['Numbers','Add/Subtract'], flashcards:[{front:'1+1',back:'2'}], quiz:[{question:'2+2=?',options:['2','3','4','5'],correctIndex:2}]},
-    {id:'2',title:'History 101',subject:'History',level:'Intermediate',updatedAt:'2025-10-01', notes:['Ancient Rome','Medieval'], flashcards:[{front:'Caesar',back:'Roman Leader'}], quiz:[{question:'Who was Caesar?',options:['King','Leader','Soldier','Philosopher'],correctIndex:1}]}
+    {id:'1',title:'Math Basics',subject:'Math',level:'Beginner',updatedAt:'2025-10-02', notes:[], flashcards:[], quiz:[]},
+    {id:'2',title:'History 101',subject:'History',level:'Intermediate',updatedAt:'2025-10-01', notes:[], flashcards:[], quiz:[]}
   ];
   localStorage.setItem('pc_capsules', JSON.stringify(capsules));
 }
 
-// ---------- نمایش بخش‌ها ----------
+// تابع نمایش بخش‌ها
 function showSection(sectionId){
   document.getElementById('library').classList.add('d-none');
   document.getElementById('author').classList.add('d-none');
@@ -17,7 +17,7 @@ function showSection(sectionId){
   document.getElementById(sectionId).classList.remove('d-none');
 }
 
-// ---------- Dark Mode ----------
+// Dark Mode
 const darkToggle = document.getElementById('darkModeToggle');
 darkToggle.addEventListener('click', ()=>{
   document.body.classList.toggle('dark-mode');
@@ -25,7 +25,7 @@ darkToggle.addEventListener('click', ()=>{
 });
 if(localStorage.getItem('darkMode')==='true') document.body.classList.add('dark-mode');
 
-// ---------- Navbar ----------
+// Navbar
 document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('libraryNav').addEventListener('click', e=>{
     e.preventDefault();
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   renderLibrary();
 });
 
-// ---------- Library ----------
+// رندر Library واقعی
 function renderLibrary(){
   const libraryEl = document.getElementById('library');
   libraryEl.innerHTML = '';
@@ -55,7 +55,7 @@ function renderLibrary(){
       <div class="card mb-3 p-2 shadow-sm">
         <div class="card-body">
           <h5>${c.title} <span class="badge bg-primary">${c.level}</span></h5>
-          <p>${c.subject} | Updated: ${c.updatedAt.split('T')[0]}</p>
+          <p>${c.subject} | Updated: ${c.updatedAt}</p>
           <div class="d-flex justify-content-between flex-wrap">
             <button class="btn btn-success btn-sm mb-1" onclick="openLearn('${c.id}')"><i class="bi bi-book"></i> Learn</button>
             <button class="btn btn-warning btn-sm mb-1" onclick="openEdit('${c.id}')"><i class="bi bi-pencil-square"></i> Edit</button>
@@ -69,41 +69,51 @@ function renderLibrary(){
   });
 }
 
-// ---------- Library Actions ----------
+// دکمه‌های Library
 function openLearn(id){
   showSection('learn');
   const capsule = capsules.find(c => c.id===id);
-  const learnEl = document.getElementById('learn');
-  learnEl.innerHTML = `<h2>${capsule.title}</h2>`;
+  document.getElementById('learn').innerHTML = `<h2>${capsule.title}</h2><p>Learn Mode content coming soon...</p>`;
+}
 
-  // Notes
-  if(capsule.notes.length){
-    const notesDiv = document.createElement('div');
-    notesDiv.className='mb-3';
-    notesDiv.innerHTML = `<h4>Notes</h4><ul>${capsule.notes.map(n=>`<li>${n}</li>`).join('')}</ul>`;
-    learnEl.appendChild(notesDiv);
-  }
+function openEdit(id){
+  showSection('author');
+  const capsule = capsules.find(c => c.id===id);
+  document.getElementById('titleInput').value = capsule.title;
+  document.getElementById('subjectInput').value = capsule.subject;
+  document.getElementById('levelInput').value = capsule.level;
+}
 
-  // Flashcards
-  if(capsule.flashcards.length){
-    let currentIndex = 0;
-    const flashDiv = document.createElement('div');
-    flashDiv.className='mb-3';
-    const cardDiv = document.createElement('div');
-    cardDiv.className='card p-3 mb-2 shadow-sm text-center';
-    cardDiv.style.cursor='pointer';
-    cardDiv.innerText = capsule.flashcards[currentIndex].front;
+function exportCapsule(id){
+  const capsule = capsules.find(c => c.id===id);
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(capsule,null,2));
+  const dlAnchor = document.createElement('a');
+  dlAnchor.setAttribute("href", dataStr);
+  dlAnchor.setAttribute("download", capsule.title+".json");
+  dlAnchor.click();
+}
 
-    cardDiv.addEventListener('click', ()=>{
-      const f = capsule.flashcards[currentIndex];
-      cardDiv.innerText = cardDiv.innerText===f.front ? f.back : f.front;
-    });
+function deleteCapsule(id){
+  if(!confirm('Delete this capsule?')) return;
+  capsules = capsules.filter(c => c.id!==id);
+  localStorage.setItem('pc_capsules', JSON.stringify(capsules));
+  renderLibrary();
+}
 
-    const prevBtn = document.createElement('button');
-    prevBtn.className='btn btn-secondary btn-sm me-1';
-    prevBtn.innerText='Prev';
-    prevBtn.onclick = ()=>{ if(currentIndex>0) { currentIndex--; cardDiv.innerText = capsule.flashcards[currentIndex].front; }};
+// Author Mode: ذخیره Capsule جدید
+const authorForm = document.getElementById('authorForm');
+authorForm.addEventListener('submit', e=>{
+  e.preventDefault();
+  const title = document.getElementById('titleInput').value;
+  const subject = document.getElementById('subjectInput').value;
+  const level = document.getElementById('levelInput').value;
 
+  const newCapsule = { id: Date.now().toString(), title, subject, level, updatedAt: new Date().toISOString(), notes: [], flashcards: [], quiz: [] };
+  capsules.push(newCapsule);
+  localStorage.setItem('pc_capsules', JSON.stringify(capsules));
+  renderLibrary();
+  showSection('library');
+});
     const nextBtn = document.createElement('button');
     nextBtn.className='btn btn-secondary btn-sm';
     nextBtn.innerText='Next';
