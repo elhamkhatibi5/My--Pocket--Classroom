@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <style>
-/* ==== Colors & Dark Mode ==== */
 :root {
   --bg-color: #ffffff;
   --text-color: #000000;
@@ -32,18 +31,15 @@ body {
 
 h1 { margin-bottom: 20px; }
 
-/* ==== Tabs ==== */
 #tabs .nav-link {
   margin-right: 5px;
   cursor: pointer;
 }
-
 #tabs .nav-link.active {
   font-weight: bold;
   border-bottom: 2px solid var(--btn-primary);
 }
 
-/* ==== Card & Capsule Row ==== */
 .card {
   background-color: var(--card-bg);
   color: var(--text-color);
@@ -62,46 +58,49 @@ h1 { margin-bottom: 20px; }
   border-radius: 8px;
 }
 
-.capsule-row button {
-  margin-left: 5px;
-}
+.capsule-row button { margin-left: 5px; }
+button:hover { opacity:0.85; transform: translateY(-1px); transition:0.2s; }
+#authorTab input, #authorTab select { margin-bottom:10px; }
 
-/* ==== Buttons Hover ==== */
-button:hover {
-  opacity: 0.85;
-  transform: translateY(-1px);
-  transition: 0.2s;
+.flashcard {
+  perspective: 1000px;
+  cursor: pointer;
 }
-
-/* ==== Inputs ==== */
-#authorTab input, #authorTab select {
-  margin-bottom: 10px;
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  min-height: 100px;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
 }
+.flashcard-inner.flipped { transform: rotateY(180deg); }
+.flashcard-face {
+  position: absolute;
+  width: 100%;
+  backface-visibility: hidden;
+  padding: 15px;
+  border-radius: 10px;
+}
+.flashcard-back { transform: rotateY(180deg); background-color: var(--btn-primary); color: #fff; }
 </style>
 </head>
 <body>
 
 <h1>Pocket Classroom</h1>
-
-<!-- Dark Mode Toggle -->
 <button id="toggleDark" class="btn btn-secondary mb-3"><i class="bi bi-moon-stars"></i> Toggle Dark Mode</button>
 
-<!-- Tabs -->
 <div id="tabs" class="mb-3">
   <button class="nav-link active btn btn-outline-primary me-1" data-tab="library"><i class="bi bi-journal-bookmark"></i> Library</button>
   <button class="nav-link btn btn-outline-success me-1" data-tab="learn"><i class="bi bi-book"></i> Learn</button>
   <button class="nav-link btn btn-outline-warning" data-tab="author"><i class="bi bi-pencil-square"></i> Author</button>
 </div>
 
-<!-- Tab Contents -->
 <div id="libraryTab" class="tab-content">
   <div id="libraryContainer"></div>
 </div>
-
 <div id="learnTab" class="tab-content d-none">
   <div id="learnContainer"></div>
 </div>
-
 <div id="authorTab" class="tab-content d-none">
   <input id="capsuleTitle" class="form-control" placeholder="Title">
   <input id="capsuleSubject" class="form-control" placeholder="Subject">
@@ -113,47 +112,21 @@ button:hover {
   <button id="addCapsuleBtn" class="btn btn-primary mt-2"><i class="bi bi-plus-lg"></i> Add Capsule</button>
 </div>
 
-<!-- Export / Import -->
 <div class="mt-3">
   <button id="exportBtn" class="btn btn-success me-2"><i class="bi bi-box-arrow-up-right"></i> Export All</button>
   <button id="importBtn" class="btn btn-secondary me-2"><i class="bi bi-file-earmark-arrow-up"></i> Import</button>
   <input type="file" id="importFile" style="display:none;">
 </div>
 
-<!-- JS -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-
   let capsules = JSON.parse(localStorage.getItem('pocket_capsules')) || [];
 
-  function saveAll() {
-    localStorage.setItem('pocket_capsules', JSON.stringify(capsules));
-  }
+  function saveAll() { localStorage.setItem('pocket_capsules', JSON.stringify(capsules)); }
 
-  // ===== Dark Mode Toggle =====
   document.getElementById('toggleDark').addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
   });
-
-  // ===== Add sample capsule if empty =====
-  if(capsules.length === 0){
-    capsules.push({
-      id: Date.now(),
-      title: "Sample Capsule",
-      subject: "Math",
-      level: "Easy",
-      updatedAt: new Date().toISOString().split('T')[0],
-      notes: ["Note 1", "Note 2"],
-      flashcards: [
-        {question: "2 + 2?", answer: "4"},
-        {question: "3 x 3?", answer: "9"}
-      ],
-      quiz: [
-        {q: "5 - 2 = ?", a: "3"}
-      ]
-    });
-    saveAll();
-  }
 
   // ===== Tabs =====
   const tabs = document.querySelectorAll('#tabs .nav-link');
@@ -162,127 +135,103 @@ document.addEventListener('DOMContentLoaded', () => {
       tabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('d-none'));
-      document.getElementById(tab.dataset.tab + 'Tab').classList.remove('d-none');
-      if(tab.dataset.tab === 'learn') renderLearn();
-      if(tab.dataset.tab === 'library') renderLibrary();
+      document.getElementById(tab.dataset.tab+'Tab').classList.remove('d-none');
+      if(tab.dataset.tab==='learn') renderLearn();
+      if(tab.dataset.tab==='library') renderLibrary();
     });
   });
 
   // ===== Library =====
   const libraryContainer = document.getElementById('libraryContainer');
-
-  function renderLibrary() {
-    libraryContainer.innerHTML = '';
-    capsules.forEach(cap => {
-      const div = document.createElement('div');
-      div.className = 'capsule-row';
-      div.innerHTML = `
-        <div>
-          <strong>${cap.title}</strong> | ${cap.subject} | ${cap.level} | Updated: ${cap.updatedAt}
-        </div>
+  function renderLibrary(){
+    libraryContainer.innerHTML='';
+    if(capsules.length===0){
+      libraryContainer.innerHTML='<div class="card text-center p-4">No capsules. Use Author tab to add one.</div>';
+      return;
+    }
+    capsules.forEach(cap=>{
+      const div=document.createElement('div'); div.className='capsule-row';
+      div.innerHTML=`
+        <div><strong>${cap.title}</strong> | ${cap.subject} | ${cap.level} | Updated: ${cap.updatedAt}</div>
         <div>
           <button class="btn btn-sm btn-primary editBtn"><i class="bi bi-pencil-square"></i></button>
           <button class="btn btn-sm btn-danger deleteBtn"><i class="bi bi-trash"></i></button>
           <button class="btn btn-sm btn-success learnBtn"><i class="bi bi-book"></i></button>
           <button class="btn btn-sm btn-warning exportBtn"><i class="bi bi-box-arrow-up-right"></i></button>
-        </div>
-      `;
-
-      div.querySelector('.editBtn').addEventListener('click', e => {
+        </div>`;
+      div.querySelector('.editBtn').addEventListener('click', e=>{
         e.stopPropagation();
-        const newTitle = prompt('Title:', cap.title);
-        const newSubject = prompt('Subject:', cap.subject);
-        const newLevel = prompt('Level:', cap.level);
+        const newTitle=prompt('Title:',cap.title);
+        const newSubject=prompt('Subject:',cap.subject);
+        const newLevel=prompt('Level:',cap.level);
         if(newTitle && newSubject && newLevel){
-          cap.title = newTitle; cap.subject = newSubject; cap.level = newLevel;
-          cap.updatedAt = new Date().toISOString().split('T')[0];
-          saveAll(); renderLibrary();
+          cap.title=newTitle; cap.subject=newSubject; cap.level=newLevel;
+          cap.updatedAt=new Date().toISOString().split('T')[0]; saveAll(); renderLibrary();
         }
       });
-
-      div.querySelector('.deleteBtn').addEventListener('click', e => {
-        e.stopPropagation();
-        capsules = capsules.filter(c => c.id !== cap.id);
-        saveAll(); renderLibrary();
+      div.querySelector('.deleteBtn').addEventListener('click', e=>{
+        e.stopPropagation(); capsules=capsules.filter(c=>c.id!==cap.id); saveAll(); renderLibrary();
       });
-
-      div.querySelector('.learnBtn').addEventListener('click', e => {
-        e.stopPropagation();
-        alert(`Learn Capsule: ${cap.title}`);
+      div.querySelector('.learnBtn').addEventListener('click', e=>{
+        e.stopPropagation(); window.dispatchEvent(new CustomEvent('openLearn',{detail:{id:cap.id}}));
       });
-
-      div.querySelector('.exportBtn').addEventListener('click', e => {
-        e.stopPropagation();
-        const data = JSON.stringify(cap, null, 2);
-        const blob = new Blob([data], {type:'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href=url; a.download=cap.title+'.json'; a.click();
-        URL.revokeObjectURL(url);
+      div.querySelector('.exportBtn').addEventListener('click', e=>{
+        e.stopPropagation(); const blob=new Blob([JSON.stringify(cap,null,2)],{type:'application/json'});
+        const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+        a.download=cap.title.replace(/\s+/g,'_')+'.json'; a.click();
       });
-
       libraryContainer.appendChild(div);
     });
   }
-
   renderLibrary();
 
   // ===== Author =====
-  document.getElementById('addCapsuleBtn').addEventListener('click', () => {
-    const title = document.getElementById('capsuleTitle').value.trim();
-    const subject = document.getElementById('capsuleSubject').value.trim();
-    const level = document.getElementById('capsuleLevel').value;
-    if(!title || !subject) return alert('Please fill Title and Subject');
-    capsules.push({id: Date.now(), title, subject, level, updatedAt: new Date().toISOString().split('T')[0], notes: [], flashcards: [], quiz: []});
+  document.getElementById('addCapsuleBtn').addEventListener('click', ()=>{
+    const title=document.getElementById('capsuleTitle').value.trim();
+    const subject=document.getElementById('capsuleSubject').value.trim();
+    const level=document.getElementById('capsuleLevel').value;
+    if(!title||!subject)return alert('Please fill Title and Subject');
+    capsules.push({
+      id:Date.now(), title, subject, level,
+      updatedAt:new Date().toISOString().split('T')[0],
+      notes:[],
+      flashcards:[],
+      quiz:[]
+    });
     saveAll(); renderLibrary();
     document.getElementById('capsuleTitle').value=''; document.getElementById('capsuleSubject').value='';
   });
 
   // ===== Learn =====
-  const learnContainer = document.getElementById('learnContainer');
-  function renderLearn() {
-    learnContainer.innerHTML = '';
-    capsules.forEach(cap => {
-      const div = document.createElement('div');
-      div.className = 'card p-3 mb-3';
-      
-      let flashcardsHTML = '';
-      cap.flashcards.forEach(fc => {
-        flashcardsHTML += `<div>Q: ${fc.question} | A: ${fc.answer}</div>`;
-      });
-
-      div.innerHTML = `
-        <strong>${cap.title}</strong> | Notes: ${cap.notes.length} | Flashcards: ${cap.flashcards.length} | Quiz: ${cap.quiz.length}
-        <div class="mt-2">${flashcardsHTML}</div>
-      `;
+  const learnContainer=document.getElementById('learnContainer');
+  function renderLearn(){
+    learnContainer.innerHTML='';
+    capsules.forEach(cap=>{
+      const div=document.createElement('div'); div.className='card p-3 mb-3';
+      let flashcardsHTML='';
+      cap.flashcards.forEach(fc=>{ flashcardsHTML+=`<div>Q: ${fc.question} | A: ${fc.answer}</div>`; });
+      div.innerHTML=`<strong>${cap.title}</strong> | Notes: ${cap.notes.length} | Flashcards: ${cap.flashcards.length} | Quiz: ${cap.quiz.length}<div class="mt-2">${flashcardsHTML}</div>`;
       learnContainer.appendChild(div);
     });
   }
 
   // ===== Export / Import =====
-  document.getElementById('exportBtn').addEventListener('click', () => {
-    const data = JSON.stringify(capsules, null, 2);
-    const blob = new Blob([data], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href=url; a.download='pocket_classroom.json'; a.click();
-    URL.revokeObjectURL(url);
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    const blob=new Blob([JSON.stringify(capsules,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pocket_classroom.json'; a.click();
   });
-
-  document.getElementById('importBtn').addEventListener('click',()=>document.getElementById('importFile').click());
+  document.getElementById('importBtn').addEventListener('click', ()=>document.getElementById('importFile').click());
   document.getElementById('importFile').addEventListener('change', e=>{
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(evt){
-      try{
-        const data = JSON.parse(evt.target.result);
-        capsules = data;
-        saveAll(); renderLibrary(); alert('Import successful!');
-      }catch(err){ alert('Invalid JSON'); }
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(evt){
+      try{ const data=JSON.parse(evt.target.result); capsules=data; saveAll(); renderLibrary(); alert('Import successful!'); }
+      catch(err){ alert('Invalid JSON'); }
     };
     reader.readAsText(file);
   });
 
 });
 </script>
-
 </body>
-                                                        </html>
+</html>
