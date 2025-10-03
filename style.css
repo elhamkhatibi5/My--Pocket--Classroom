@@ -1,17 +1,212 @@
-body.dark-mode {
+/* ==========================
+   General Body & Theme
+========================== */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #121212;
-  color: #eee;
+  color: #e0e0e0;
 }
 
-body.dark-mode .card {
-  background-color: #1e1e1e;
-  color: #eee;
+a {
+  text-decoration: none;
 }
 
-body.dark-mode .navbar-dark {
-  background-color: #1c1c1c;
+/* ==========================
+   Navbar
+========================== */
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.4rem;
 }
 
-button {
+.nav-link.active {
+  font-weight: 500;
+  color: #4ade80 !important; /* Green accent */
+}
+
+/* ==========================
+   Tabs & Sections
+========================== */
+.tab-section {
+  padding-top: 1rem;
+}
+
+.tab-section h2 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  color: #22d3ee; /* Blue accent */
+}
+
+/* ==========================
+   Buttons
+========================== */
+.btn {
+  font-size: 0.9rem;
+}
+
+.btn-success {
+  background-color: #4ade80;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #22c55e;
+}
+
+.btn-primary {
+  background-color: #22d3ee;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0ea5e9;
+}
+
+/* ==========================
+   Library Cards
+========================== */
+.capsule-card {
+  background-color: #1f1f1f;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+}
+
+.capsule-card:hover {
+  transform: translateY(-4px);
+}
+
+.capsule-meta {
+  font-size: 0.85rem;
+  color: #a3a3a3;
+}
+
+.progress {
+  height: 0.6rem;
+  border-radius: 0.3rem;
+}
+
+/* ==========================
+   Author Form & Editors
+========================== */
+#authorEditors .editor-section {
+  background-color: #1a1a1a;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 0.4rem;
+  border: 1px solid #333;
+}
+
+#authorEditors .editor-section h5 {
+  color: #4ade80;
+  margin-bottom: 0.5rem;
+}
+
+#authorEditors input, 
+#authorEditors textarea, 
+#authorEditors select {
+  background-color: #121212;
+  color: #e0e0e0;
+  border: 1px solid #333;
+}
+
+#authorEditors input:focus,
+#authorEditors textarea:focus,
+#authorEditors select:focus {
+  border-color: #22d3ee;
+  outline: none;
+}
+
+/* ==========================
+   Learn Mode
+========================== */
+#learnContent {
+  background-color: #1f1f1f;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  min-height: 300px;
+}
+
+/* Notes */
+#learnContent ol {
+  padding-left: 1.2rem;
+}
+
+/* Flashcards */
+.flashcard-container {
+  perspective: 1000px;
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.flashcard {
+  width: 250px;
+  height: 150px;
+  background-color: #121212;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #e0e0e0;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
   cursor: pointer;
+  position: relative;
+}
+
+.flashcard.flipped {
+  transform: rotateY(180deg);
+}
+
+.flashcard .front, .flashcard .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.flashcard .back {
+  transform: rotateY(180deg);
+  color: #22d3ee;
+}
+
+/* Quiz */
+.quiz-question {
+  margin-bottom: 1rem;
+}
+
+.quiz-options button {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+/* ==========================
+   Theme Toggle
+========================== */
+#themeToggle {
+  border: 1px solid #4ade80;
+}
+
+/* ==========================
+   Responsive Adjustments
+========================== */
+@media (max-width: 576px) {
+  .flashcard {
+    width: 200px;
+    height: 120px;
+    font-size: 1rem;
+  }
+
+  .btn {
+    font-size: 0.8rem;
+  }
 }
