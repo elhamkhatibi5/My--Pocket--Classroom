@@ -1,334 +1,208 @@
+document.addEventListener('DOMContentLoaded', () => {
 
-    // ---------- داده اولیه ----------
-let capsules = JSON.parse(localStorage.getItem('pc_capsules')) || [];
-let editingCapsuleId = null;
+  // ======== Data ========
+  let notes = JSON.parse(localStorage.getItem('pocket_notes')) || [];
+  let flashcards = JSON.parse(localStorage.getItem('pocket_flashcards')) || [];
+  let quiz = JSON.parse(localStorage.getItem('pocket_quiz')) || [];
 
-if(capsules.length === 0){
-  capsules.push({
-    id:'1',
-    title:'Sample Capsule',
-    subject:'Demo',
-    level:'Beginner',
-    updatedAt: new Date().toISOString(),
-    notes:['This is a sample note.'],
-    flashcards:[{front:'Q1', back:'A1'}],
-    quiz:[{question:'Sample Q?', options:['A','B','C','D'], correctIndex:0}]
-  });
-  localStorage.setItem('pc_capsules', JSON.stringify(capsules));
-}
-
-// ---------- نمایش بخش‌ها ----------
-function showSection(sectionId){
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById(sectionId).classList.add('active');
-}
-
-// ---------- Dark Mode ----------
-const darkToggle = document.getElementById('darkModeToggle');
-darkToggle.addEventListener('click', ()=>{
-  document.body.classList.toggle('dark-mode');
-  localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-});
-if(localStorage.getItem('darkMode')==='true') document.body.classList.add('dark-mode');
-
-// ---------- Navbar ----------
-document.addEventListener('DOMContentLoaded', ()=>{
-  document.getElementById('libraryNav').addEventListener('click', e=>{
-    e.preventDefault();
-    showSection('library');
-    renderLibrary();
-  });
-
-  document.getElementById('authorNav').addEventListener('click', e=>{
-    e.preventDefault();
-    showSection('author');
-    clearAuthorForm();
-  });
-
-  document.getElementById('learnNav').addEventListener('click', e=>{
-    e.preventDefault();
-    alert('Select a capsule to start learning from Library.');
-  });
-
-  renderLibrary();
-});
-
-// ---------- Library ----------
-function renderLibrary(){
-  const libraryEl = document.getElementById('library');
-  libraryEl.innerHTML = '';
-  if(capsules.length === 0){
-    libraryEl.innerHTML = '<p>No capsules available.</p>';
-    return;
+  function saveAll() {
+    localStorage.setItem('pocket_notes', JSON.stringify(notes));
+    localStorage.setItem('pocket_flashcards', JSON.stringify(flashcards));
+    localStorage.setItem('pocket_quiz', JSON.stringify(quiz));
   }
 
-  capsules.forEach(c => {
-    const card = document.createElement('div');
-    card.className = 'col-md-4';
-    card.innerHTML = `
-      <div class="card mb-3 p-2 shadow-sm">
-        <div class="card-body">
-          <h5>${c.title} <span class="badge bg-primary">${c.level}</span></h5>
-          <p>${c.subject} | Updated: ${c.updatedAt.split('T')[0]}</p>
-          <div class="d-flex justify-content-between flex-wrap">
-            <button class="btn btn-success btn-sm mb-1 learnBtn"><i class="bi bi-lightning-fill"></i> Learn</button>
-            <button class="btn btn-warning btn-sm mb-1 editBtn"><i class="bi bi-pencil-square"></i> Edit</button>
-            <button class="btn btn-info btn-sm mb-1 exportBtn"><i class="bi bi-box-arrow-up-right"></i> Export</button>
-            <button class="btn btn-danger btn-sm mb-1 deleteBtn"><i class="bi bi-trash"></i> Delete</button>
+  // ======== Tabs ========
+  const tabs = document.querySelectorAll('#tabs .nav-link');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('d-none'));
+      document.getElementById(tab.dataset.tab + 'Tab').classList.remove('d-none');
+      if(tab.dataset.tab === 'learn') renderLearn();
+    });
+  });
+
+  // ======== Notes ========
+  const notesContainer = document.getElementById('notesContainer');
+
+  function renderNotes() {
+    notesContainer.innerHTML = '';
+    notes.forEach(note => {
+      const div = document.createElement('div');
+      div.className = 'col-md-4';
+      div.innerHTML = `
+        <div class="card p-2">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>${note.title}</span>
+            <div>
+              <button class="btn btn-sm btn-primary editBtn">Edit</button>
+              <button class="btn btn-sm btn-danger deleteBtn">Delete</button>
+            </div>
           </div>
         </div>
-      </div>
-    `;
-    libraryEl.appendChild(card);
+      `;
+      const card = div.querySelector('.card');
 
-    // ---------- Event ها ----------
-    card.querySelector('.learnBtn').addEventListener('click', ()=> openLearn(c.id));
-    card.querySelector('.editBtn').addEventListener('click', ()=> openEdit(c.id));
-    card.querySelector('.exportBtn').addEventListener('click', ()=> exportCapsule(c.id));
-    card.querySelector('.deleteBtn').addEventListener('click', ()=> deleteCapsule(c.id));
-  });
-}
-
-// ---------- Learn ----------
-function openLearn(id){
-  showSection('learn');
-  const capsule = capsules.find(c => c.id===id);
-  const learnEl = document.getElementById('learn');
-  learnEl.innerHTML = `<h2>${capsule.title}</h2>`;
-
-  // Notes
-  if(capsule.notes.length){
-    const notesDiv = document.createElement('div');
-    notesDiv.className='mb-3';
-    notesDiv.innerHTML = `<h4>Notes</h4><ul>${capsule.notes.map(n=>`<li>${n}</li>`).join('')}</ul>`;
-    learnEl.appendChild(notesDiv);
-  }
-
-  // Flashcards
-  if(capsule.flashcards.length){
-    let currentIndex = 0;
-    const flashDiv = document.createElement('div');
-    flashDiv.className = 'mb-3';
-    const cardDiv = document.createElement('div');
-    cardDiv.className = 'card p-3 mb-2 shadow-sm text-center';
-    cardDiv.style.cursor='pointer';
-    cardDiv.innerText = capsule.flashcards[currentIndex].front;
-
-    cardDiv.addEventListener('click', ()=>{
-      const f = capsule.flashcards[currentIndex];
-      cardDiv.innerText = cardDiv.innerText===f.front ? f.back : f.front;
-    });
-
-    const prevBtn = document.createElement('button');
-    prevBtn.className='btn btn-secondary btn-sm me-1';
-    prevBtn.innerText='Prev';
-    prevBtn.onclick = ()=>{ if(currentIndex>0){ currentIndex--; cardDiv.innerText = capsule.flashcards[currentIndex].front; }};
-
-    const nextBtn = document.createElement('button');
-    nextBtn.className='btn btn-secondary btn-sm';
-    nextBtn.innerText='Next';
-    nextBtn.onclick = ()=>{ if(currentIndex<capsule.flashcards.length-1){ currentIndex++; cardDiv.innerText = capsule.flashcards[currentIndex].front; }};
-
-    flashDiv.appendChild(cardDiv);
-    flashDiv.appendChild(prevBtn);
-    flashDiv.appendChild(nextBtn);
-    learnEl.appendChild(flashDiv);
-  }
-
-  // Quiz
-  if(capsule.quiz.length){
-    let qIndex=0;
-    const quizDiv = document.createElement('div');
-    quizDiv.className='mb-3';
-    const renderQuestion = ()=>{
-      quizDiv.innerHTML='';
-      const q = capsule.quiz[qIndex];
-      const qCard = document.createElement('div');
-      qCard.className='card p-3 mb-2 shadow-sm';
-      qCard.innerHTML = `<h5>${q.question}</h5>`;
-      q.options.forEach((opt,i)=>{
-        const btn = document.createElement('button');
-        btn.className='btn btn-outline-primary btn-sm m-1';
-        btn.innerText=opt;
-        btn.onclick = ()=>{
-          if(i===q.correctIndex) btn.className='btn btn-success btn-sm m-1';
-          else btn.className='btn btn-danger btn-sm m-1';
-          setTimeout(()=>{
-            qIndex++;
-            if(qIndex<capsule.quiz.length) renderQuestion();
-            else quizDiv.innerHTML='<p>Quiz Finished!</p>';
-          },500);
-        };
-        qCard.appendChild(btn);
+      div.querySelector('.editBtn').addEventListener('click', e => {
+        e.stopPropagation();
+        const newTitle = prompt('Edit note:', note.title);
+        if(newTitle){ note.title = newTitle; saveAll(); renderNotes(); }
       });
-      quizDiv.appendChild(qCard);
-    };
-    renderQuestion();
-    learnEl.appendChild(quizDiv);
-  }
-}
 
-// ---------- Author Mode ----------
-const flashcardsEditor = document.getElementById('flashcardsEditor');
-const addFlashcardBtn = document.getElementById('addFlashcardBtn');
-addFlashcardBtn.addEventListener('click', ()=>{
-  const div = document.createElement('div');
-  div.className='mb-2';
-  div.innerHTML=`
-    <input type="text" placeholder="Front" class="form-control mb-1 frontInput" required>
-    <input type="text" placeholder="Back" class="form-control mb-1 backInput" required>
-    <button type="button" class="btn btn-danger btn-sm removeFlashcard"><i class="bi bi-trash"></i> Remove</button>
-  `;
-  flashcardsEditor.appendChild(div);
-  div.querySelector('.removeFlashcard').addEventListener('click', ()=> div.remove());
-});
+      div.querySelector('.deleteBtn').addEventListener('click', e => {
+        e.stopPropagation();
+        notes = notes.filter(n => n.id !== note.id); saveAll(); renderNotes();
+      });
 
-const quizEditor = document.getElementById('quizEditor');
-const addQuizBtn = document.getElementById('addQuizBtn');
-addQuizBtn.addEventListener('click', ()=>{
-  const div = document.createElement('div');
-  div.className='mb-3 border p-2';
-  div.innerHTML=`
-    <input type="text" placeholder="Question" class="form-control mb-1 questionInput" required>
-    <input type="text" placeholder="Option A" class="form-control mb-1 opt0" required>
-    <input type="text" placeholder="Option B" class="form-control mb-1 opt1" required>
-    <input type="text" placeholder="Option C" class="form-control mb-1 opt2" required>
-    <input type="text" placeholder="Option D" class="form-control mb-1 opt3" required>
-    <select class="form-select mb-1 correctIndex">
-      <option value="0">Correct: A</option>
-      <option value="1">Correct: B</option>
-      <option value="2">Correct: C</option>
-      <option value="3">Correct: D</option>
-    </select>
-    <button type="button" class="btn btn-danger btn-sm removeQuestion"><i class="bi bi-trash"></i> Remove</button>
-  `;
-  quizEditor.appendChild(div);
-  div.querySelector('.removeQuestion').addEventListener('click', ()=> div.remove());
-});
-
-// ---------- Save Capsule ----------
-document.getElementById('authorForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  const title = document.getElementById('titleInput').value.trim();
-  const subject = document.getElementById('subjectInput').value.trim();
-  const level = document.getElementById('levelInput').value;
-
-  const flashcards = Array.from(flashcardsEditor.children).map(div=>({
-    front: div.querySelector('.frontInput').value.trim(),
-    back: div.querySelector('.backInput').value.trim()
-  })).filter(f=>f.front && f.back);
-
-  const quiz = Array.from(quizEditor.children).map(div=>({
-    question: div.querySelector('.questionInput').value.trim(),
-    options:[
-      div.querySelector('.opt0').value.trim(),
-      div.querySelector('.opt1').value.trim(),
-      div.querySelector('.opt2').value.trim(),
-      div.querySelector('.opt3').value.trim()
-    ],
-    correctIndex: parseInt(div.querySelector('.correctIndex').value)
-  })).filter(q=>q.question && q.options.every(o=>o));
-
-  if(editingCapsuleId){
-    const cap = capsules.find(c=>c.id===editingCapsuleId);
-    cap.title = title;
-    cap.subject = subject;
-    cap.level = level;
-    cap.flashcards = flashcards;
-    cap.quiz = quiz;
-    cap.updatedAt = new Date().toISOString();
-  } else {
-    capsules.push({
-      id: Date.now().toString(),
-      title, subject, level,
-      updatedAt: new Date().toISOString(),
-      notes: [],
-      flashcards,
-      quiz
+      card.addEventListener('click', () => alert(`Note: ${note.title}`));
+      notesContainer.appendChild(div);
     });
   }
 
-  localStorage.setItem('pc_capsules', JSON.stringify(capsules));
-  renderLibrary();
-  showSection('library');
-  editingCapsuleId = null;
-  clearAuthorForm();
+  document.getElementById('addNoteBtn').addEventListener('click', () => {
+    const val = document.getElementById('newNote').value.trim();
+    if(!val) return alert('Please enter a note!');
+    notes.push({id: Date.now(), title: val});
+    saveAll();
+    renderNotes();
+    document.getElementById('newNote').value='';
+  });
+
+  renderNotes();
+
+  // ======== Flashcards ========
+  const flashcardsContainer = document.getElementById('flashcardsContainer');
+
+  function renderFlashcards() {
+    flashcardsContainer.innerHTML = '';
+    flashcards.forEach(fc => {
+      const div = document.createElement('div');
+      div.className = 'col-md-4';
+      div.innerHTML = `
+        <div class="card p-2">
+          <div><strong>${fc.front}</strong> - ${fc.back}</div>
+          <div class="mt-1">
+            <button class="btn btn-sm btn-primary editBtn">Edit</button>
+            <button class="btn btn-sm btn-danger deleteBtn">Delete</button>
+          </div>
+        </div>
+      `;
+      const card = div.querySelector('.card');
+
+      div.querySelector('.editBtn').addEventListener('click', e => {
+        e.stopPropagation();
+        const newFront = prompt('Front:', fc.front);
+        const newBack = prompt('Back:', fc.back);
+        if(newFront && newBack){ fc.front = newFront; fc.back = newBack; saveAll(); renderFlashcards(); }
+      });
+
+      div.querySelector('.deleteBtn').addEventListener('click', e => {
+        e.stopPropagation();
+        flashcards = flashcards.filter(f => f.id !== fc.id); saveAll(); renderFlashcards();
+      });
+
+      card.addEventListener('click', () => alert(`Flashcard: ${fc.front} - ${fc.back}`));
+      flashcardsContainer.appendChild(div);
+    });
+  }
+
+  document.getElementById('addFlashcardBtn').addEventListener('click', () => {
+    const front = document.getElementById('newFront').value.trim();
+    const back = document.getElementById('newBack').value.trim();
+    if(!front || !back) return alert('Please enter both Front and Back!');
+    flashcards.push({id: Date.now(), front, back});
+    saveAll();
+    renderFlashcards();
+    document.getElementById('newFront').value='';
+    document.getElementById('newBack').value='';
+  });
+
+  renderFlashcards();
+
+  // ======== Quiz ========
+  const quizContainer = document.getElementById('quizContainer');
+
+  function renderQuiz() {
+    quizContainer.innerHTML = '';
+    quiz.forEach(q => {
+      const div = document.createElement('div');
+      div.className = 'col-md-4';
+      div.innerHTML = `
+        <div class="card p-2">
+          <div><strong>${q.question}</strong> - ${q.answer}</div>
+          <div class="mt-1">
+            <button class="btn btn-sm btn-primary editBtn">Edit</button>
+            <button class="btn btn-sm btn-danger deleteBtn">Delete</button>
+          </div>
+        </div>
+      `;
+      const card = div.querySelector('.card');
+
+      div.querySelector('.editBtn').addEventListener('click', e => {
+        e.stopPropagation();
+        const newQ = prompt('Question:', q.question);
+        const newA = prompt('Answer:', q.answer);
+        if(newQ && newA){ q.question=newQ; q.answer=newA; saveAll(); renderQuiz(); }
+      });
+
+      div.querySelector('.deleteBtn').addEventListener('click', e => {
+        e.stopPropagation();
+        quiz = quiz.filter(qq => qq.id !== q.id); saveAll(); renderQuiz();
+      });
+
+      card.addEventListener('click', () => alert(`Quiz: ${q.question} - ${q.answer}`));
+      quizContainer.appendChild(div);
+    });
+  }
+
+  document.getElementById('addQuizBtn').addEventListener('click', () => {
+    const question = document.getElementById('newQuestion').value.trim();
+    const answer = document.getElementById('newAnswer').value.trim();
+    if(!question || !answer) return alert('Please enter both Question and Answer!');
+    quiz.push({id: Date.now(), question, answer});
+    saveAll();
+    renderQuiz();
+    document.getElementById('newQuestion').value='';
+    document.getElementById('newAnswer').value='';
+  });
+
+  renderQuiz();
+
+  // ======== Learn Mode ========
+  const learnContainer = document.getElementById('learnContainer');
+
+  function renderLearn() {
+    learnContainer.innerHTML='<h5>Notes</h5>';
+    notes.forEach(n => { const div=document.createElement('div'); div.textContent=n.title; div.className='card p-2 mb-1'; learnContainer.appendChild(div); });
+
+    learnContainer.innerHTML+='<h5 class="mt-3">Flashcards</h5>';
+    flashcards.forEach(f => { const div=document.createElement('div'); div.textContent=`${f.front} - ${f.back}`; div.className='card p-2 mb-1'; learnContainer.appendChild(div); });
+
+    learnContainer.innerHTML+='<h5 class="mt-3">Quiz</h5>';
+    quiz.forEach(q => { const div=document.createElement('div'); div.textContent=`${q.question} - ${q.answer}`; div.className='card p-2 mb-1'; learnContainer.appendChild(div); });
+  }
+
+  // ======== Export / Import ========
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const data = JSON.stringify({notes, flashcards, quiz}, null, 2);
+    const blob = new Blob([data], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='pocket_classroom.json'; a.click(); URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('importBtn').addEventListener('click',()=>document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change', e=>{
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        const data = JSON.parse(evt.target.result);
+        notes=data.notes||[]; flashcards=data.flashcards||[]; quiz=data.quiz||[];
+        saveAll(); renderNotes(); renderFlashcards(); renderQuiz(); alert('Import successful!');
+      }catch(err){ alert('Invalid JSON file'); }
+    };
+    reader.readAsText(file);
+  });
+
 });
-
-// ---------- Edit Capsule ----------
-function openEdit(id){
-  showSection('author');
-  const capsule = capsules.find(c=>c.id===id);
-  if(!capsule) return;
-  editingCapsuleId = id;
-
-  document.getElementById('titleInput').value = capsule.title;
-  document.getElementById('subjectInput').value = capsule.subject;
-  document.getElementById('levelInput').value = capsule.level;
-
-  flashcardsEditor.innerHTML = '';
-  capsule.flashcards.forEach(fc=>{
-    const div = document.createElement('div');
-    div.className='mb-2';
-    div.innerHTML=`
-      <input class="form-control mb-1 frontInput" value="${fc.front}" required>
-      <input class="form-control mb-1 backInput" value="${fc.back}" required>
-      <button type="button" class="btn btn-danger btn-sm removeFlashcard"><i class="bi bi-trash"></i> Remove</button>
-    `;
-    flashcardsEditor.appendChild(div);
-    div.querySelector('.removeFlashcard').addEventListener('click', ()=> div.remove());
-  });
-
-  quizEditor.innerHTML = '';
-  capsule.quiz.forEach(q=>{
-    const div = document.createElement('div');
-    div.className='mb-3 border p-2';
-    div.innerHTML=`
-      <input type="text" class="form-control mb-1 questionInput" value="${q.question}" required>
-      <input type="text" class="form-control mb-1 opt0" value="${q.options[0]}" required>
-      <input type="text" class="form-control mb-1 opt1" value="${q.options[1]}" required>
-      <input type="text" class="form-control mb-1 opt2" value="${q.options[2]}" required>
-      <input type="text" class="form-control mb-1 opt3" value="${q.options[3]}" required>
-      <select class="form-select mb-1 correctIndex">
-        <option value="0" ${q.correctIndex===0?'selected':''}>Correct: A</option>
-        <option value="1" ${q.correctIndex===1?'selected':''}>Correct: B</option>
-        <option value="2" ${q.correctIndex===2?'selected':''}>Correct: C</option>
-        <option value="3" ${q.correctIndex===3?'selected':''}>Correct: D</option>
-      </select>
-      <button type="button" class="btn btn-danger btn-sm removeQuestion"><i class="bi bi-trash"></i> Remove</button>
-    `;
-    quizEditor.appendChild(div);
-    div.querySelector('.removeQuestion').addEventListener('click', ()=> div.remove());
-  });
-}
-
-// ---------- Delete Capsule ----------
-function deleteCapsule(id){
-  if(!confirm('Are you sure you want to delete this capsule?')) return;
-  capsules = capsules.filter(c=>c.id!==id);
-  localStorage.setItem('pc_capsules', JSON.stringify(capsules));
-  renderLibrary();
-}
-
-// ---------- Export Capsule ----------
-function exportCapsule(id){
-  const capsule = capsules.find(c=>c.id===id);
-  if(!capsule) return;
-  const blob = new Blob([JSON.stringify(capsule,null,2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${capsule.title}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ---------- Helpers ----------
-function clearAuthorForm(){
-  editingCapsuleId = null;
-  document.getElementById('titleInput').value='';
-  document.getElementById('subjectInput').value='';
-  document.getElementById('levelInput').value='Beginner';
-  flashcardsEditor.innerHTML='';
-  quizEditor.innerHTML='';
-}
