@@ -17,9 +17,9 @@ if (capsules.length === 0) {
 
 // ---------- نمایش بخش‌ها ----------
 function showSection(sectionId) {
-  ['library', 'author', 'learn'].forEach(id => {
-    document.getElementById(id).classList.add('d-none');
-  });
+  document.getElementById('library').classList.add('d-none');
+  document.getElementById('author').classList.add('d-none');
+  document.getElementById('learn').classList.add('d-none');
   document.getElementById(sectionId).classList.remove('d-none');
 }
 
@@ -29,9 +29,8 @@ darkToggle.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
 });
-if (localStorage.getItem('darkMode') === 'true') {
+if (localStorage.getItem('darkMode') === 'true')
   document.body.classList.add('dark-mode');
-}
 
 // ---------- Navbar ----------
 document.addEventListener('DOMContentLoaded', () => {
@@ -79,7 +78,7 @@ function renderLibrary() {
   });
 }
 
-// ---------- Learn ----------
+// ---------- Library Actions ----------
 function openLearn(id) {
   showSection('learn');
   const capsule = capsules.find(c => c.id === id);
@@ -104,6 +103,145 @@ function openLearn(id) {
     cardDiv.style.cursor = 'pointer';
     cardDiv.innerText = capsule.flashcards[currentIndex].front;
 
+    cardDiv.addEventListener('click', () => {
+      const f = capsule.flashcards[currentIndex];
+      cardDiv.innerText = cardDiv.innerText === f.front ? f.back : f.front;
+    });
+
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'btn btn-secondary btn-sm me-1';
+    prevBtn.innerText = 'Prev';
+    prevBtn.onclick = () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        cardDiv.innerText = capsule.flashcards[currentIndex].front;
+      }
+    };
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'btn btn-secondary btn-sm';
+    nextBtn.innerText = 'Next';
+    nextBtn.onclick = () => {
+      if (currentIndex < capsule.flashcards.length - 1) {
+        currentIndex++;
+        cardDiv.innerText = capsule.flashcards[currentIndex].front;
+      }
+    };
+
+    flashDiv.appendChild(cardDiv);
+    flashDiv.appendChild(prevBtn);
+    flashDiv.appendChild(nextBtn);
+    learnEl.appendChild(flashDiv);
+  }
+
+  // Quiz
+  if (capsule.quiz.length) {
+    let qIndex = 0;
+    const quizDiv = document.createElement('div');
+    quizDiv.className = 'mb-3';
+    const renderQuestion = () => {
+      quizDiv.innerHTML = '';
+      const q = capsule.quiz[qIndex];
+      const qCard = document.createElement('div');
+      qCard.className = 'card p-3 mb-2 shadow-sm';
+      qCard.innerHTML = `<h5>${q.question}</h5>`;
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline-primary btn-sm m-1';
+        btn.innerText = opt;
+        btn.onclick = () => {
+          if (i === q.correctIndex) btn.className = 'btn btn-success btn-sm m-1';
+          else btn.className = 'btn btn-danger btn-sm m-1';
+          setTimeout(() => {
+            qIndex++;
+            if (qIndex < capsule.quiz.length) renderQuestion();
+            else quizDiv.innerHTML = '<p>Quiz Finished!</p>';
+          }, 500);
+        };
+        qCard.appendChild(btn);
+      });
+      quizDiv.appendChild(qCard);
+    };
+    renderQuestion();
+    learnEl.appendChild(quizDiv);
+  }
+}
+
+// ---------- Author Mode ----------
+const flashcardsEditor = document.getElementById('flashcardsEditor');
+const addFlashcardBtn = document.getElementById('addFlashcardBtn');
+addFlashcardBtn.addEventListener('click', () => {
+  const div = document.createElement('div');
+  div.className = 'mb-2';
+  div.innerHTML = `
+    <input type="text" placeholder="Front" class="form-control mb-1 frontInput">
+    <input type="text" placeholder="Back" class="form-control mb-1 backInput">
+    <button type="button" class="btn btn-danger btn-sm removeFlashcard">Remove</button>
+  `;
+  flashcardsEditor.appendChild(div);
+  div.querySelector('.removeFlashcard').addEventListener('click', () => div.remove());
+});
+
+const quizEditor = document.getElementById('quizEditor');
+const addQuizBtn = document.getElementById('addQuizBtn');
+addQuizBtn.addEventListener('click', () => {
+  const div = document.createElement('div');
+  div.className = 'mb-3 border p-2';
+  div.innerHTML = `
+    <input type="text" placeholder="Question" class="form-control mb-1 questionInput">
+    <input type="text" placeholder="Option A" class="form-control mb-1 opt0">
+    <input type="text" placeholder="Option B" class="form-control mb-1 opt1">
+    <input type="text" placeholder="Option C" class="form-control mb-1 opt2">
+    <input type="text" placeholder="Option D" class="form-control mb-1 opt3">
+    <select class="form-select mb-1 correctIndex">
+      <option value="0">Correct: A</option>
+      <option value="1">Correct: B</option>
+      <option value="2">Correct: C</option>
+      <option value="3">Correct: D</option>
+    </select>
+    <button type="button" class="btn btn-danger btn-sm removeQuestion">Remove</button>
+  `;
+  quizEditor.appendChild(div);
+  div.querySelector('.removeQuestion').addEventListener('click', () => div.remove());
+});
+
+// ---------- Save Capsule ----------
+document.getElementById('authorForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const title = document.getElementById('titleInput').value;
+  const subject = document.getElementById('subjectInput').value;
+  const level = document.getElementById('levelInput').value;
+
+  const flashcards = Array.from(flashcardsEditor.children).map(div => ({
+    front: div.querySelector('.frontInput').value,
+    back: div.querySelector('.backInput').value
+  })).filter(f => f.front && f.back);
+
+  const quiz = Array.from(quizEditor.children).map(div => ({
+    question: div.querySelector('.questionInput').value,
+    options: [
+      div.querySelector('.opt0').value,
+      div.querySelector('.opt1').value,
+      div.querySelector('.opt2').value,
+      div.querySelector('.opt3').value
+    ],
+    correctIndex: parseInt(div.querySelector('.correctIndex').value)
+  })).filter(q => q.question && q.options.every(o => o));
+
+  const newCapsule = {
+    id: Date.now().toString(),
+    title, subject, level,
+    updatedAt: new Date().toISOString(),
+    notes: [],
+    flashcards,
+    quiz
+  };
+
+  capsules.push(newCapsule);
+  localStorage.setItem('pc_capsules', JSON.stringify(capsules));
+  renderLibrary();
+  showSection('library');
+});
     cardDiv.addEventListener('click', () => {
       const f = capsule.flashcards[currentIndex];
       cardDiv.innerText = cardDiv.innerText === f.front ? f.back : f.front;
