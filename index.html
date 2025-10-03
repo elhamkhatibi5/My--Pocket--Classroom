@@ -1,109 +1,527 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pocket Classroom</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-<style>
-:root {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --card-bg: #f8f9fa;
-  --btn-primary: #0d6efd;
-}
-
-body.dark-mode {
-  --bg-color: #121212;
-  --text-color: #e0e0e0;
-  --card-bg: #1e1e1e;
-  --btn-primary: #bb86fc;
-}
-
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: 'Segoe UI', sans-serif;
-  padding: 20px;
-}
-
-h1 { margin-bottom: 20px; }
-
-#tabs .nav-link {
-  margin-right: 5px;
-  cursor: pointer;
-}
-#tabs .nav-link.active {
-  font-weight: bold;
-  border-bottom: 2px solid var(--btn-primary);
-}
-
-.card {
-  background-color: var(--card-bg);
-  color: var(--text-color);
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-
-.capsule-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  border-radius: 8px;
-}
-
-.capsule-row button { margin-left: 5px; }
-button:hover { opacity:0.85; transform: translateY(-1px); transition:0.2s; }
-#authorTab input, #authorTab select { margin-bottom:10px; }
-
-.flashcard {
-  perspective: 1000px;
-  cursor: pointer;
-}
-.flashcard-inner {
-  position: relative;
-  width: 100%;
-  min-height: 100px;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-}
-.flashcard-inner.flipped { transform: rotateY(180deg); }
-.flashcard-face {
-  position: absolute;
-  width: 100%;
-  backface-visibility: hidden;
-  padding: 15px;
-  border-radius: 10px;
-}
-.flashcard-back { transform: rotateY(180deg); background-color: var(--btn-primary); color: #fff; }
-</style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Pocket Classroom — Real</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    /* پایه‌ای و شبیه به پروژه‌ی تو؛ قابل تغییر */
+    :root{
+      --bg:#f8f9fa; --card:#fff; --text:#212529;
+    }
+    [data-theme="dark"]{ --bg:#0f1720; --card:#0b1220; --text:#dbeafe; }
+    body{ background:var(--bg); color:var(--text); font-family: "Vazirmatn", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding-bottom:40px; }
+    .card{ background:var(--card); color:var(--text); }
+    .capsule-card{ cursor:pointer; transition:transform .08s; }
+    .capsule-card:hover{ transform:translateY(-3px); }
+    .tag{ font-size:11px; padding:.15rem .4rem; border-radius:6px; background:rgba(0,0,0,0.06); margin-left:6px; }
+    .no-select{ user-select:none; }
+    .flashcard{ min-height:120px; display:flex; align-items:center; justify-content:center; font-size:20px; padding:1rem; text-align:center; }
+    .small-muted{ font-size:12px; color:gray; }
+    /* responsive tweaks */
+    @media (max-width:576px){
+      .g-3 .col-sm-6{ flex:0 0 100%; max-width:100%; }
+    }
+  </style>
 </head>
 <body>
 
-<h1>Pocket Classroom</h1>
-<button id="toggleDark" class="btn btn-secondary mb-3"><i class="bi bi-moon-stars"></i> Toggle Dark Mode</button>
+<nav class="navbar navbar-expand-lg navbar-light mb-3">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="#">Pocket Classroom</a>
+    <div class="d-flex gap-2 align-items-center">
+      <button id="toggle-theme" class="btn btn-sm btn-outline-secondary">حالت تاریک</button>
+      <button id="export-btn" class="btn btn-sm btn-outline-primary">Export</button>
+      <button id="import-btn" class="btn btn-sm btn-outline-success">Import</button>
+      <button id="new-capsule-btn" class="btn btn-sm btn-primary">+ کپسول جدید</button>
+    </div>
+  </div>
+</nav>
 
-<div id="tabs" class="mb-3">
-  <button class="nav-link active btn btn-outline-primary me-1" data-tab="library"><i class="bi bi-journal-bookmark"></i> Library</button>
-  <button class="nav-link btn btn-outline-success me-1" data-tab="learn"><i class="bi bi-book"></i> Learn</button>
-  <button class="nav-link btn btn-outline-warning" data-tab="author"><i class="bi bi-pencil-square"></i> Author</button>
+<div class="container">
+  <div class="row g-3">
+    <div class="col-12">
+      <input id="search" class="form-control" placeholder="جستجو در Library, عنوان یا تگ...">
+    </div>
+
+    <div class="col-12">
+      <div id="library" class="row g-3"></div>
+    </div>
+  </div>
 </div>
 
-<div id="libraryTab" class="tab-content">
-  <div id="libraryContainer"></div>
+<!-- Modals -->
+<!-- Author Modal -->
+<div class="modal fade" id="authorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content card">
+      <div class="modal-header">
+        <h5 class="modal-title" id="authorModalTitle">ساخت کپسول</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+      </div>
+      <div class="modal-body">
+        <form id="authorForm">
+          <div class="mb-3">
+            <label class="form-label">عنوان</label>
+            <input id="capsule-title" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">توضیح کوتاه</label>
+            <input id="capsule-desc" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">تگ‌ها (با کاما جدا کن)</label>
+            <input id="capsule-tags" class="form-control" placeholder="ریاضی,فلاش‌کارت">
+          </div>
+
+          <hr>
+          <div>
+            <h6>فلش‌کارت‌ها</h6>
+            <div id="cards-list" class="mb-3"></div>
+            <div class="d-flex gap-2">
+              <input id="new-front" class="form-control" placeholder="سوال / جلو">
+              <input id="new-back" class="form-control" placeholder="پاسخ / پشت">
+              <button id="add-card" class="btn btn-outline-secondary">افزودن</button>
+            </div>
+          </div>
+
+          <input type="hidden" id="capsule-id">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="save-capsule" class="btn btn-primary">ذخیره</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+      </div>
+    </div>
+  </div>
 </div>
-<div id="learnTab" class="tab-content d-none">
-  <div id="learnContainer"></div>
+
+<!-- Learn Modal -->
+<div class="modal fade" id="learnModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content card">
+      <div class="modal-header">
+        <h5 id="learnTitle" class="modal-title">Learn</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+      </div>
+      <div class="modal-body">
+        <div id="learnBody">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div><strong id="learnCapsuleTitle"></strong><div class="small-muted" id="learnDesc"></div></div>
+            <div><span id="progressText"></span></div>
+          </div>
+          <div id="flashcard-area" class="card p-3 mb-3">
+            <div id="flashcard" class="flashcard">کارت خالی</div>
+            <div class="d-flex gap-2 justify-content-center">
+              <button id="show-answer" class="btn btn-outline-primary">نمایش پاسخ</button>
+              <button id="know-btn" class="btn btn-success">بلد بودم</button>
+              <button id="dontknow-btn" class="btn btn-danger">نمی‌دانم</button>
+            </div>
+          </div>
+          <div id="learnLog" class="small-muted"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+      </div>
+    </div>
+  </div>
 </div>
-<div id="authorTab" class="tab-content d-none">
-  <input id="capsuleTitle" class="form-control" placeholder="Title">
-  <input id="capsuleSubject" class="form-control" placeholder="Subject">
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content card">
+      <div class="modal-header"><h5 class="modal-title">Import JSON</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+      </div>
+      <div class="modal-body">
+        <p class="small-muted">یا فایل JSON را بکش و رها کن یا متن JSON را وارد کن.</p>
+        <input id="importFile" type="file" accept=".json" class="form-control mb-2"/>
+        <textarea id="importText" rows="6" class="form-control" placeholder='[{"id":"...","meta":{...},"cards":[...]}]'></textarea>
+      </div>
+      <div class="modal-footer">
+        <button id="doImport" class="btn btn-success">Import</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ======= Storage / Utilities ======= */
+const KEY = 'pocket:capsules:v1';
+
+function uid(prefix='c'){
+  return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+}
+
+function loadAll(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { console.error(e); return []; }
+}
+function saveAll(arr){
+  localStorage.setItem(KEY, JSON.stringify(arr));
+}
+function findById(id){
+  return loadAll().find(c => c.id === id);
+}
+function upsertCapsule(capsule){
+  const all = loadAll();
+  const i = all.findIndex(x=>x.id===capsule.id);
+  if(i>=0) all[i]=capsule; else all.unshift(capsule);
+  saveAll(all);
+}
+function deleteCapsule(id){
+  const all = loadAll().filter(x=>x.id!==id);
+  saveAll(all);
+}
+
+/* defaults sample if empty */
+if(loadAll().length===0){
+  const sample = {
+    id: uid('sample'),
+    schema: 'pocket-classroom/v1',
+    meta:{ title:'مثال: ریاضی پایه', description:'فلش‌کارت‌های نمونه', tags:['ریاضی','مثال'], created: Date.now(), updated: Date.now() },
+    cards:[
+      {id:uid('card'), front:'۲+۲ چند است؟', back:'۴'},
+      {id:uid('card'), front:'مساحت مربع با ضلع a؟', back:'a×a'},
+    ],
+    progress:{}
+  };
+  saveAll([sample]);
+}
+
+/* ======= UI Rendering ======= */
+const libraryEl = document.getElementById('library');
+const searchEl = document.getElementById('search');
+const newCapsuleBtn = document.getElementById('new-capsule-btn');
+const authorModal = new bootstrap.Modal(document.getElementById('authorModal'), {backdrop:'static'});
+const learnModal = new bootstrap.Modal(document.getElementById('learnModal'));
+const importModal = new bootstrap.Modal(document.getElementById('importModal'));
+const themeToggle = document.getElementById('toggle-theme');
+
+function renderLibrary(filter=''){
+  const all = loadAll();
+  const q = filter.trim().toLowerCase();
+  const filtered = all.filter(c=>{
+    if(!q) return true;
+    const m = c.meta || {};
+    return (m.title||'').toLowerCase().includes(q) ||
+           (m.description||'').toLowerCase().includes(q) ||
+           (m.tags||[]).join(' ').toLowerCase().includes(q) ||
+           (c.cards||[]).some(cd => (cd.front+cd.back).toLowerCase().includes(q));
+  });
+  if(filtered.length===0){
+    libraryEl.innerHTML = `<div class="col-12"><div class="alert alert-info">هیچ کپسولی پیدا نشد.</div></div>`;
+    return;
+  }
+  libraryEl.innerHTML = filtered.map(c=>{
+    const m=c.meta||{};
+    const tags=(m.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('');
+    const count = (c.cards||[]).length;
+    const created = new Date(m.created||Date.now()).toLocaleDateString('fa-IR');
+    return `
+      <div class="col-sm-6 col-md-4">
+        <div class="card p-3 capsule-card">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h5 class="mb-1">${escapeHtml(m.title||'بدون عنوان')}</h5>
+              <div class="small-muted">${escapeHtml(m.description||'')}</div>
+              <div class="mt-2">${tags}</div>
+            </div>
+            <div class="text-end">
+              <div class="small-muted">${count} کارت</div>
+              <div class="small-muted">${created}</div>
+            </div>
+          </div>
+          <div class="mt-3 d-flex gap-2 justify-content-end">
+            <button class="btn btn-sm btn-outline-primary" data-action="learn" data-id="${c.id}"><i class="bi bi-book"></i> یادگیری</button>
+            <button class="btn btn-sm btn-outline-secondary" data-action="edit" data-id="${c.id}"><i class="bi bi-pencil"></i> ویرایش</button>
+            <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${c.id}"><i class="bi bi-trash"></i> حذف</button>
+            <button class="btn btn-sm btn-outline-dark" data-action="export" data-id="${c.id}"><i class="bi bi-file-earmark-arrow-up"></i></button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* escape helper */
+function escapeHtml(s=''){ return s.replaceAll && s.replaceAll(/[&<>"']/g, ch=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[ch]) || s; }
+
+/* click handlers for library buttons */
+libraryEl.addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const action = btn.dataset.action;
+  const id = btn.dataset.id;
+  if(action === 'learn') openLearn(id);
+  if(action === 'edit') openAuthorForEdit(id);
+  if(action === 'delete') {
+    if(confirm('آیا از حذف این کپسول اطمینان دارید؟')) { deleteCapsule(id); renderLibrary(searchEl.value); }
+  }
+  if(action === 'export'){ const c=findById(id); downloadJson([c], `capsule-${c.id}.json`); }
+});
+
+/* ======= Author (create/edit) ======= */
+const authorForm = document.getElementById('authorForm');
+const capsTitle = document.getElementById('capsule-title');
+const capsDesc = document.getElementById('capsule-desc');
+const capsTags = document.getElementById('capsule-tags');
+const capsId = document.getElementById('capsule-id');
+const cardsList = document.getElementById('cards-list');
+const newFront = document.getElementById('new-front');
+const newBack = document.getElementById('new-back');
+const addCardBtn = document.getElementById('add-card');
+const saveCapsuleBtn = document.getElementById('save-capsule');
+const authorModalTitle = document.getElementById('authorModalTitle');
+
+function resetAuthorForm(){
+  capsId.value=''; capsTitle.value=''; capsDesc.value=''; capsTags.value=''; cardsList.innerHTML='';
+}
+
+newCapsuleBtn.addEventListener('click', ()=>{
+  resetAuthorForm();
+  authorModalTitle.textContent = 'ساخت کپسول جدید';
+  authorModal.show();
+});
+
+function renderCardsList(items){
+  cardsList.innerHTML = (items||[]).map(cd=>`
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <div class="flex-grow-1 p-2 border rounded">
+        <div><strong>${escapeHtml(cd.front||'')}</strong></div>
+        <div class="small-muted">${escapeHtml(cd.back||'')}</div>
+      </div>
+      <button class="btn btn-sm btn-outline-danger" data-action="del-card" data-id="${cd.id}"><i class="bi bi-x"></i></button>
+    </div>
+  `).join('');
+}
+
+cardsList.addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const id = btn.dataset.id;
+  const action = btn.dataset.action;
+  if(action==='del-card'){
+    const arr = getWorkingCards();
+    const idx = arr.findIndex(x=>x.id===id);
+    if(idx>=0){ arr.splice(idx,1); setWorkingCards(arr); renderCardsList(arr); }
+  }
+});
+
+function getWorkingCards(){
+  const w = authorForm.dataset.working;
+  return w ? JSON.parse(w) : [];
+}
+function setWorkingCards(arr){ authorForm.dataset.working = JSON.stringify(arr); }
+
+addCardBtn.addEventListener('click', e=>{
+  e.preventDefault();
+  const f = newFront.value.trim(); const b = newBack.value.trim();
+  if(!f && !b) return;
+  const arr = getWorkingCards();
+  arr.push({id: uid('card'), front: f, back: b});
+  setWorkingCards(arr); renderCardsList(arr);
+  newFront.value=''; newBack.value=''; newFront.focus();
+});
+
+saveCapsuleBtn.addEventListener('click', ()=>{
+  const title = capsTitle.value.trim();
+  if(!title){ alert('عنوان الزامی است'); return; }
+  const id = capsId.value || uid('caps');
+  const tags = capsTags.value.split(',').map(t=>t.trim()).filter(Boolean);
+  const meta = { title, description: capsDesc.value.trim(), tags, created: Date.now(), updated: Date.now() };
+  const cards = getWorkingCards();
+  const capsule = { id, schema: 'pocket-classroom/v1', meta, cards, progress: {} };
+  upsertCapsule(capsule);
+  authorModal.hide();
+  renderLibrary(searchEl.value);
+});
+
+function openAuthorForEdit(id){
+  const c = findById(id);
+  if(!c) { alert('کپسول پیدا نشد'); return; }
+  capsId.value = c.id;
+  capsTitle.value = c.meta.title || '';
+  capsDesc.value = c.meta.description || '';
+  capsTags.value = (c.meta.tags||[]).join(',');
+  setWorkingCards(c.cards || []);
+  renderCardsList(c.cards || []);
+  authorModalTitle.textContent = 'ویرایش کپسول';
+  authorModal.show();
+}
+
+/* ======= Learn Mode ======= */
+let currentLearn = { capsule:null, index:0, order:[], known:0, total:0 };
+const flashcardEl = document.getElementById('flashcard');
+const showAnswerBtn = document.getElementById('show-answer');
+const knowBtn = document.getElementById('know-btn');
+const dontKnowBtn = document.getElementById('dontknow-btn');
+const learnCapsuleTitle = document.getElementById('learnCapsuleTitle');
+const learnDesc = document.getElementById('learnDesc');
+const progressText = document.getElementById('progressText');
+const learnLog = document.getElementById('learnLog');
+
+function openLearn(id){
+  const c = findById(id);
+  if(!c || !c.cards || c.cards.length===0) { alert('کپسول خالی است یا پیدا نشد'); return; }
+  currentLearn.capsule = c;
+  currentLearn.order = c.cards.map((_,i)=>i).sort(()=>Math.random()-0.5);
+  currentLearn.index = 0;
+  currentLearn.known = 0;
+  currentLearn.total = c.cards.length;
+  learnCapsuleTitle.textContent = c.meta.title;
+  learnDesc.textContent = c.meta.description || '';
+  progressText.textContent = `0 / ${currentLearn.total}`;
+  flipToFront();
+  learnLog.textContent = '';
+  learnModal.show();
+}
+
+function flipToFront(){
+  const ci = currentLearn.order[currentLearn.index];
+  const card = currentLearn.capsule.cards[ci];
+  flashcardEl.textContent = card.front || '[جلو خالی]';
+  flashcardEl.dataset.back = card.back || '';
+  flashcardEl.dataset.front = card.front || '';
+  flashcardEl.dataset.cardId = card.id;
+  flashcardEl.classList.remove('show-back');
+}
+
+showAnswerBtn.addEventListener('click', ()=> {
+  flashcardEl.textContent = flashcardEl.dataset.back || '[پاسخ خالی]';
+});
+
+knowBtn.addEventListener('click', ()=>{
+  markAnswer(true);
+});
+dontKnowBtn.addEventListener('click', ()=>{ markAnswer(false); });
+
+function markAnswer(known){
+  if(typeof known !== 'boolean') known=false;
+  if(known) currentLearn.known++;
+  // log
+  const id = flashcardEl.dataset.cardId;
+  learnLog.textContent += `${currentLearn.index+1}. ${escapeHtml(flashcardEl.dataset.front)} — ${known ? '✔' : '✖'}\n`;
+  // advance
+  currentLearn.index++;
+  progressText.textContent = `${currentLearn.index} / ${currentLearn.total}`;
+  if(currentLearn.index >= currentLearn.total){
+    learnLog.textContent += `\nپایان. درست: ${currentLearn.known} از ${currentLearn.total}`;
+    saveProgressForCapsule(currentLearn.capsule.id, { lastStudied: Date.now(), lastScore: currentLearn.known, total: currentLearn.total });
+    return;
+  }
+  flipToFront();
+}
+
+/* progress save */
+function saveProgressForCapsule(id, data){
+  const c = findById(id);
+  if(!c) return;
+  c.progress = Object.assign({}, c.progress||{}, data);
+  upsertCapsule(c);
+  renderLibrary(searchEl.value);
+}
+
+/* ======= Export / Import ======= */
+function downloadJson(obj, filename='export.json'){
+  const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('export-btn').addEventListener('click', ()=>{
+  const all = loadAll();
+  downloadJson(all, `pocket-capsules-backup-${new Date().toISOString().slice(0,10)}.json`);
+});
+
+document.getElementById('import-btn').addEventListener('click', ()=>{
+  document.getElementById('importText').value = '';
+  importModal.show();
+});
+
+document.getElementById('doImport').addEventListener('click', ()=>{
+  const fileInput = document.getElementById('importFile');
+  const txt = document.getElementById('importText').value.trim();
+  if(fileInput.files && fileInput.files.length>0){
+    const fr = new FileReader();
+    fr.onload = () => {
+      try { const arr = JSON.parse(fr.result); handleImportArray(arr); importModal.hide(); renderLibrary(searchEl.value); }
+      catch(e){ alert('فایل JSON معتبر نیست'); }
+    };
+    fr.readAsText(fileInput.files[0]);
+  } else if(txt){
+    try { const arr = JSON.parse(txt); handleImportArray(arr); importModal.hide(); renderLibrary(searchEl.value); }
+    catch(e){ alert('متن JSON معتبر نیست'); }
+  } else {
+    alert('فایل یا متن وارد کنید');
+  }
+});
+
+function handleImportArray(arr){
+  if(!Array.isArray(arr)) arr = [arr];
+  const existing = loadAll();
+  // we append new ones but keep same ids (or create new if id collision)
+  arr.forEach(it=>{
+    if(!it.id) it.id = uid('imp');
+    // ensure shape
+    it.schema = it.schema || 'pocket-classroom/v1';
+    it.meta = it.meta || { title: it.meta?.title || 'Imported', created: Date.now(), updated: Date.now() };
+    it.cards = Array.isArray(it.cards) ? it.cards : [];
+    // if id exists, create new id
+    if(existing.some(x=>x.id===it.id)) it.id = uid('imp');
+    existing.unshift(it);
+  });
+  saveAll(existing);
+}
+
+/* helper: download individual capsule export when clicking export button in card (handled earlier) */
+
+/* ======= Theme toggle ======= */
+function setTheme(isDark){
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  themeToggle.textContent = isDark ? 'حالت روشن' : 'حالت تاریک';
+  localStorage.setItem('pocket:theme', isDark ? 'dark' : 'light');
+}
+themeToggle.addEventListener('click', ()=>{
+  const cur = localStorage.getItem('pocket:theme') === 'dark';
+  setTheme(!cur);
+});
+setTheme(localStorage.getItem('pocket:theme') === 'dark');
+
+/* ======= Search ======= */
+searchEl.addEventListener('input', ()=> renderLibrary(searchEl.value));
+
+/* ======= Helpers & Init ======= */
+function init(){
+  renderLibrary();
+  // drag & drop import
+  const importArea = document.getElementById('importModal');
+  // restore some UI on load if needed
+}
+init();
+
+/* simple download fallback for export from library view */
+function downloadJson(obj, filename='export.json'){ // override earlier to ensure single definition
+  try{
+    const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }catch(e){ console.error(e); alert('خطا در خروجی گرفتن'); }
+}
+</script>
+</body>
+</html>  <input id="capsuleSubject" class="form-control" placeholder="Subject">
   <select id="capsuleLevel" class="form-select">
     <option value="Easy">Easy</option>
     <option value="Medium">Medium</option>
