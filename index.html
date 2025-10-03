@@ -1,67 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pocket Classroom</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-  <style>
-    body.dark-mode { background: #121212; color: #eee; }
-    .dark-mode .card { background: #1e1e1e; color: #eee; }
-    .nav-link { cursor: pointer; }
-    .section { margin-top: 20px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocket Classroom</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+  body.dark-mode { background-color: #121212; color: #f1f1f1; }
+  .dark-mode .card, .dark-mode .btn { background-color: #1e1e1e; color: #f1f1f1; }
+  .card { transition: all 0.3s; }
+  .section { display: none; }
+  .section.active { display: block; }
+  #library .card:hover { transform: scale(1.02); }
+</style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light p-2 shadow-sm">
-    <a class="navbar-brand" href="#"><i class="bi bi-journal-bookmark-fill"></i> Pocket Classroom</a>
-    <div class="collapse navbar-collapse">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Pocket Classroom</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" id="libraryNav"><i class="bi bi-book"></i> Library</a></li>
-        <li class="nav-item"><a class="nav-link" id="authorNav"><i class="bi bi-pencil-square"></i> Author</a></li>
-        <li class="nav-item"><a class="nav-link" id="learnNav"><i class="bi bi-lightbulb"></i> Learn</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" id="libraryNav"><i class="bi bi-journal-bookmark"></i> Library</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" id="authorNav"><i class="bi bi-pencil-square"></i> Author</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" id="learnNav"><i class="bi bi-lightning-fill"></i> Learn</a></li>
       </ul>
-      <button class="btn btn-outline-secondary" id="darkModeToggle"><i class="bi bi-moon"></i></button>
+      <button class="btn btn-outline-light" id="darkModeToggle"><i class="bi bi-moon-stars"></i></button>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <!-- Sections -->
-  <div class="container section">
-    <!-- Library -->
-    <div id="library" class="row"></div>
+<div class="container mt-4">
+  <div id="library" class="row section active"></div>
 
-    <!-- Author -->
-    <div id="author" class="d-none">
-      <form id="authorForm">
-        <div class="mb-2">
-          <input type="text" id="titleInput" class="form-control" placeholder="Title">
-        </div>
-        <div class="mb-2">
-          <input type="text" id="subjectInput" class="form-control" placeholder="Subject">
-        </div>
-        <div class="mb-2">
-          <select id="levelInput" class="form-select">
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-          </select>
-        </div>
-        <h5><i class="bi bi-card-text"></i> Flashcards</h5>
-        <div id="flashcardsEditor"></div>
-        <button type="button" class="btn btn-primary mb-2" id="addFlashcardBtn"><i class="bi bi-plus-lg"></i> Add Flashcard</button>
-        <h5><i class="bi bi-question-circle"></i> Quiz</h5>
-        <div id="quizEditor"></div>
-        <button type="button" class="btn btn-primary mb-2" id="addQuizBtn"><i class="bi bi-plus-lg"></i> Add Question</button>
-        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Save Capsule</button>
-      </form>
-    </div>
+  <div id="author" class="section">
+    <form id="authorForm">
+      <div class="mb-3">
+        <input id="titleInput" class="form-control" placeholder="Title">
+      </div>
+      <div class="mb-3">
+        <input id="subjectInput" class="form-control" placeholder="Subject">
+      </div>
+      <div class="mb-3">
+        <select id="levelInput" class="form-select">
+          <option>Beginner</option>
+          <option>Intermediate</option>
+          <option>Advanced</option>
+        </select>
+      </div>
+      <div id="flashcardsEditor" class="mb-3"></div>
+      <button type="button" class="btn btn-secondary mb-3" id="addFlashcardBtn"><i class="bi bi-plus-square"></i> Add Flashcard</button>
 
-    <!-- Learn -->
-    <div id="learn" class="d-none"></div>
+      <div id="quizEditor" class="mb-3"></div>
+      <button type="button" class="btn btn-secondary mb-3" id="addQuizBtn"><i class="bi bi-plus-square"></i> Add Quiz Question</button>
+
+      <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save Capsule</button>
+    </form>
   </div>
 
-  <script src="main.js"></script>
+  <div id="learn" class="section"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="main.js"></script>
+
 </body>
 </html>
