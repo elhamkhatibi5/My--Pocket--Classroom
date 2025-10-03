@@ -1,22 +1,22 @@
 // ---------- داده اولیه ----------
 let capsules = JSON.parse(localStorage.getItem('pc_capsules')) || [];
 
-if(capsules.length === 0){
+if (capsules.length === 0) {
   capsules.push({
-    id:'1',
-    title:'Sample Capsule',
-    subject:'Demo',
-    level:'Beginner',
+    id: '1',
+    title: 'Sample Capsule',
+    subject: 'Demo',
+    level: 'Beginner',
     updatedAt: new Date().toISOString(),
-    notes:['Note 1','Note 2'],
-    flashcards:[{front:'Q1', back:'A1'}],
-    quiz:[{question:'Q?', options:['A','B','C','D'], correctIndex:0}]
+    notes: ['Note 1', 'Note 2'],
+    flashcards: [{ front: 'Q1', back: 'A1' }],
+    quiz: [{ question: 'Q?', options: ['A', 'B', 'C', 'D'], correctIndex: 0 }]
   });
   localStorage.setItem('pc_capsules', JSON.stringify(capsules));
 }
 
 // ---------- نمایش بخش‌ها ----------
-function showSection(sectionId){
+function showSection(sectionId) {
   document.getElementById('library').classList.add('d-none');
   document.getElementById('author').classList.add('d-none');
   document.getElementById('learn').classList.add('d-none');
@@ -25,24 +25,27 @@ function showSection(sectionId){
 
 // ---------- Dark Mode ----------
 const darkToggle = document.getElementById('darkModeToggle');
-darkToggle.addEventListener('click', ()=>{
+darkToggle.addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
 });
-if(localStorage.getItem('darkMode')==='true') document.body.classList.add('dark-mode');
+if (localStorage.getItem('darkMode') === 'true')
+  document.body.classList.add('dark-mode');
 
 // ---------- Navbar ----------
-document.addEventListener('DOMContentLoaded', ()=>{
-  document.getElementById('libraryNav').addEventListener('click', e=>{
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('libraryNav').addEventListener('click', e => {
     e.preventDefault();
     showSection('library');
     renderLibrary();
   });
-  document.getElementById('authorNav').addEventListener('click', e=>{
+
+  document.getElementById('authorNav').addEventListener('click', e => {
     e.preventDefault();
     showSection('author');
   });
-  document.getElementById('learnNav').addEventListener('click', e=>{
+
+  document.getElementById('learnNav').addEventListener('click', e => {
     e.preventDefault();
     showSection('learn');
   });
@@ -51,7 +54,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 });
 
 // ---------- Library ----------
-function renderLibrary(){
+function renderLibrary() {
   const libraryEl = document.getElementById('library');
   libraryEl.innerHTML = '';
   capsules.forEach(c => {
@@ -76,44 +79,54 @@ function renderLibrary(){
 }
 
 // ---------- Library Actions ----------
-function openLearn(id){
+function openLearn(id) {
   showSection('learn');
-  const capsule = capsules.find(c => c.id===id);
+  const capsule = capsules.find(c => c.id === id);
   const learnEl = document.getElementById('learn');
   learnEl.innerHTML = `<h2>${capsule.title}</h2>`;
 
   // Notes
-  if(capsule.notes.length){
+  if (capsule.notes.length) {
     const notesDiv = document.createElement('div');
-    notesDiv.className='mb-3';
-    notesDiv.innerHTML = `<h4>Notes</h4><ul>${capsule.notes.map(n=>`<li>${n}</li>`).join('')}</ul>`;
+    notesDiv.className = 'mb-3';
+    notesDiv.innerHTML = `<h4>Notes</h4><ul>${capsule.notes.map(n => `<li>${n}</li>`).join('')}</ul>`;
     learnEl.appendChild(notesDiv);
   }
 
   // Flashcards
-  if(capsule.flashcards.length){
+  if (capsule.flashcards.length) {
     let currentIndex = 0;
     const flashDiv = document.createElement('div');
-    flashDiv.className='mb-3';
+    flashDiv.className = 'mb-3';
     const cardDiv = document.createElement('div');
-    cardDiv.className='card p-3 mb-2 shadow-sm text-center';
-    cardDiv.style.cursor='pointer';
+    cardDiv.className = 'card p-3 mb-2 shadow-sm text-center';
+    cardDiv.style.cursor = 'pointer';
     cardDiv.innerText = capsule.flashcards[currentIndex].front;
 
-    cardDiv.addEventListener('click', ()=>{
+    cardDiv.addEventListener('click', () => {
       const f = capsule.flashcards[currentIndex];
-      cardDiv.innerText = cardDiv.innerText===f.front ? f.back : f.front;
+      cardDiv.innerText = cardDiv.innerText === f.front ? f.back : f.front;
     });
 
     const prevBtn = document.createElement('button');
-    prevBtn.className='btn btn-secondary btn-sm me-1';
-    prevBtn.innerText='Prev';
-    prevBtn.onclick = ()=>{ if(currentIndex>0) { currentIndex--; cardDiv.innerText = capsule.flashcards[currentIndex].front; }};
+    prevBtn.className = 'btn btn-secondary btn-sm me-1';
+    prevBtn.innerText = 'Prev';
+    prevBtn.onclick = () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        cardDiv.innerText = capsule.flashcards[currentIndex].front;
+      }
+    };
 
     const nextBtn = document.createElement('button');
-    nextBtn.className='btn btn-secondary btn-sm';
-    nextBtn.innerText='Next';
-    nextBtn.onclick = ()=>{ if(currentIndex<capsule.flashcards.length-1) { currentIndex++; cardDiv.innerText = capsule.flashcards[currentIndex].front; }};
+    nextBtn.className = 'btn btn-secondary btn-sm';
+    nextBtn.innerText = 'Next';
+    nextBtn.onclick = () => {
+      if (currentIndex < capsule.flashcards.length - 1) {
+        currentIndex++;
+        cardDiv.innerText = capsule.flashcards[currentIndex].front;
+      }
+    };
 
     flashDiv.appendChild(cardDiv);
     flashDiv.appendChild(prevBtn);
@@ -122,28 +135,28 @@ function openLearn(id){
   }
 
   // Quiz
-  if(capsule.quiz.length){
-    let qIndex=0;
+  if (capsule.quiz.length) {
+    let qIndex = 0;
     const quizDiv = document.createElement('div');
-    quizDiv.className='mb-3';
-    const renderQuestion = ()=>{
-      quizDiv.innerHTML='';
+    quizDiv.className = 'mb-3';
+    const renderQuestion = () => {
+      quizDiv.innerHTML = '';
       const q = capsule.quiz[qIndex];
       const qCard = document.createElement('div');
-      qCard.className='card p-3 mb-2 shadow-sm';
+      qCard.className = 'card p-3 mb-2 shadow-sm';
       qCard.innerHTML = `<h5>${q.question}</h5>`;
-      q.options.forEach((opt,i)=>{
+      q.options.forEach((opt, i) => {
         const btn = document.createElement('button');
-        btn.className='btn btn-outline-primary btn-sm m-1';
-        btn.innerText=opt;
-        btn.onclick = ()=>{
-          if(i===q.correctIndex) btn.className='btn btn-success btn-sm m-1';
-          else btn.className='btn btn-danger btn-sm m-1';
-          setTimeout(()=>{
+        btn.className = 'btn btn-outline-primary btn-sm m-1';
+        btn.innerText = opt;
+        btn.onclick = () => {
+          if (i === q.correctIndex) btn.className = 'btn btn-success btn-sm m-1';
+          else btn.className = 'btn btn-danger btn-sm m-1';
+          setTimeout(() => {
             qIndex++;
-            if(qIndex<capsule.quiz.length) renderQuestion();
-            else quizDiv.innerHTML='<p>Quiz Finished!</p>';
-          },500);
+            if (qIndex < capsule.quiz.length) renderQuestion();
+            else quizDiv.innerHTML = '<p>Quiz Finished!</p>';
+          }, 500);
         };
         qCard.appendChild(btn);
       });
@@ -157,7 +170,7 @@ function openLearn(id){
 // ---------- Author Mode ----------
 const flashcardsEditor = document.getElementById('flashcardsEditor');
 const addFlashcardBtn = document.getElementById('addFlashcardBtn');
-addFlashcardBtn.addEventListener('click', ()=>{
+addFlashcardBtn.addEventListener('click', () => {
   const div = document.createElement('div');
   div.className = 'mb-2';
   div.innerHTML = `
@@ -166,12 +179,12 @@ addFlashcardBtn.addEventListener('click', ()=>{
     <button type="button" class="btn btn-danger btn-sm removeFlashcard">Remove</button>
   `;
   flashcardsEditor.appendChild(div);
-  div.querySelector('.removeFlashcard').addEventListener('click', ()=> div.remove());
+  div.querySelector('.removeFlashcard').addEventListener('click', () => div.remove());
 });
 
 const quizEditor = document.getElementById('quizEditor');
 const addQuizBtn = document.getElementById('addQuizBtn');
-addQuizBtn.addEventListener('click', ()=>{
+addQuizBtn.addEventListener('click', () => {
   const div = document.createElement('div');
   div.className = 'mb-3 border p-2';
   div.innerHTML = `
@@ -189,104 +202,43 @@ addQuizBtn.addEventListener('click', ()=>{
     <button type="button" class="btn btn-danger btn-sm removeQuestion">Remove</button>
   `;
   quizEditor.appendChild(div);
-  div.querySelector('.removeQuestion').addEventListener('click', ()=> div.remove());
+  div.querySelector('.removeQuestion').addEventListener('click', () => div.remove());
 });
 
 // ---------- Save Capsule ----------
-document.getElementById('authorForm').addEventListener('submit', e=>{
+document.getElementById('authorForm').addEventListener('submit', e => {
   e.preventDefault();
   const title = document.getElementById('titleInput').value;
   const subject = document.getElementById('subjectInput').value;
   const level = document.getElementById('levelInput').value;
 
-  const flashcards = Array.from(flashcardsEditor.children).map(div=>({
+  const flashcards = Array.from(flashcardsEditor.children).map(div => ({
     front: div.querySelector('.frontInput').value,
     back: div.querySelector('.backInput').value
-  })).filter(f=>f  e.preventDefault();
-  const title = document.getElementById('titleInput').value;
-  const subject = document.getElementById('subjectInput').value;
-  const level = document.getElementById('levelInput').value;
+  })).filter(f => f.front && f.back);
 
-  const newCapsule = { id: Date.now().toString(), title, subject, level, updatedAt: new Date().toISOString(), notes: [], flashcards: [], quiz: [] };
+  const quiz = Array.from(quizEditor.children).map(div => ({
+    question: div.querySelector('.questionInput').value,
+    options: [
+      div.querySelector('.opt0').value,
+      div.querySelector('.opt1').value,
+      div.querySelector('.opt2').value,
+      div.querySelector('.opt3').value
+    ],
+    correctIndex: parseInt(div.querySelector('.correctIndex').value)
+  })).filter(q => q.question && q.options.every(o => o));
+
+  const newCapsule = {
+    id: Date.now().toString(),
+    title, subject, level,
+    updatedAt: new Date().toISOString(),
+    notes: [],
+    flashcards,
+    quiz
+  };
+
   capsules.push(newCapsule);
   localStorage.setItem('pc_capsules', JSON.stringify(capsules));
   renderLibrary();
   showSection('library');
 });
-    const nextBtn = document.createElement('button');
-    nextBtn.className='btn btn-secondary btn-sm';
-    nextBtn.innerText='Next';
-    nextBtn.onclick = ()=>{ if(currentIndex<capsule.flashcards.length-1) { currentIndex++; cardDiv.innerText = capsule.flashcards[currentIndex].front; }};
-
-    flashDiv.appendChild(cardDiv);
-    flashDiv.appendChild(prevBtn);
-    flashDiv.appendChild(nextBtn);
-    learnEl.appendChild(flashDiv);
-  }
-
-  // Quiz
-  if(capsule.quiz.length){
-    let qIndex=0;
-    const quizDiv = document.createElement('div');
-    quizDiv.className='mb-3';
-    const renderQuestion = ()=>{
-      quizDiv.innerHTML='';
-      const q = capsule.quiz[qIndex];
-      const qCard = document.createElement('div');
-      qCard.className='card p-3 mb-2 shadow-sm';
-      qCard.innerHTML = `<h5>${q.question}</h5>`;
-      q.options.forEach((opt,i)=>{
-        const btn = document.createElement('button');
-        btn.className='btn btn-outline-primary btn-sm m-1';
-        btn.innerText=opt;
-        btn.onclick = ()=>{
-          if(i===q.correctIndex) btn.className='btn btn-success btn-sm m-1';
-          else btn.className='btn btn-danger btn-sm m-1';
-          setTimeout(()=>{
-            qIndex++;
-            if(qIndex<capsule.quiz.length) renderQuestion();
-            else quizDiv.innerHTML='<p>Quiz Finished!</p>';
-          },500);
-        };
-        qCard.appendChild(btn);
-      });
-      quizDiv.appendChild(qCard);
-    };
-    renderQuestion();
-    learnEl.appendChild(quizDiv);
-  }
-}
-
-function openEdit(id){
-  showSection('author');
-  const capsule = capsules.find(c => c.id===id);
-  document.getElementById('titleInput').value = capsule.title;
-  document.getElementById('subjectInput').value = capsule.subject;
-  document.getElementById('levelInput').value = capsule.level;
-
-  // پاک کردن و بارگذاری flashcards
-  flashcardsEditor.innerHTML = '';
-  capsule.flashcards.forEach(fc=>{
-    const div = document.createElement('div');
-    div.className='mb-2';
-    div.innerHTML = `<input class="form-control mb-1 frontInput" value="${fc.front}">
-                     <input class="form-control mb-1 backInput" value="${fc.back}">
-                     <button type="button" class="btn btn-danger btn-sm removeFlashcard">Remove</button>`;
-    flashcardsEditor.appendChild(div);
-    div.querySelector('.removeFlashcard').addEventListener('click',()=>div.remove());
-  });
-
-  // پاک کردن و بارگذاری quiz
-  quizEditor.innerHTML='';
-  capsule.quiz.forEach(q=>{
-    const div = document.createElement('div');
-    div.className='mb-3 border p-2';
-    div.innerHTML = `<input type="text" class="form-control mb-1 questionInput" value="${q.question}">
-                     <input type="text" class="form-control mb-1 opt0" value="${q.options[0]}">
-                     <input type="text" class="form-control mb-1 opt1" value="${q.options[1]}">
-                     <input type="text" class="form-control mb-1 opt2" value="${q.options[2]}">
-                     <input type="text" class="form-control mb-1 opt3" value="${q.options[3]}">
-                     <select class="form-select mb-1 correctIndex">
-                       <option value="0" ${q.correctIndex===0?'selected':''}>Correct: A</option>
-                       <option value="1" ${q.correctIndex===1?'selected':''}>Correct: B</option>
-                       <option value="2" ${q.correctIndex===2?'selected':''}>
