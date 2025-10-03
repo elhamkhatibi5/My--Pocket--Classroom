@@ -1,3 +1,53 @@
+
+import { saveCapsule, loadIndex } from './storage.js';
+
+if(loadIndex().length === 0){
+  const sample = {
+    "schema": "pocket-classroom/v1",
+    "id": "sample_math_1",
+    "meta": {
+      "title": "Math Capsule – Addition & Subtraction",
+      "subject": "Mathematics",
+      "level": "Beginner",
+      "description": "Practice basic addition and subtraction"
+    },
+    "notes": [
+      "Addition is combining numbers: 2 + 3 = 5.",
+      "Subtraction is taking away: 5 - 2 = 3.",
+      "Zero is the identity for addition: n + 0 = n."
+    ],
+    "flashcards": [
+      { "front": "3 + 4", "back": "7" },
+      { "front": "5 - 2", "back": "3" },
+      { "front": "10 + 0", "back": "10" },
+      { "front": "7 - 7", "back": "0" }
+    ],
+    "quiz": [
+      {
+        "question": "What is 4 + 3?",
+        "choices": ["5", "6", "7", "8"],
+        "answer": 2,
+        "explanation": "4 + 3 = 7"
+      },
+      {
+        "question": "What is 9 - 6?",
+        "choices": ["2", "3", "4", "5"],
+        "answer": 1,
+        "explanation": "9 - 6 = 3"
+      },
+      {
+        "question": "What is the result of 10 + 0?",
+        "choices": ["0", "10", "20", "1"],
+        "answer": 1,
+        "explanation": "Zero doesn’t change a number in addition"
+      }
+    ],
+    "updatedAt": new Date().toISOString()
+  };
+  saveCapsule(sample);
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
 
   let capsules = JSON.parse(localStorage.getItem('pocket_capsules')) || [];
