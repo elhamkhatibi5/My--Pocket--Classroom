@@ -68,19 +68,18 @@
 </div>
 
 <script>
-  // LocalStorage Keys
+  // ======== Data ========
   let notes = JSON.parse(localStorage.getItem('pocket_notes')) || [];
   let flashcards = JSON.parse(localStorage.getItem('pocket_flashcards')) || [];
   let quiz = JSON.parse(localStorage.getItem('pocket_quiz')) || [];
 
-  // Save functions
   function saveAll() {
     localStorage.setItem('pocket_notes', JSON.stringify(notes));
     localStorage.setItem('pocket_flashcards', JSON.stringify(flashcards));
     localStorage.setItem('pocket_quiz', JSON.stringify(quiz));
   }
 
-  // Tabs
+  // ======== Tabs ========
   document.querySelectorAll('#tabs .nav-link').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('#tabs .nav-link').forEach(t => t.classList.remove('active'));
@@ -91,7 +90,7 @@
     });
   });
 
-  // Notes
+  // ======== Notes ========
   const notesContainer = document.getElementById('notesContainer');
   function renderNotes() {
     notesContainer.innerHTML = '';
@@ -129,7 +128,7 @@
   });
   renderNotes();
 
-  // Flashcards
+  // ======== Flashcards ========
   const flashcardsContainer = document.getElementById('flashcardsContainer');
   function renderFlashcards() {
     flashcardsContainer.innerHTML = '';
@@ -167,7 +166,7 @@
   });
   renderFlashcards();
 
-  // Quiz
+  // ======== Quiz ========
   const quizContainer = document.getElementById('quizContainer');
   function renderQuiz() {
     quizContainer.innerHTML = '';
@@ -205,7 +204,7 @@
   });
   renderQuiz();
 
-  // Learn Mode
+  // ======== Learn Mode ========
   const learnContainer=document.getElementById('learnContainer');
   function renderLearn() {
     learnContainer.innerHTML='<h5>Notes</h5>';
@@ -218,7 +217,7 @@
     quiz.forEach(q => { const div=document.createElement('div'); div.textContent=`${q.question} - ${q.answer}`; div.className='card p-2 mb-1'; learnContainer.appendChild(div); });
   }
 
-  // Export / Import
+  // ======== Export / Import ========
   document.getElementById('exportBtn').addEventListener('click', () => {
     const data = JSON.stringify({notes, flashcards, quiz}, null, 2);
     const blob = new Blob([data], {type:'application/json'});
@@ -238,7 +237,6 @@
     };
     reader.readAsText(file);
   });
-
 </script>
 </body>
 </html>
