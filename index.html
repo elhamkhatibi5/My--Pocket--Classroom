@@ -1,81 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pocket Classroom</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<style>
-  body.dark-mode { background-color: #121212; color: #f1f1f1; }
-  .dark-mode .card, .dark-mode .btn { background-color: #1e1e1e; color: #f1f1f1; }
-  .card { transition: all 0.3s; }
-  .section { display: none; }
-  .section.active { display: block; }
-  #library .card:hover { transform: scale(1.02); }
-  .btn-sm { min-width: 70px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Options List</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #121212; color: #fff; }
+    .option { cursor: pointer; transition: 0.2s; }
+    .option:hover { background-color: #1f1f1f; }
+    .card { background-color: #1a1a1a; color: #fff; }
+    .btn { margin-right: 5px; }
+  </style>
 </head>
-<body>
+<body class="p-4">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#"><i class="bi bi-box-seam"></i> Pocket Classroom</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" href="#" id="libraryNav"><i class="bi bi-journal-bookmark"></i> Library</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" id="authorNav"><i class="bi bi-pencil-square"></i> Author</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" id="learnNav"><i class="bi bi-lightning-fill"></i> Learn</a></li>
-      </ul>
-      <button class="btn btn-outline-light" id="darkModeToggle"><i class="bi bi-moon-stars"></i></button>
-    </div>
-  </div>
-</nav>
+<div class="container">
+  <h2 class="mb-3">Manage Options</h2>
 
-<div class="container mt-4">
-
-  <!-- Library Section -->
-  <div id="library" class="row section active"></div>
-
-  <!-- Author Section -->
-  <div id="author" class="section">
-    <form id="authorForm">
-      <div class="mb-3">
-        <input id="titleInput" class="form-control" placeholder="Title" required>
-      </div>
-      <div class="mb-3">
-        <input id="subjectInput" class="form-control" placeholder="Subject" required>
-      </div>
-      <div class="mb-3">
-        <select id="levelInput" class="form-select">
-          <option>Beginner</option>
-          <option>Intermediate</option>
-          <option>Advanced</option>
-        </select>
-      </div>
-
-      <h5><i class="bi bi-card-text"></i> Flashcards</h5>
-      <div id="flashcardsEditor" class="mb-3"></div>
-      <button type="button" class="btn btn-secondary mb-3" id="addFlashcardBtn"><i class="bi bi-plus-square"></i> Add Flashcard</button>
-
-      <h5><i class="bi bi-question-circle"></i> Quiz</h5>
-      <div id="quizEditor" class="mb-3"></div>
-      <button type="button" class="btn btn-secondary mb-3" id="addQuizBtn"><i class="bi bi-plus-square"></i> Add Quiz Question</button>
-
-      <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save Capsule</button>
-    </form>
+  <div class="mb-3 d-flex">
+    <input type="text" id="newOption" class="form-control me-2" placeholder="New option...">
+    <button id="addBtn" class="btn btn-success">Add</button>
   </div>
 
-  <!-- Learn Section -->
-  <div id="learn" class="section"></div>
-
+  <div id="optionsContainer" class="row g-2"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="main.js"></script>
+<script>
+  // Load options from LocalStorage or create default sample
+  let options = JSON.parse(localStorage.getItem('my_options')) || [
+    { id: 1, title: "Option One" },
+    { id: 2, title: "Option Two" },
+    { id: 3, title: "Option Three" }
+  ];
+
+  // Save options to LocalStorage
+  function saveOptions() {
+    localStorage.setItem('my_options', JSON.stringify(options));
+  }
+
+  const container = document.getElementById('optionsContainer');
+
+  // Render options function
+  function renderOptions() {
+    container.innerHTML = '';
+    options.forEach(opt => {
+      const div = document.createElement('div');
+      div.className = 'col-md-4';
+      div.innerHTML = `
+        <div class="card p-2 option">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>${opt.title}</span>
+            <div>
+              <button class="btn btn-sm btn-primary editBtn">Edit</button>
+              <button class="btn btn-sm btn-danger deleteBtn">Delete</button>
+            </div>
+          </div>
+        </div>
+      `;
+      // Edit option
+      div.querySelector('.editBtn').addEventListener('click', () => {
+        const newTitle = prompt('Enter new option title:', opt.title);
+        if(newTitle) {
+          opt.title = newTitle;
+          saveOptions();
+          renderOptions();
+        }
+      });
+      // Delete option
+      div.querySelector('.deleteBtn').addEventListener('click', () => {
+        options = options.filter(o => o.id !== opt.id);
+        saveOptions();
+        renderOptions();
+      });
+      // Click on option
+      div.querySelector('.card').addEventListener('click', () => {
+        alert(`You selected: ${opt.title}`);
+      });
+
+      container.appendChild(div);
+    });
+  }
+
+  // Add new option
+  document.getElementById('addBtn').addEventListener('click', () => {
+    const input = document.getElementById('newOption');
+    const val = input.value.trim();
+    if(val) {
+      const newOption = { id: Date.now(), title: val };
+      options.push(newOption);
+      saveOptions();
+      renderOptions();
+      input.value = '';
+    }
+  });
+
+  // Initial render
+  renderOptions();
+</script>
 
 </body>
 </html>
