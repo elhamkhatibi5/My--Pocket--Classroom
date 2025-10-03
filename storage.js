@@ -1,63 +1,90 @@
-// storage.js — مدیریت کامل کپسول‌ها، فلش‌کارت‌ها و نوت‌ها
+// storage.js
 
-// بارگذاری همه کپسول‌ها
-export function loadAllCapsules() {
+// ===== ایندکس کپسول‌ها =====
+export function loadIndex() {
   try {
-    return JSON.parse(localStorage.getItem('pocket_capsules') || '[]');
+    return JSON.parse(localStorage.getItem('pc_capsules_index') || '[]');
   } catch (e) {
-    console.error("Error loading capsules:", e);
     return [];
   }
 }
 
-// ذخیره همه کپسول‌ها
-export function saveAllCapsules(capsules) {
-  try {
-    localStorage.setItem('pocket_capsules', JSON.stringify(capsules));
-  } catch (e) {
-    console.error("Error saving capsules:", e);
-  }
+export function saveIndex(index) {
+  localStorage.setItem('pc_capsules_index', JSON.stringify(index));
 }
 
-// بارگذاری یک کپسول با id
-export function loadCapsule(id) {
-  const capsules = loadAllCapsules();
-  return capsules.find(c => c.id === id) || null;
-}
-
-// ذخیره یا آپدیت یک کپسول
+// ===== ذخیره یک کپسول =====
 export function saveCapsule(capsule) {
-  let capsules = loadAllCapsules();
-  const index = capsules.findIndex(c => c.id === capsule.id);
-  if(index >= 0) {
-    capsules[index] = capsule; // آپدیت
+  if (!capsule.id) capsule.id = 'pc_' + Date.now();
+  capsule.updatedAt = new Date().toISOString();
+
+  localStorage.setItem('pc_capsule_' + capsule.id, JSON.stringify(capsule));
+
+  const idx = loadIndex();
+  const existing = idx.find(i => i.id === capsule.id);
+
+  const entry = {
+    id: capsule.id,
+    title: capsule.meta?.title || 'Untitled',
+    subject: capsule.meta?.subject || '',
+    level: capsule.meta?.level || '',
+    type: capsule.meta?.type || 'note',   // 👈 نوع کپسول (note / flashcard / quiz)
+    updatedAt: capsule.updatedAt
+  };
+
+  if (existing) {
+    idx[idx.findIndex(x => x.id === capsule.id)] = entry;
   } else {
-    capsules.push(capsule);     // اضافه کردن جدید
+    idx.push(entry);
   }
-  saveAllCapsules(capsules);
+
+  saveIndex(idx);
 }
 
-// حذف یک کپسول
+// ===== لود و حذف =====
+export function loadCapsule(id) {
+  try {
+    return JSON.parse(localStorage.getItem('pc_capsule_' + id));
+  } catch (e) {
+    return null;
+  }
+}
+
 export function deleteCapsule(id) {
-  let capsules = loadAllCapsules();
-  capsules = capsules.filter(c => c.id !== id);
-  saveAllCapsules(capsules);
+  localStorage.removeItem('pc_capsule_' + id);
+  saveIndex(loadIndex().filter(i => i.id !== id));
 }
 
-// پیشرفت کاربر روی یک کپسول (optional)
+// ===== پیشرفت کاربر در Learn Mode =====
 export function loadProgress(id) {
   try {
-    return JSON.parse(localStorage.getItem('pocket_progress_' + id) || '{}');
-  } catch(e) {
-    console.error("Error loading progress:", e);
+    return JSON.parse(localStorage.getItem('pc_progress_' + id) || '{}');
+  } catch (e) {
     return {};
   }
 }
 
 export function saveProgress(id, progress) {
+  localStorage.setItem('pc_progress_' + id, JSON.stringify(progress));
+}
+
+// ===== Import / Export =====
+export function exportCapsules() {
+  const index = loadIndex();
+  const capsules = index.map(i => loadCapsule(i.id));
+  return JSON.stringify({ schema: "pocket-classroom/v1", capsules }, null, 2);
+}
+
+export function importCapsules(json) {
   try {
-    localStorage.setItem('pocket_progress_' + id, JSON.stringify(progress));
-  } catch(e) {
-    console.error("Error saving progress:", e);
+    const data = JSON.parse(json);
+    if (data.schema !== "pocket-classroom/v1") throw new Error("Invalid schema");
+    if (!Array.isArray(data.capsules)) throw new Error("Invalid capsules array");
+
+    data.capsules.forEach(c => saveCapsule(c));
+    return true;
+  } catch (e) {
+    console.error("Import failed", e);
+    return false;
   }
 }
