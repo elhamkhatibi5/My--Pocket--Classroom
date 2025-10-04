@@ -1,165 +1,152 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pocket Classroom — Real Version</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pocket Classroom — Offline</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<style>
-:root {
-  --bg:#f8f9fa; --card:#fff; --text:#212529; --accent:#0d6efd;
-}
-[data-theme="dark"] {
-  --bg:#0f1720; --card:#0b1220; --text:#dbeafe; --accent:#3b82f6;
-}
-body {
-  background: var(--bg); color: var(--text); font-family: Arial,sans-serif; padding-bottom:40px;
-}
-.navbar, .card { background: var(--card); color: var(--text); }
-.capsule-card { cursor:pointer; transition: transform .08s; }
-.capsule-card:hover { transform: translateY(-3px); }
-.tag { font-size:11px; padding:.15rem .4rem; border-radius:6px; background: rgba(0,0,0,0.06); margin-left:6px; }
-.flashcard { min-height:120px; display:flex; align-items:center; justify-content:center; font-size:20px; padding:1rem; text-align:center; border-radius:8px; }
-.small-muted { font-size:12px; color:gray; }
-button:focus { outline:none; }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light mb-3 px-3">
-  <a class="navbar-brand fw-bold" href="#">Pocket Classroom</a>
-  <div class="ms-auto d-flex gap-2">
-    <button id="toggle-theme" class="btn btn-sm btn-outline-secondary">Dark Mode</button>
-    <button id="export-btn" class="btn btn-sm btn-outline-primary">Export All</button>
-    <button id="import-btn" class="btn btn-sm btn-outline-success">Import</button>
-    <button id="new-capsule-btn" class="btn btn-sm btn-primary">+ Add Capsule</button>
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" id="topbar">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><i class="bi bi-mortarboard-fill"></i> Pocket Classroom</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navmenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="#" id="navLibrary"><i class="bi bi-journal-bookmark"></i> Library</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" id="navAuthor"><i class="bi bi-pencil-square"></i> Author</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" id="navLearn"><i class="bi bi-lightning-fill"></i> Learn</a></li>
+      </ul>
+      <div class="d-flex gap-2">
+        <input id="importFile" type="file" accept="application/json" class="d-none">
+        <button class="btn btn-outline-light btn-sm" id="btnImport"><i class="bi bi-file-earmark-arrow-up"></i> Import</button>
+        <button class="btn btn-outline-light btn-sm" id="btnNew"><i class="bi bi-plus-lg"></i> New Capsule</button>
+        <button class="btn btn-outline-light btn-sm" id="toggleTheme" aria-label="Toggle theme"><i class="bi bi-moon-stars"></i></button>
+      </div>
+    </div>
   </div>
 </nav>
 
-<div class="container">
-  <!-- Search -->
-  <div class="row mb-3">
-    <div class="col-12">
-      <input id="search" class="form-control" placeholder="Search capsules...">
-    </div>
-  </div>
-
+<main class="container my-4">
   <!-- Library -->
-  <div class="row g-3" id="library"></div>
-</div>
+  <section id="sectionLibrary" class="view active" aria-labelledby="navLibrary">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="h4 mb-0">Library</h2>
+      <div class="text-muted small">Saved capsules: <span id="capsuleCount">0</span></div>
+    </div>
+    <div id="libraryGrid" class="row g-3"></div>
+  </section>
 
-<!-- Author Modal -->
-<div class="modal fade" id="authorModal" tabindex="-1" aria-hidden="true">
-<div class="modal-dialog modal-lg modal-dialog-centered">
-<div class="modal-content card">
-<div class="modal-header">
-<h5 class="modal-title" id="authorModalTitle">Create Capsule</h5>
-<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-</div>
-<div class="modal-body">
-<form id="authorForm">
-<div class="mb-3">
-<label class="form-label">Title</label>
-<input id="capsule-title" class="form-control" required>
-</div>
-<div class="mb-3">
-<label class="form-label">Subject</label>
-<input id="capsule-subject" class="form-control">
-</div>
-<div class="mb-3">
-<label class="form-label">Level</label>
-<select id="capsule-level" class="form-select">
-<option value="Easy">Easy</option>
-<option value="Medium">Medium</option>
-<option value="Hard">Hard</option>
-</select>
-</div>
-<div class="mb-3">
-<label class="form-label">Tags (comma-separated)</label>
-<input id="capsule-tags" class="form-control" placeholder="Math,Science">
-</div>
-<hr>
-<div>
-<h6>Flashcards</h6>
-<div id="cards-list" class="mb-3"></div>
-<div class="d-flex gap-2">
-<input id="new-front" class="form-control" placeholder="Front / Question">
-<input id="new-back" class="form-control" placeholder="Back / Answer">
-<button id="add-card" class="btn btn-outline-secondary">Add Card</button>
-</div>
-</div>
-<input type="hidden" id="capsule-id">
-</form>
-</div>
-<div class="modal-footer">
-<button id="save-capsule" class="btn btn-primary">Save Capsule</button>
-<button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-</div>
-</div>
-</div>
-</div>
+  <!-- Author -->
+  <section id="sectionAuthor" class="view" aria-labelledby="navAuthor" hidden>
+    <h2 class="h4">Author Capsule</h2>
+    <form id="authorForm" class="mb-3" aria-label="Author form">
+      <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label">Title <span class="text-danger">*</span></label>
+          <input id="metaTitle" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Subject</label>
+          <input id="metaSubject" class="form-control">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Level</label>
+          <select id="metaLevel" class="form-select">
+            <option>Beginner</option><option>Intermediate</option><option>Advanced</option>
+          </select>
+        </div>
+      </div>
 
-<!-- Learn Modal -->
-<div class="modal fade" id="learnModal" tabindex="-1" aria-hidden="true">
-<div class="modal-dialog modal-lg modal-dialog-centered">
-<div class="modal-content card">
-<div class="modal-header">
-<h5 id="learnTitle" class="modal-title">Learn</h5>
-<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-</div>
-<div class="modal-body">
-<div id="learnBody">
-<div class="d-flex justify-content-between align-items-center mb-3">
-<div><strong id="learnCapsuleTitle"></strong><div class="small-muted" id="learnDesc"></div></div>
-<div><span id="progressText"></span></div>
-</div>
-<div id="flashcard-area" class="card p-3 mb-3">
-<div id="flashcard" class="flashcard">Empty Card</div>
-<div class="d-flex gap-2 justify-content-center mt-2">
-<button id="show-answer" class="btn btn-outline-primary">Show Answer</button>
-<button id="know-btn" class="btn btn-success">I Know</button>
-<button id="dontknow-btn" class="btn btn-danger">I Don’t Know</button>
-</div>
-</div>
-<div id="learnLog" class="small-muted"></div>
-</div>
-</div>
-<div class="modal-footer">
-<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-</div>
-</div>
-</div>
-</div>
+      <div class="mt-3">
+        <label class="form-label">Description / Notes (one per line)</label>
+        <textarea id="metaNotes" class="form-control" rows="4" placeholder="Write notes or markdown-lite..."></textarea>
+      </div>
 
+      <hr>
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Flashcards</h5>
+        <div>
+          <button id="addFlashRow" type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg"></i> Add</button>
+          <button id="clearFlash" type="button" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Clear</button>
+        </div>
+      </div>
+      <div id="flashcardsEditor" class="mt-2"></div>
+
+      <hr>
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Quiz</h5>
+        <div>
+          <button id="addQuizQ" type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg"></i> Add Question</button>
+        </div>
+      </div>
+      <div id="quizEditor" class="mt-2"></div>
+
+      <div class="mt-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save Capsule</button>
+        <button id="btnCancelAuthor" type="button" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Learn -->
+  <section id="sectionLearn" class="view" aria-labelledby="navLearn" hidden>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h2 id="learnTitle" class="h4 mb-0">Learn</h2>
+        <div class="small text-muted" id="learnMeta"></div>
+      </div>
+      <div>
+        <select id="learnSelector" class="form-select form-select-sm"></select>
+      </div>
+    </div>
+
+    <ul class="nav nav-tabs" id="learnTabs" role="tablist">
+      <li class="nav-item"><button class="nav-link active" data-bs-target="#notesTab" data-bs-toggle="tab" type="button">Notes</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-target="#flashTab" data-bs-toggle="tab" type="button">Flashcards</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-target="#quizTab" data-bs-toggle="tab" type="button">Quiz</button></li>
+    </ul>
+
+    <div class="tab-content mt-3">
+      <div class="tab-pane fade show active" id="notesTab">
+        <div class="mb-2 d-flex gap-2">
+          <input id="noteSearch" class="form-control form-control-sm" placeholder="Search notes...">
+        </div>
+        <ol id="notesList" class="list-group list-group-numbered"></ol>
+      </div>
+
+      <div class="tab-pane fade" id="flashTab">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <button id="prevCard" class="btn btn-sm btn-outline-secondary"><i class="bi bi-chevron-left"></i></button>
+          <button id="flipCard" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-repeat"></i> Flip (Space)</button>
+          <button id="nextCard" class="btn btn-sm btn-outline-secondary"><i class="bi bi-chevron-right"></i></button>
+          <div class="ms-auto small text-muted">Card <span id="cardCounter">0/0</span></div>
+        </div>
+        <div id="flashArea" class="flashcard-area"></div>
+        <div class="mt-2 d-flex gap-2">
+          <button id="markKnown" class="btn btn-sm btn-success">Known</button>
+          <button id="markUnknown" class="btn btn-sm btn-outline-danger">Unknown</button>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="quizTab">
+        <div id="quizArea"></div>
+        <div id="quizResult" class="mt-3"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="text-center py-3 small text-muted">Pocket Classroom — Offline • schema: pocket-classroom/v1</footer>
+
+<script type="module" src="utils.js"></script>
+<script type="module" src="storage.js"></script>
+<script type="module" src="app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-// ===== Storage & Utilities =====
-const KEY='pocket:capsules:v1';
-function uid(prefix='c'){ return prefix+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
-function loadAll(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e){ return [];} }
-function saveAll(arr){ localStorage.setItem(KEY,JSON.stringify(arr)); }
-function findById(id){ return loadAll().find(c=>c.id===id); }
-function upsertCapsule(c){ const all=loadAll(); const i=all.findIndex(x=>x.id===c.id); if(i>=0) all[i]=c; else all.unshift(c); saveAll(all);}
-function deleteCapsule(id){ saveAll(loadAll().filter(x=>x.id!==id)); }
-
-// ===== UI Rendering =====
-const libraryEl=document.getElementById('library');
-const searchEl=document.getElementById('search');
-const newCapsuleBtn=document.getElementById('new-capsule-btn');
-const authorModal=new bootstrap.Modal(document.getElementById('authorModal'),{backdrop:'static'});
-const learnModal=new bootstrap.Modal(document.getElementById('learnModal'));
-const themeToggle=document.getElementById('toggle-theme');
-
-function renderLibrary(filter=''){
-  const all=loadAll();
-  const q=filter.trim().toLowerCase();
-  const filtered=all.filter(c=>!q||c.meta.title.toLowerCase().includes(q)||c.meta.subject?.toLowerCase().includes(q)||c.meta.tags.join(' ').toLowerCase().includes(q)||c.cards.some(cd=>(cd.front+cd.back).toLowerCase().includes(q)));
-  if(filtered.length===0){ libraryEl.innerHTML='<div class="col-12"><div class="alert alert-info">No capsules found.</div></div>'; return;}
-  libraryEl.innerHTML=filtered.map(c=>{
-    const m=c.meta; const tags=m.tags.map(t=>`<span class="tag">${t}</span>`).join('');
-    const count=c.cards.length; const created=new Date(m.created).toLocaleDateString('en-US');
-    return `<div class="col-sm-6 col-md-4"><div class="card p-3 capsule-card">
-      <div class="d-flex justify-content-between"><div>
-        <h5>${m.title}</h5><div class
+</body>
+</html>
