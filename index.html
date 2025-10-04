@@ -1,172 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pocket Classroom — Real English Learning</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocket Classroom — Real English Version</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+:root { --bg:#f8f9fa; --card:#fff; --text:#212529; }
+[data-theme="dark"] { --bg:#0f1720; --card:#0b1220; --text:#dbeafe; }
+body { background:var(--bg); color:var(--text); font-family:Arial,sans-serif; padding-bottom:40px; }
+.card { background:var(--card); color:var(--text); }
+.capsule-card { cursor:pointer; transition:transform .08s; }
+.capsule-card:hover { transform:translateY(-3px); }
+.tag { font-size:11px; padding:.15rem .4rem; border-radius:6px; background:rgba(0,0,0,0.06); margin-left:6px; }
+.flashcard { min-height:120px; display:flex; align-items:center; justify-content:center; font-size:20px; padding:1rem; text-align:center; }
+.small-muted { font-size:12px; color:gray; }
+</style>
 </head>
 <body>
-    <!-- Header -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Pocket Classroom</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Courses</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Library</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="container mt-4">
-        <!-- Courses Section -->
-        <section id="courses">
-            <h2 class="mb-3">Courses</h2>
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">English Grammar</h5>
-                            <p class="card-text">Learn tenses, sentence structures, and advanced grammar rules.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Vocabulary Builder</h5>
-                            <p class="card-text">Expand your English vocabulary with daily exercises and quizzes.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Pronunciation Practice</h5>
-                            <p class="card-text">Master English pronunciation with audio guides and repetition drills.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Add more cards as needed -->
-            </div>
-        </section>
-
-        <!-- Lessons Section -->
-        <section id="lessons" class="mt-5">
-            <h2 class="mb-3">Lessons</h2>
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Lesson 1: Present Simple</h5>
-                            <p class="card-text">Learn how to describe routines and daily activities using the present simple tense.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Lesson 2: Past Simple</h5>
-                            <p class="card-text">Understand past events and learn regular & irregular verbs usage.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Lesson 3: Future Forms</h5>
-                            <p class="card-text">Learn how to talk about future plans and predictions with will, going to, and present continuous.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Add more lessons -->
-            </div>
-        </section>
-
-        <!-- Exercises Section -->
-        <section id="exercises" class="mt-5">
-            <h2 class="mb-3">Exercises</h2>
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Grammar Quiz</h5>
-                            <p class="card-text">Test your knowledge on English grammar with interactive quizzes.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Vocabulary Challenge</h5>
-                            <p class="card-text">Match words with meanings and improve your vocabulary quickly.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Listening Practice</h5>
-                            <p class="card-text">Listen to conversations and answer comprehension questions.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Library Section -->
-        <section id="library" class="mt-5">
-            <h2 class="mb-3">Library</h2>
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">English E-Books</h5>
-                            <p class="card-text">Access a wide variety of English e-books for reading practice.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Audio Lessons</h5>
-                            <p class="card-text">Listen to lessons on-the-go to improve pronunciation and listening skills.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Flashcards</h5>
-                            <p class="card-text">Review vocabulary with digital flashcards for faster learning.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Profile Section -->
-        <section id="profile" class="mt-5 mb-5">
-            <h2 class="mb-3">Profile</h2>
-            <div class="card p-3 shadow-sm">
-                <p><strong>Name:</strong> John Doe</p>
-                <p><strong>Level:</strong> Intermediate</p>
-                <p><strong>Courses Completed:</strong> 5</p>
-                <p><strong>Achievements:</strong> Grammar Master, Vocabulary Star</p>
-            </div>
-        </section>
+<nav class="navbar navbar-expand-lg navbar-light mb-3">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="#">Pocket Classroom</a>
+    <div class="d-flex gap-2 align-items-center">
+      <button id="toggle-theme" class="btn btn-sm btn-outline-secondary">Dark Mode</button>
+      <button id="export-btn" class="btn btn-sm btn-outline-primary">Export All</button>
+      <button id="import-btn" class="btn btn-sm btn-outline-success">Import</button>
+      <button id="new-capsule-btn" class="btn btn-sm btn-primary">+ Add Capsule</button>
     </div>
+  </div>
+</nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="main.js"></script>
-</body>
-</html>
+<div class="container">
+  <div class="row g-3">
+    <div class="col-12">
+      <input id="search" class="form-control" placeholder="Search by title, tag, or card content...">
+    </div>
+    <div class="col-12">
+      <div id="library" class="row g-3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Author Modal -->
+<div class="modal fade" id="authorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content card">
+      <div class="modal-header">
+        <h5 class="modal-title" id="authorModalTitle">Create Capsule</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="authorForm">
+          <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input id="capsule-title" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input id="capsule-desc" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tags (comma-separated)</label>
+            <input id="capsule-tags" class="form-control" placeholder="Math,Flashcards">
+          </div>
+          <hr>
+          <div>
+            <h6>Flashcards</h6>
+            <div id="cards-list" class="mb-3"></div>
+            <div class="d-flex gap-2">
+              <input id="new-front" class="form-control" placeholder="Front / Question">
+              <input id="new-back" class="form-control" placeholder="Back / Answer">
+              <button id="add-card" class="btn btn-outline-secondary">Add Card</button>
+            </div>
+          </div>
+          <input type="hidden" id="capsule-id">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="save-capsule" class="btn btn-primary">Save Capsule</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Learn Modal -->
+<div class="modal fade" id="learnModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content card">
+      <div class="modal-header">
+        <h5 id="learnTitle" class="modal-title">Learn</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="learnBody">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div><strong id="learnCapsuleTitle"></strong><div class="small-muted" id="learnDesc"></div></div>
+            <div><span id="progressText"></span></div>
+          </div>
+          <div id="flashcard-area" class="card p-3 mb-3">
+            <div id="flashcard" class="flashcard">Empty Card</div>
+            <div class="d-flex gap-2 justify-content-center">
+              <button id="show-answer" class="btn btn-outline-primary">Show Answer</button>
+              <button id="know-btn" class="btn btn-success">I Know</button>
+              <button id="dontknow-btn" class="btn btn-danger">I Don’t Know</button>
+            </div>
+          </div>
+          <div id="learnLog" class="small-muted"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content card">
+      <div class="modal-header"><h5 class="modal-title">Import JSON</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="small-muted">Drag & drop JSON file or paste JSON text below.</p>
+        <input id="importFile" type="file" accept=".json" class="form-control mb-2"/>
+        <textarea id="importText" rows="6" class="form-control" placeholder='[{"id":"...","meta":{...},"cards":[...]}]'></textarea>
+      </div>
+      <div class="modal-footer">
+        <button id="doImport" class="btn btn-success">Import</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ===== Storage & Utilities =====
+const KEY='pocket:capsules:v1';
+function uid(prefix='c'){ return prefix+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function loadAll(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e){ return [];} }
+function saveAll(arr){ localStorage.setItem(KEY,JSON.stringify(arr)); }
+function findById(id){ return loadAll().find(c=>c.id===id); }
+function upsertCapsule(c){ const all=loadAll(); const i=all.findIndex(x=>x.id===c.id); if(i>=0) all[i]=c; else all.unshift(c); saveAll(all);}
+function deleteCapsule(id){ saveAll(loadAll().filter(x=>x.id!==id)); }
+
+// Sample if empty
+if(loadAll().length===0){
+  const sample={id:uid('sample'), schema:'pocket-classroom/v1',
+  meta:{title:'Sample Math', description:'Sample flashcards', tags:['Math','Sample'], created:Date.now(), updated:Date.now()},
+  cards:[{id:uid('card'), front:'2+2=?', back:'4'},{id:uid('card'), front:'Area of square with side a?', back:'a × a'}],
+  progress:{}};
+  saveAll
