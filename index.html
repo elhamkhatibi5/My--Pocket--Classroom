@@ -1,13 +1,15 @@
-<!doctype html>
+!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Pocket Classroom — English Version</title>
+  <title>Pocket Classroom — Real English Version</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    :root{ --bg:#f8f9fa; --card:#fff; --text:#212529; }
+    :root{
+      --bg:#f8f9fa; --card:#fff; --text:#212529;
+    }
     [data-theme="dark"]{ --bg:#0f1720; --card:#0b1220; --text:#dbeafe; }
     body{ background:var(--bg); color:var(--text); font-family:Arial,sans-serif; padding-bottom:40px; }
     .card{ background:var(--card); color:var(--text); }
@@ -49,7 +51,7 @@
     <div class="modal-content card">
       <div class="modal-header">
         <h5 class="modal-title" id="authorModalTitle">Create Capsule</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <form id="authorForm">
@@ -92,15 +94,12 @@
     <div class="modal-content card">
       <div class="modal-header">
         <h5 id="learnTitle" class="modal-title">Learn</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <div id="learnBody">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <strong id="learnCapsuleTitle"></strong>
-              <div class="small-muted" id="learnDesc"></div>
-            </div>
+            <div><strong id="learnCapsuleTitle"></strong><div class="small-muted" id="learnDesc"></div></div>
             <div><span id="progressText"></span></div>
           </div>
           <div id="flashcard-area" class="card p-3 mb-3">
@@ -126,10 +125,10 @@
   <div class="modal-dialog modal-md modal-dialog-centered">
     <div class="modal-content card">
       <div class="modal-header"><h5 class="modal-title">Import JSON</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p class="small-muted">Drag & drop a JSON file or paste JSON text below.</p>
+        <p class="small-muted">Drag & drop JSON file or paste JSON text below.</p>
         <input id="importFile" type="file" accept=".json" class="form-control mb-2"/>
         <textarea id="importText" rows="6" class="form-control" placeholder='[{"id":"...","meta":{...},"cards":[...]}]'></textarea>
       </div>
@@ -143,7 +142,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-/* ======= Storage & Utilities ======= */
+// ===== Storage & Utilities =====
 const KEY='pocket:capsules:v1';
 function uid(prefix='c'){ return prefix+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
 function loadAll(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e){ return [];} }
@@ -152,7 +151,7 @@ function findById(id){ return loadAll().find(c=>c.id===id); }
 function upsertCapsule(c){ const all=loadAll(); const i=all.findIndex(x=>x.id===c.id); if(i>=0) all[i]=c; else all.unshift(c); saveAll(all);}
 function deleteCapsule(id){ saveAll(loadAll().filter(x=>x.id!==id)); }
 
-/* Sample capsule if empty */
+// Sample if empty
 if(loadAll().length===0){
   const sample={id:uid('sample'), schema:'pocket-classroom/v1',
   meta:{title:'Sample Math', description:'Sample flashcards', tags:['Math','Sample'], created:Date.now(), updated:Date.now()},
@@ -161,8 +160,634 @@ if(loadAll().length===0){
   saveAll([sample]);
 }
 
-/* ======= UI Rendering & JS Handling ======= */
-/* The rest of your JS can remain the same, as labels/messages are now in English. */
+// ===== UI Rendering =====
+const libraryEl=document.getElementById('library');
+const searchEl=document.getElementById('search');
+const newCapsuleBtn=document.getElementById('new-capsule-btn');
+const authorModal=new bootstrap.Modal(document.getElementById('authorModal'),{backdrop:'static'});
+const learnModal=new bootstrap.Modal(document.getElementById('learnModal'));
+const importModal=new bootstrap.Modal(document.getElementById('importModal'));
+const themeToggle=document.getElementById('toggle-theme');
+
+function renderLibrary(filter=''){
+  const all=loadAll();
+  const q=filter.trim().toLowerCase();
+  const filtered=all.filter(c=>!q||c.meta.title.toLowerCase().includes(q)||c.meta.description.toLowerCase().includes(q)||c.meta.tags.join(' ').toLowerCase().includes(q)||c.cards.some(cd=>(cd.front+cd.back).toLowerCase().includes(q)));
+  if(filtered.length===0){ libraryEl.innerHTML='<div class="col-12"><div class="alert alert-info">No capsules found.</div></div>'; return;}
+  libraryEl.innerHTML=filtered.map(c=>{
+    const m=c.meta; const tags=m.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+    const count=c.cards.length; const created=new Date(m.created).toLocaleDateString('en-US');
+    return `<div class="col-sm-6 col-md-4"><div class="card p-3 capsule-card">
+      <div class="d-flex justify-content-between"><div>
+        <h5>${m.title}</h5><div class="small-muted">${m.description}</div><div class="mt-2">${tags}</div></div>
+      <div class="text-end"><div class="small-muted">${count} cards</div><div class="small-muted">${created}</div></div></div>
+      <div class="mt-3 d-flex gap-2 justify-content-end">
+        <button class="btn btn-sm btn-outline-primary" data-action="learn" data-id="${c.id}"><i class="bi bi-book"></i> Learn</button>
+        <button class="btn btn-sm btn-outline-secondary" data-action="edit" data-id="${c.id}"><i class="bi bi-pencil"></i> Edit</button>
+        <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${c.id}"><i class="bi bi-trash"></i> Delete</button>
+        <button class="btn btn-sm btn-outline-dark" data-action="export" data-id="${c.id}"><i class="bi bi-file-earmark-arrow-up"></i> Export</button>
+      </div></div></div>`;
+  }).join('');
+}
+
+// ===== Author / Add Capsule =====
+const authorForm=document.getElementById('authorForm');
+const capsTitle=document.getElementById('capsule-title');
+const capsDesc=document.getElementById('capsule-desc');
+const capsTags=document.getElementById('capsule-tags');
+const capsId=document.getElementById('capsule-id');
+const cardsList=document.getElementById('cards-list');
+const newFront=document.getElementById('new-front');
+const newBack=document.getElementById('new-back');
+const addCardBtn=document.getElementById('add-card');
+const saveCapsuleBtn=document.getElementById('save-capsule');
+const authorModalTitle=document.getElementById('authorModalTitle');
+
+function resetAuthorForm(){ capsId.value=''; capsTitle.value=''; capsDesc.value=''; capsTags.value=''; cardsList.innerHTML=''; authorForm.dataset.working='[]'; }
+
+newCapsuleBtn.addEventListener('click', ()=>{ resetAuthorForm(); authorModalTitle.textContent='Add New Capsule'; authorModal.show(); });
+
+function renderCardsList(items){ cardsList.innerHTML=(items||[]).map(cd=>`<div class="d-flex align-items-center gap-2 mb-2">
+  <div class="flex-grow-1 p-2 border rounded"><div><strong>${cd.front}</strong></div><div class="small-muted">${cd.back}</div></div>
+  <button class="btn btn-sm btn-outline-danger" data-action="del-card" data-id="${cd.id}"><i class="bi bi-x"></i></button></div>`).join(''); }
+
+cardsList.addEventListener('click', e=>{ const btn=e.target.closest('button'); if(!btn)return; const id=btn.dataset.id; if(btn.dataset.action==='del-card'){ let arr=JSON.parse(authorForm.dataset.working); arr=arr.filter(x=>x.id!==id); authorForm.dataset.working=JSON.stringify(arr); renderCardsList(arr); }});
+
+addCardBtn.addEventListener('click', e=>{ e.preventDefault(); let f=newFront.value.trim(), b=newBack.value.trim(); if(!f&&!b)return; let arr=JSON.parse(authorForm.dataset.working); arr.push({id:uid('card'), front:f, back:b}); authorForm.dataset.working=JSON.stringify(arr); renderCardsList(arr); newFront.value=''; newBack.value=''; newFront.focus(); });
+
+saveCapsuleBtn.addEventListener('click', ()=>{ const title=capsTitle.value.trim(); if(!title){ alert('Title required'); return; } const id=capsId.value||uid('caps'); const tags=capsTags.value.split(',').map(t=>t.trim()).filter(Boolean); const meta={title,description:capsDesc.value.trim(),tags,created:Date.now(),updated:Date.now()}; const cards=JSON.parse(authorForm.dataset.working); const capsule={id,schema:'pocket-classroom/v1',meta,cards,progress:{}}; upsertCapsule(capsule); authorModal.hide(); renderLibrary(searchEl.value); });
+
+function openAuthorForEdit(id){ const c=findById(id); if(!c){ alert('Capsule not found'); return; } capsId.value=c.id; capsTitle.value=c.meta.title; capsDesc.value=c.meta.description; capsTags.value=c.meta.tags.join(','); authorForm.dataset.working=JSON.stringify(c.cards||[]); renderCardsList(c.cards||[]); authorModalTitle.textContent='Edit Capsule'; authorModal.show(); }
+
+libraryEl.addEventListener('click', e=>{ const btn=e.target.closest('button'); if(!btn)return; const action=btn.dataset.action, id=btn.dataset.id; if(action==='learn') openLearn(id); if(action==='edit') openAuthorForEdit(id); if(action==='delete'){ if(confirm('Are you sure to delete this capsule?')){ deleteCapsule(id); renderLibrary(searchEl.value); } } if(action==='export'){ const c=findById(id); downloadJson([c],`capsule-${c.id}.json`);} });
+
+// ===== Learn Mode =====
+let currentLearn={capsule:null,index:0,order:[],known:0,total:0};
+const flashcardEl=document.getElementById('flashcard');
+const showAnswerBtn=document.getElementById('show-answer');
+const knowBtn=document.getElementById('know-btn');
+const dontKnowBtn=document.getElementById('dontknow-btn');
+const learnCapsuleTitle=document.getElementById('learnCapsuleTitle');
+const learnDesc=document.getElementById('learnDesc');
+const progressText=document.getElementById('progressText');
+const learnLog=document.getElementById('learnLog');
+
+function openLearn(id){ const c=findById(id); if(!c||!c.cards||c.cards.length===0){ alert('Empty or missing capsule'); return; } currentLearn.capsule=c; currentLearn.order=c.cards.map((_,i)=>i).sort(()=>Math.random()-0.5); currentLearn.index=0; currentLearn.known=0; currentLearn.total=c.cards.length; learnCapsuleTitle.textContent=c.meta.title; learnDesc.textContent=c.meta.description||''; progressText.textContent=`0 / ${currentLearn.total}`; flipToFront(); learnLog.textContent=''; learnModal.show(); }
+function flipToFront(){ const ci=currentLearn.order[currentLearn.index]; const card=currentLearn.capsule.cards[ci]; flashcardEl.textContent=card.front||'Empty'; flashcardEl.dataset.back=card.back||''; flashcardEl.dataset.front=card.front||''; flashcardEl.dataset.cardId=card.id;}
+showAnswerBtn.addEventListener('click',()=>{ flashcardEl.textContent=flashcardEl.dataset.back||'Empty';});
+knowBtn.addEventListener('click',()=>{ markAnswer(true); });
+dontKnowBtn.addEventListener('click',()=>{ markAnswer(false); });
+function markAnswer(known){ if(typeof known!=='boolean') known=false; if(known) currentLearn.known++; learnLog.textContent+=`${currentLearn.index+1}. ${flashcardEl.dataset.front} — ${known?'✔':'✖'}\n`; currentLearn.index++; progressText.textContent=`${currentLearn.index} / ${currentLearn.total}`; if(currentLearn.index>=currentLearn.total){ learnLog.textContent+=`\nFinished. Correct: ${currentLearn.known} / ${currentLearn.total}`; saveProgressForCapsule(currentLearn.capsule.id,{lastStudied:Date.now(), lastScore:currentLearn.known,total:currentLearn.total}); return;} flipToFront(); }
+function saveProgressForCapsule(id,data){ const c=findById(id); if(!c)return; c.progress=Object.assign({},c.progress||{},data); upsertCapsule(c); renderLibrary(searchEl.value); }
+
+// ===== Export / Import =====
+function downloadJson(obj,filename='export.json'){ const blob=new Blob        <h5 id="learnTitle" class="modal-title">Learn</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+      </div>
+      <div class="modal-body">
+        <div id="learnBody">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div><strong id="learnCapsuleTitle"></strong><div class="small-muted" id="learnDesc"></div></div>
+            <div><span id="progressText"></span></div>
+          </div>
+          <div id="flashcard-area" class="card p-3 mb-3">
+            <div id="flashcard" class="flashcard">کارت خالی</div>
+            <div class="d-flex gap-2 justify-content-center">
+              <button id="show-answer" class="btn btn-outline-primary">نمایش پاسخ</button>
+              <button id="know-btn" class="btn btn-success">بلد بودم</button>
+              <button id="dontknow-btn" class="btn btn-danger">نمی‌دانم</button>
+            </div>
+          </div>
+          <div id="learnLog" class="small-muted"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content card">
+      <div class="modal-header"><h5 class="modal-title">Import JSON</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+      </div>
+      <div class="modal-body">
+        <p class="small-muted">یا فایل JSON را بکش و رها کن یا متن JSON را وارد کن.</p>
+        <input id="importFile" type="file" accept=".json" class="form-control mb-2"/>
+        <textarea id="importText" rows="6" class="form-control" placeholder='[{"id":"...","meta":{...},"cards":[...]}]'></textarea>
+      </div>
+      <div class="modal-footer">
+        <button id="doImport" class="btn btn-success">Import</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ======= Storage / Utilities ======= */
+const KEY = 'pocket:capsules:v1';
+
+function uid(prefix='c'){
+  return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+}
+
+function loadAll(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { console.error(e); return []; }
+}
+function saveAll(arr){
+  localStorage.setItem(KEY, JSON.stringify(arr));
+}
+function findById(id){
+  return loadAll().find(c => c.id === id);
+}
+function upsertCapsule(capsule){
+  const all = loadAll();
+  const i = all.findIndex(x=>x.id===capsule.id);
+  if(i>=0) all[i]=capsule; else all.unshift(capsule);
+  saveAll(all);
+}
+function deleteCapsule(id){
+  const all = loadAll().filter(x=>x.id!==id);
+  saveAll(all);
+}
+
+/* defaults sample if empty */
+if(loadAll().length===0){
+  const sample = {
+    id: uid('sample'),
+    schema: 'pocket-classroom/v1',
+    meta:{ title:'مثال: ریاضی پایه', description:'فلش‌کارت‌های نمونه', tags:['ریاضی','مثال'], created: Date.now(), updated: Date.now() },
+    cards:[
+      {id:uid('card'), front:'۲+۲ چند است؟', back:'۴'},
+      {id:uid('card'), front:'مساحت مربع با ضلع a؟', back:'a×a'},
+    ],
+    progress:{}
+  };
+  saveAll([sample]);
+}
+
+/* ======= UI Rendering ======= */
+const libraryEl = document.getElementById('library');
+const searchEl = document.getElementById('search');
+const newCapsuleBtn = document.getElementById('new-capsule-btn');
+const authorModal = new bootstrap.Modal(document.getElementById('authorModal'), {backdrop:'static'});
+const learnModal = new bootstrap.Modal(document.getElementById('learnModal'));
+const importModal = new bootstrap.Modal(document.getElementById('importModal'));
+const themeToggle = document.getElementById('toggle-theme');
+
+function renderLibrary(filter=''){
+  const all = loadAll();
+  const q = filter.trim().toLowerCase();
+  const filtered = all.filter(c=>{
+    if(!q) return true;
+    const m = c.meta || {};
+    return (m.title||'').toLowerCase().includes(q) ||
+           (m.description||'').toLowerCase().includes(q) ||
+           (m.tags||[]).join(' ').toLowerCase().includes(q) ||
+           (c.cards||[]).some(cd => (cd.front+cd.back).toLowerCase().includes(q));
+  });
+  if(filtered.length===0){
+    libraryEl.innerHTML = `<div class="col-12"><div class="alert alert-info">هیچ کپسولی پیدا نشد.</div></div>`;
+    return;
+  }
+  libraryEl.innerHTML = filtered.map(c=>{
+    const m=c.meta||{};
+    const tags=(m.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('');
+    const count = (c.cards||[]).length;
+    const created = new Date(m.created||Date.now()).toLocaleDateString('fa-IR');
+    return `
+      <div class="col-sm-6 col-md-4">
+        <div class="card p-3 capsule-card">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h5 class="mb-1">${escapeHtml(m.title||'بدون عنوان')}</h5>
+              <div class="small-muted">${escapeHtml(m.description||'')}</div>
+              <div class="mt-2">${tags}</div>
+            </div>
+            <div class="text-end">
+              <div class="small-muted">${count} کارت</div>
+              <div class="small-muted">${created}</div>
+            </div>
+          </div>
+          <div class="mt-3 d-flex gap-2 justify-content-end">
+            <button class="btn btn-sm btn-outline-primary" data-action="learn" data-id="${c.id}"><i class="bi bi-book"></i> یادگیری</button>
+            <button class="btn btn-sm btn-outline-secondary" data-action="edit" data-id="${c.id}"><i class="bi bi-pencil"></i> ویرایش</button>
+            <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${c.id}"><i class="bi bi-trash"></i> حذف</button>
+            <button class="btn btn-sm btn-outline-dark" data-action="export" data-id="${c.id}"><i class="bi bi-file-earmark-arrow-up"></i></button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* escape helper */
+function escapeHtml(s=''){ return s.replaceAll && s.replaceAll(/[&<>"']/g, ch=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[ch]) || s; }
+
+/* click handlers for library buttons */
+libraryEl.addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const action = btn.dataset.action;
+  const id = btn.dataset.id;
+  if(action === 'learn') openLearn(id);
+  if(action === 'edit') openAuthorForEdit(id);
+  if(action === 'delete') {
+    if(confirm('آیا از حذف این کپسول اطمینان دارید؟')) { deleteCapsule(id); renderLibrary(searchEl.value); }
+  }
+  if(action === 'export'){ const c=findById(id); downloadJson([c], `capsule-${c.id}.json`); }
+});
+
+/* ======= Author (create/edit) ======= */
+const authorForm = document.getElementById('authorForm');
+const capsTitle = document.getElementById('capsule-title');
+const capsDesc = document.getElementById('capsule-desc');
+const capsTags = document.getElementById('capsule-tags');
+const capsId = document.getElementById('capsule-id');
+const cardsList = document.getElementById('cards-list');
+const newFront = document.getElementById('new-front');
+const newBack = document.getElementById('new-back');
+const addCardBtn = document.getElementById('add-card');
+const saveCapsuleBtn = document.getElementById('save-capsule');
+const authorModalTitle = document.getElementById('authorModalTitle');
+
+function resetAuthorForm(){
+  capsId.value=''; capsTitle.value=''; capsDesc.value=''; capsTags.value=''; cardsList.innerHTML='';
+}
+
+newCapsuleBtn.addEventListener('click', ()=>{
+  resetAuthorForm();
+  authorModalTitle.textContent = 'ساخت کپسول جدید';
+  authorModal.show();
+});
+
+function renderCardsList(items){
+  cardsList.innerHTML = (items||[]).map(cd=>`
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <div class="flex-grow-1 p-2 border rounded">
+        <div><strong>${escapeHtml(cd.front||'')}</strong></div>
+        <div class="small-muted">${escapeHtml(cd.back||'')}</div>
+      </div>
+      <button class="btn btn-sm btn-outline-danger" data-action="del-card" data-id="${cd.id}"><i class="bi bi-x"></i></button>
+    </div>
+  `).join('');
+}
+
+cardsList.addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const id = btn.dataset.id;
+  const action = btn.dataset.action;
+  if(action==='del-card'){
+    const arr = getWorkingCards();
+    const idx = arr.findIndex(x=>x.id===id);
+    if(idx>=0){ arr.splice(idx,1); setWorkingCards(arr); renderCardsList(arr); }
+  }
+});
+
+function getWorkingCards(){
+  const w = authorForm.dataset.working;
+  return w ? JSON.parse(w) : [];
+}
+function setWorkingCards(arr){ authorForm.dataset.working = JSON.stringify(arr); }
+
+addCardBtn.addEventListener('click', e=>{
+  e.preventDefault();
+  const f = newFront.value.trim(); const b = newBack.value.trim();
+  if(!f && !b) return;
+  const arr = getWorkingCards();
+  arr.push({id: uid('card'), front: f, back: b});
+  setWorkingCards(arr); renderCardsList(arr);
+  newFront.value=''; newBack.value=''; newFront.focus();
+});
+
+saveCapsuleBtn.addEventListener('click', ()=>{
+  const title = capsTitle.value.trim();
+  if(!title){ alert('عنوان الزامی است'); return; }
+  const id = capsId.value || uid('caps');
+  const tags = capsTags.value.split(',').map(t=>t.trim()).filter(Boolean);
+  const meta = { title, description: capsDesc.value.trim(), tags, created: Date.now(), updated: Date.now() };
+  const cards = getWorkingCards();
+  const capsule = { id, schema: 'pocket-classroom/v1', meta, cards, progress: {} };
+  upsertCapsule(capsule);
+  authorModal.hide();
+  renderLibrary(searchEl.value);
+});
+
+function openAuthorForEdit(id){
+  const c = findById(id);
+  if(!c) { alert('کپسول پیدا نشد'); return; }
+  capsId.value = c.id;
+  capsTitle.value = c.meta.title || '';
+  capsDesc.value = c.meta.description || '';
+  capsTags.value = (c.meta.tags||[]).join(',');
+  setWorkingCards(c.cards || []);
+  renderCardsList(c.cards || []);
+  authorModalTitle.textContent = 'ویرایش کپسول';
+  authorModal.show();
+}
+
+/* ======= Learn Mode ======= */
+let currentLearn = { capsule:null, index:0, order:[], known:0, total:0 };
+const flashcardEl = document.getElementById('flashcard');
+const showAnswerBtn = document.getElementById('show-answer');
+const knowBtn = document.getElementById('know-btn');
+const dontKnowBtn = document.getElementById('dontknow-btn');
+const learnCapsuleTitle = document.getElementById('learnCapsuleTitle');
+const learnDesc = document.getElementById('learnDesc');
+const progressText = document.getElementById('progressText');
+const learnLog = document.getElementById('learnLog');
+
+function openLearn(id){
+  const c = findById(id);
+  if(!c || !c.cards || c.cards.length===0) { alert('کپسول خالی است یا پیدا نشد'); return; }
+  currentLearn.capsule = c;
+  currentLearn.order = c.cards.map((_,i)=>i).sort(()=>Math.random()-0.5);
+  currentLearn.index = 0;
+  currentLearn.known = 0;
+  currentLearn.total = c.cards.length;
+  learnCapsuleTitle.textContent = c.meta.title;
+  learnDesc.textContent = c.meta.description || '';
+  progressText.textContent = `0 / ${currentLearn.total}`;
+  flipToFront();
+  learnLog.textContent = '';
+  learnModal.show();
+}
+
+function flipToFront(){
+  const ci = currentLearn.order[currentLearn.index];
+  const card = currentLearn.capsule.cards[ci];
+  flashcardEl.textContent = card.front || '[جلو خالی]';
+  flashcardEl.dataset.back = card.back || '';
+  flashcardEl.dataset.front = card.front || '';
+  flashcardEl.dataset.cardId = card.id;
+  flashcardEl.classList.remove('show-back');
+}
+
+showAnswerBtn.addEventListener('click', ()=> {
+  flashcardEl.textContent = flashcardEl.dataset.back || '[پاسخ خالی]';
+});
+
+knowBtn.addEventListener('click', ()=>{
+  markAnswer(true);
+});
+dontKnowBtn.addEventListener('click', ()=>{ markAnswer(false); });
+
+function markAnswer(known){
+  if(typeof known !== 'boolean') known=false;
+  if(known) currentLearn.known++;
+  // log
+  const id = flashcardEl.dataset.cardId;
+  learnLog.textContent += `${currentLearn.index+1}. ${escapeHtml(flashcardEl.dataset.front)} — ${known ? '✔' : '✖'}\n`;
+  // advance
+  currentLearn.index++;
+  progressText.textContent = `${currentLearn.index} / ${currentLearn.total}`;
+  if(currentLearn.index >= currentLearn.total){
+    learnLog.textContent += `\nپایان. درست: ${currentLearn.known} از ${currentLearn.total}`;
+    saveProgressForCapsule(currentLearn.capsule.id, { lastStudied: Date.now(), lastScore: currentLearn.known, total: currentLearn.total });
+    return;
+  }
+  flipToFront();
+}
+
+/* progress save */
+function saveProgressForCapsule(id, data){
+  const c = findById(id);
+  if(!c) return;
+  c.progress = Object.assign({}, c.progress||{}, data);
+  upsertCapsule(c);
+  renderLibrary(searchEl.value);
+}
+
+/* ======= Export / Import ======= */
+function downloadJson(obj, filename='export.json'){
+  const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('export-btn').addEventListener('click', ()=>{
+  const all = loadAll();
+  downloadJson(all, `pocket-capsules-backup-${new Date().toISOString().slice(0,10)}.json`);
+});
+
+document.getElementById('import-btn').addEventListener('click', ()=>{
+  document.getElementById('importText').value = '';
+  importModal.show();
+});
+
+document.getElementById('doImport').addEventListener('click', ()=>{
+  const fileInput = document.getElementById('importFile');
+  const txt = document.getElementById('importText').value.trim();
+  if(fileInput.files && fileInput.files.length>0){
+    const fr = new FileReader();
+    fr.onload = () => {
+      try { const arr = JSON.parse(fr.result); handleImportArray(arr); importModal.hide(); renderLibrary(searchEl.value); }
+      catch(e){ alert('فایل JSON معتبر نیست'); }
+    };
+    fr.readAsText(fileInput.files[0]);
+  } else if(txt){
+    try { const arr = JSON.parse(txt); handleImportArray(arr); importModal.hide(); renderLibrary(searchEl.value); }
+    catch(e){ alert('متن JSON معتبر نیست'); }
+  } else {
+    alert('فایل یا متن وارد کنید');
+  }
+});
+
+function handleImportArray(arr){
+  if(!Array.isArray(arr)) arr = [arr];
+  const existing = loadAll();
+  // we append new ones but keep same ids (or create new if id collision)
+  arr.forEach(it=>{
+    if(!it.id) it.id = uid('imp');
+    // ensure shape
+    it.schema = it.schema || 'pocket-classroom/v1';
+    it.meta = it.meta || { title: it.meta?.title || 'Imported', created: Date.now(), updated: Date.now() };
+    it.cards = Array.isArray(it.cards) ? it.cards : [];
+    // if id exists, create new id
+    if(existing.some(x=>x.id===it.id)) it.id = uid('imp');
+    existing.unshift(it);
+  });
+  saveAll(existing);
+}
+
+/* helper: download individual capsule export when clicking export button in card (handled earlier) */
+
+/* ======= Theme toggle ======= */
+function setTheme(isDark){
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  themeToggle.textContent = isDark ? 'حالت روشن' : 'حالت تاریک';
+  localStorage.setItem('pocket:theme', isDark ? 'dark' : 'light');
+}
+themeToggle.addEventListener('click', ()=>{
+  const cur = localStorage.getItem('pocket:theme') === 'dark';
+  setTheme(!cur);
+});
+setTheme(localStorage.getItem('pocket:theme') === 'dark');
+
+/* ======= Search ======= */
+searchEl.addEventListener('input', ()=> renderLibrary(searchEl.value));
+
+/* ======= Helpers & Init ======= */
+function init(){
+  renderLibrary();
+  // drag & drop import
+  const importArea = document.getElementById('importModal');
+  // restore some UI on load if needed
+}
+init();
+
+/* simple download fallback for export from library view */
+function downloadJson(obj, filename='export.json'){ // override earlier to ensure single definition
+  try{
+    const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }catch(e){ console.error(e); alert('خطا در خروجی گرفتن'); }
+}
+</script>
+</body>
+</html>  <input id="capsuleSubject" class="form-control" placeholder="Subject">
+  <select id="capsuleLevel" class="form-select">
+    <option value="Easy">Easy</option>
+    <option value="Medium">Medium</option>
+    <option value="Hard">Hard</option>
+  </select>
+  <button id="addCapsuleBtn" class="btn btn-primary mt-2"><i class="bi bi-plus-lg"></i> Add Capsule</button>
+</div>
+
+<div class="mt-3">
+  <button id="exportBtn" class="btn btn-success me-2"><i class="bi bi-box-arrow-up-right"></i> Export All</button>
+  <button id="importBtn" class="btn btn-secondary me-2"><i class="bi bi-file-earmark-arrow-up"></i> Import</button>
+  <input type="file" id="importFile" style="display:none;">
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let capsules = JSON.parse(localStorage.getItem('pocket_capsules')) || [];
+
+  function saveAll() { localStorage.setItem('pocket_capsules', JSON.stringify(capsules)); }
+
+  document.getElementById('toggleDark').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+  });
+
+  // ===== Tabs =====
+  const tabs = document.querySelectorAll('#tabs .nav-link');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('d-none'));
+      document.getElementById(tab.dataset.tab+'Tab').classList.remove('d-none');
+      if(tab.dataset.tab==='learn') renderLearn();
+      if(tab.dataset.tab==='library') renderLibrary();
+    });
+  });
+
+  // ===== Library =====
+  const libraryContainer = document.getElementById('libraryContainer');
+  function renderLibrary(){
+    libraryContainer.innerHTML='';
+    if(capsules.length===0){
+      libraryContainer.innerHTML='<div class="card text-center p-4">No capsules. Use Author tab to add one.</div>';
+      return;
+    }
+    capsules.forEach(cap=>{
+      const div=document.createElement('div'); div.className='capsule-row';
+      div.innerHTML=`
+        <div><strong>${cap.title}</strong> | ${cap.subject} | ${cap.level} | Updated: ${cap.updatedAt}</div>
+        <div>
+          <button class="btn btn-sm btn-primary editBtn"><i class="bi bi-pencil-square"></i></button>
+          <button class="btn btn-sm btn-danger deleteBtn"><i class="bi bi-trash"></i></button>
+          <button class="btn btn-sm btn-success learnBtn"><i class="bi bi-book"></i></button>
+          <button class="btn btn-sm btn-warning exportBtn"><i class="bi bi-box-arrow-up-right"></i></button>
+        </div>`;
+      div.querySelector('.editBtn').addEventListener('click', e=>{
+        e.stopPropagation();
+        const newTitle=prompt('Title:',cap.title);
+        const newSubject=prompt('Subject:',cap.subject);
+        const newLevel=prompt('Level:',cap.level);
+        if(newTitle && newSubject && newLevel){
+          cap.title=newTitle; cap.subject=newSubject; cap.level=newLevel;
+          cap.updatedAt=new Date().toISOString().split('T')[0]; saveAll(); renderLibrary();
+        }
+      });
+      div.querySelector('.deleteBtn').addEventListener('click', e=>{
+        e.stopPropagation(); capsules=capsules.filter(c=>c.id!==cap.id); saveAll(); renderLibrary();
+      });
+      div.querySelector('.learnBtn').addEventListener('click', e=>{
+        e.stopPropagation(); window.dispatchEvent(new CustomEvent('openLearn',{detail:{id:cap.id}}));
+      });
+      div.querySelector('.exportBtn').addEventListener('click', e=>{
+        e.stopPropagation(); const blob=new Blob([JSON.stringify(cap,null,2)],{type:'application/json'});
+        const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+        a.download=cap.title.replace(/\s+/g,'_')+'.json'; a.click();
+      });
+      libraryContainer.appendChild(div);
+    });
+  }
+  renderLibrary();
+
+  // ===== Author =====
+  document.getElementById('addCapsuleBtn').addEventListener('click', ()=>{
+    const title=document.getElementById('capsuleTitle').value.trim();
+    const subject=document.getElementById('capsuleSubject').value.trim();
+    const level=document.getElementById('capsuleLevel').value;
+    if(!title||!subject)return alert('Please fill Title and Subject');
+    capsules.push({
+      id:Date.now(), title, subject, level,
+      updatedAt:new Date().toISOString().split('T')[0],
+      notes:[],
+      flashcards:[],
+      quiz:[]
+    });
+    saveAll(); renderLibrary();
+    document.getElementById('capsuleTitle').value=''; document.getElementById('capsuleSubject').value='';
+  });
+
+  // ===== Learn =====
+  const learnContainer=document.getElementById('learnContainer');
+  function renderLearn(){
+    learnContainer.innerHTML='';
+    capsules.forEach(cap=>{
+      const div=document.createElement('div'); div.className='card p-3 mb-3';
+      let flashcardsHTML='';
+      cap.flashcards.forEach(fc=>{ flashcardsHTML+=`<div>Q: ${fc.question} | A: ${fc.answer}</div>`; });
+      div.innerHTML=`<strong>${cap.title}</strong> | Notes: ${cap.notes.length} | Flashcards: ${cap.flashcards.length} | Quiz: ${cap.quiz.length}<div class="mt-2">${flashcardsHTML}</div>`;
+      learnContainer.appendChild(div);
+    });
+  }
+
+  // ===== Export / Import =====
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    const blob=new Blob([JSON.stringify(capsules,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pocket_classroom.json'; a.click();
+  });
+  document.getElementById('importBtn').addEventListener('click', ()=>document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change', e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(evt){
+      try{ const data=JSON.parse(evt.target.result); capsules=data; saveAll(); renderLibrary(); alert('Import successful!'); }
+      catch(err){ alert('Invalid JSON'); }
+    };
+    reader.readAsText(file);
+  });
+
+});
 </script>
 </body>
 </html>
