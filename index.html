@@ -1,1352 +1,458 @@
-<!doctype html>
-
-<html lang="en">  
-<head>  
-  <meta charset="utf-8"/>  
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>  
-  <title>Pocket Classroom — Real English Version</title>  
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">  
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">  
-  <style>  
-    :root{  
-      --bg:#f8f9fa; --card:#fff; --text:#212529;  
-    }  
-    [data-theme="dark"]{ --bg:#0f1720; --card:#0b1220; --text:#dbeafe; }  
-    body{ background:var(--bg); color:var(--text); font-family:Arial,sans-serif; padding-bottom:40px; }  
-    .card{ background:var(--card); color:var(--text); }  
-    .capsule-card{ cursor:pointer; transition:transform .08s; }  
-    .capsule-card:hover{ transform:translateY(-3px); }  
-    .tag{ font-size:11px; padding:.15rem .4rem; border-radius:6px; background:rgba(0,0,0,0.06); margin-left:6px; }  
-    .flashcard{ min-height:120px; display:flex; align-items:center; justify-content:center; font-size:20px; padding:1rem; text-align:center; }  
-    .small-muted{ font-size:12px; color:gray; }  
-  </style>  
-</head>  
-<body>  <nav class="navbar navbar-expand-lg navbar-light mb-3">  
-  <div class="container-fluid">  
-    <a class="navbar-brand fw-bold" href="#">Pocket Classroom</a>  
-    <div class="d-flex gap-2 align-items-center">  
-      <button id="toggle-theme" class="btn btn-sm btn-outline-secondary">Dark Mode</button>  
-      <button id="export-btn" class="btn btn-sm btn-outline-primary">Export</button>  
-      <button id="import-btn" class="btn btn-sm btn-outline-success">Import</button>  
-      <button id="new-capsule-btn" class="btn btn-sm btn-primary">+ Add Capsule</button>  
-    </div>  
-  </div>  
-</nav>  <div class="container">  
-  <div class="row g-3">  
-    <div class="col-12">  
-      <input id="search" class="form-control" placeholder="Search by title, tag or card content...">  
-    </div>  
-    <div class="col-12">  
-      <div id="library" class="row g-3"></div>  
-    </div>  
-  </div>  
-</div>  <!-- Author Modal -->  <div class="modal fade" id="authorModal" tabindex="-1" aria-hidden="true">  
-  <div class="modal-dialog modal-lg modal-dialog-centered">  
-    <div class="modal-content card">  
-      <div class="modal-header">  
-        <h5 class="modal-title" id="authorModalTitle">Create Capsule</h5>  
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>  
-      </div>  
-      <div class="modal-body">  
-        <form id="authorForm">  
-          <div class="mb-3">  
-            <label class="form-label">Title</label>  
-            <input id="capsule-title" class="form-control" required>  
-          </div>  
-          <div class="mb-3">  
-            <label class="form-label">Description</label>  
-            <input id="capsule-desc" class="form-control">  
-          </div>  
-          <div class="mb-3">  
-            <label class="form-label">Tags (comma-separated)</label>  
-            <input id="capsule-tags" class="form-control" placeholder="Math,Flashcards">  
-          </div>  
-          <hr>  
-          <div>  
-            <h6>Flashcards</h6>  
-            <div id="cards-list" class="mb-3"></div>  
-            <div class="d-flex gap-2">  
-              <input id="new-front" class="form-control" placeholder="Front / Question">  
-              <input id="new-back" class="form-control" placeholder="Back / Answer">  
-              <button id="add-card" class="btn btn-outline-secondary">Add Card</button>  
-            </div>  
-          </div>  
-          <input type="hidden" id="capsule-id">  
-        </form>  
-      </div>  
-      <div class="modal-footer">  
-        <button id="save-capsule" class="btn btn-primary">Save Capsule</button>  
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>  
-      </div>  
-    </div>  
-  </div>  
-</div>  <!-- Learn Modal -->  <div class="modal fade" id="learnModal" tabindex="-1" aria-hidden="true">  
-  <div class="modal-dialog modal-lg modal-dialog-centered">  
-    <div class="modal-content card">  
-      <div class="modal-header">  
-        <h5 id="learnTitle" class="modal-title">Learn</h5>  
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>  
-      </div>  
-      <div class="modal-body">  
-        <div id="learnBody">  
-          <div class="d-flex justify-content-between align-items-center mb-3">  
-            <div><strong id="learnCapsuleTitle"></strong><div class="small-muted" id="learnDesc"></div></div>  
-            <div><span id="progressText"></span></div>  
-          </div>  
-          <div id="flashcard-area" class="card p-3 mb-3">  
-            <div id="flashcard" class="flashcard">Empty Card</div>  
-            <div class="d-flex gap-2 justify-content-center">  
-              <button id="show-answer" class="btn btn-outline-primary">Show Answer</button>  
-              <button id="know-btn" class="btn btn-success">I Know</button>  
-              <button id="dontknow-btn" class="btn btn-danger">I Don’t Know</button>  
-            </div>  
-          </div>  
-          <div id="learnLog" class="small-muted"></div>  
-        </div>  
-      </div>  
-      <div class="modal-footer">  
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>  
-      </div>  
-    </div>  
-  </div>  
-</div>  <!-- Import Modal -->  <div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">  
-  <div class="modal-dialog modal-md modal-dialog-centered">  
-    <div class="modal-content card">  
-      <div class="modal-header"><h5 class="modal-title">Import JSON</h5>  
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>  
-      </div>  
-      <div class="modal-body">  
-        <p class="small-muted">Drag & drop JSON file or paste JSON text below.</p>  
-        <input id="importFile" type="file" accept=".json" class="form-control mb-2"/>  
-        <textarea id="importText" rows="6" class="form-control" placeholder='[{"id":"...","meta":{...},"cards":[...]}]'></textarea>  
-      </div>  
-      <div class="modal-footer">  
-        <button id="doImport" class="btn btn-success">Import</button>  
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>  
-      </div>  
-    </div>  
-  </div>  
-</div>  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>  <script>  
-// ===== Storage & Utilities =====  
-const KEY='pocket:capsules:v1';  
-function uid(prefix='c'){ return prefix+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}  
-function loadAll(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); } catch(e){ return [];} }  
-function saveAll(arr){ localStorage.setItem(KEY,JSON.stringify(arr)); }  
-function findById(id){ return loadAll().find(c=>c.id===id); }  
-function upsertCapsule(c){ const all=loadAll(); const i=all.findIndex(x=>x.id===c.id); if(i>=0) all[i]=c; else all.unshift(c); saveAll(all);}  
-function deleteCapsule(id){ saveAll(loadAll().filter(x=>x.id!==id)); }  
-  
-// Sample if empty  
-if(loadAll().length===0){  
-  const sample={id:uid('sample'), schema:'pocket-classroom/v1',  
-  meta:{title:'Sample Math', description:'Sample flashcards', tags:['Math','Sample'], created:Date.now(), updated:Date.now()},  
-  cards:[{id:uid('card'), front:'2+2=?', back:'4'},{id:uid('card'), front:'Area of square with side a?', back:'a × a'}],  
-  progress:{}};  
-  saveAll([sample]);  
-}  
-  
-// ===== UI Rendering =====  
-const libraryEl=document.getElementById('library');  
-const searchEl=document.getElementById('search');  
-const newCapsuleBtn=document.getElementById('new-capsule-btn');  
-const authorModal=new bootstrap.Modal(document.getElementById('authorModal'),{backdrop:'static'});  
-const learnModal=new bootstrap.Modal(document.getElementById('learnModal'));  
-const importModal=new bootstrap.Modal(document.getElementById('importModal'));  
-const themeToggle=document.getElementById('toggle-theme');  
-  
-function renderLibrary(filter=''){  
-  const all=loadAll();  
-  const q=filter.trim().toLowerCase();  
-  const filtered=all.filter(c=>!q||c.meta.title.toLowerCase().includes(q)||c.meta.description.toLowerCase().includes(q)||c.meta.tags.join(' ').toLowerCase().includes(q)||c.cards.some(cd=>(cd.front+cd.back).toLowerCase().includes(q)));  
-  if(filtered.length===0){ libraryEl.innerHTML='<div class="col-12"><div class="alert alert-info">No capsules found.</div></div>'; return;}  
-  libraryEl.innerHTML=filtered.map(c=>{  
-    const m=c.meta; const tags=m.tags.map(t=>`<span class="tag">${t}</span>`).join('');  
-    const count=c.cards.length; const created=new Date(m.created).toLocaleDateString('en-US');  
-    return `<div class="col-sm-6 col-md-4"><div class="card p-3 capsule-card">  
-      <div class="d-flex justify-content-between"><div>  
-        <h5>${m.title}</h5><div class="small-muted">${m.description}</div><div class="mt-2">${tags}</div></div>  
-      <div class="text-end"><div class="small-muted">${count} cards</div><div class="small-muted">${created}</div></div></div>  
-      <div class="mt-3 d-flex gap-2 justify-content-end">  
-        <button class="btn btn-sm btn-outline-primary" data-action="learn" data-id="${c.id}"><i class="bi bi-book"></i> Learn</button>  
-        <button class="btn btn-sm btn-outline-secondary" data-action="edit" data-id="${c.id}"><i class="bi bi-pencil"></i> Edit</button>  
-        <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${c.id}"><i class="bi bi-trash"></i> Delete</button>  
-        <button class="btn btn-sm btn-outline-dark" data-action="export" data-id="${c.id}"><i class="bi bi-file-earmark-arrow-up"></i> Export</button>  
-      </div></div></div>`;  
-  }).join('');  
-}  
-  
-// ===== Author / Add Capsule =====  
-const authorForm=document.getElementById('authorForm');  
-const capsTitle=document.getElementById('capsule-title');  
-const capsDesc=document.getElementById('capsule-desc');  
-const capsTags=document.getElementById('capsule-tags');  
-const capsId=document.getElementById('capsule-id');  
-const cardsList=document.getElementById('cards-list');  
-const newFront=document.getElementById('new-front');  
-const newBack=document.getElementById('new-back');  
-const addCardBtn=document.getElementById('add-card');  
-const saveCapsuleBtn=document.getElementById('save-capsule');  
-const authorModalTitle=document.getElementById('authorModalTitle');  
-  
-function resetAuthorForm(){ capsId.value=''; capsTitle.value=''; capsDesc.value=''; capsTags.value=''; cardsList.innerHTML=''; authorForm.dataset.working='[]'; }  
-  
-newCapsuleBtn.addEventListener('click', ()=>{ resetAuthorForm(); authorModalTitle.textContent='Add New Capsule'; authorModal.show(); });  
-  
-function renderCardsList(items){ cardsList.innerHTML=(items||[]).map(cd=>`<div class="d-flex align-items-center gap-2 mb-2">  
-  <div class="flex-grow-1 p-2 border rounded"><div><strong>${cd.front}</strong></div><div class="small-muted">${cd.back}</div></div>  
-  <button class="btn btn-sm btn-outline-danger" data-action="del-card" data-id="${cd.id}"><i class="bi bi-x"></i></button></div>`).join(''); }  
-  
-cardsList.addEventListener('click', e=>{ const btn=e.target.closest('button'); if(!btn)return; const id=btn.dataset.id; if(btn.dataset.action==='del-card'){ let arr=JSON.parse(authorForm.dataset.working); arr=arr.filter(x=>x.id!==id); authorForm.dataset.working=JSON.stringify(arr); renderCardsList(arr); }});  
-  
-addCardBtn.addEventListener('click', e=>{ e.preventDefault(); let f=newFront.value.trim(), b=newBack.value.trim(); if(!f&&!b)return; let arr=JSON.parse(authorForm.dataset.working); arr.push({id:uid('card'), front:f, back:b}); authorForm.dataset.working=JSON.stringify(arr); renderCardsList(arr); newFront.value=''; newBack.value=''; newFront.focus(); });  
-  
-saveCapsuleBtn.addEventListener('click', ()=>{ const title=capsTitle.value.trim(); if(!title){ alert('Title required'); return; } const id=capsId.value||uid('caps'); const tags=capsTags.value.split(',').map(t=>t.trim()).filter(Boolean); const meta={title,description:capsDesc.value.trim(),tags,created:Date.now(),updated:Date.now()}; const cards=JSON.parse(authorForm.dataset.working); const capsule={id,schema:'pocket-classroom/v1',meta,cards,progress:{}}; upsertCapsule(capsule); authorModal.hide(); renderLibrary(searchEl.value); });  
-  
-function openAuthorForEdit(id){ const c=findById(id); if(!c){ alert('Capsule not found'); return; } capsId.value=c.id; capsTitle.value=c.meta.title; capsDesc.value=c.meta.description; capsTags.value=c.meta.tags.join(','); authorForm.dataset.working=JSON.stringify(c.cards||[]); renderCardsList(c.cards||[]); authorModalTitle.textContent='Edit Capsule'; authorModal.show(); }  
-  
-libraryEl.addEventListener('click', e=>{ const btn=e.target.closest('button'); if(!btn)return; const action=btn.dataset.action, id=btn.dataset.id; if(action==='learn') openLearn(id); if(action==='edit') openAuthorForEdit(id); if(action==='delete'){ if(confirm('Are you sure to delete this capsule?')){ deleteCapsule(id); renderLibrary(searchEl.value); } } if(action==='export'){ const c=findById(id); downloadJson([c],`capsule-${c.id}.json`);} });  
-  
-// ===== Learn Mode =====  
-let currentLearn={capsule:null,index:0,order:[],known:0,total:0};  
-const flashcardEl=document.getElementById('flashcard');  
-const showAnswerBtn=document.getElementById('show-answer');  
-const knowBtn=document.getElementById('know-btn');  
-const dontKnowBtn=document.getElementById('dontknow-btn');  
-const learnCapsuleTitle=document.getElementById('learnCapsuleTitle');  
-const learnDesc=document.getElementById('learnDesc');  
-const progressText=document.getElementById('progressText');  
-const learnLog=document.getElementById('learnLog');  
-  
-function openLearn(id){ const c=findById(id); if(!c||!c.cards||c.cards.length===0){ alert('Empty or missing capsule'); return; } currentLearn.capsule=c; currentLearn.order=c.cards.map((_,i)=>i).sort(()=>Math.random()-0.5); currentLearn.index=0; currentLearn.known=0; currentLearn.total=c.cards.length; learnCapsuleTitle.textContent=c.meta.title; learnDesc.textContent=c.meta.description||''; progressText.textContent=`0 / ${currentLearn.total}`; flipToFront(); learnLog.textContent=''; learnModal.show(); }  
-function flipToFront(){ const ci=currentLearn.order[currentLearn.index]; const card=currentLearn.capsule.cards[ci]; flashcardEl.textContent=card.front||'Empty'; flashcardEl.dataset.back=card.back||''; flashcardEl.dataset.front=card.front||''; flashcardEl.dataset.cardId=card.id;}  
-showAnswerBtn.addEventListener('click',()=>{ flashcardEl.textContent=flashcardEl.dataset.back||'Empty';});  
-knowBtn.addEventListener('click',()=>{ markAnswer(true); });  
-dontKnowBtn.addEventListener('click',()=>{ markAnswer(false); });  
-function markAnswer(known){ if(typeof known!=='boolean') known=false; if(known) currentLearn.known++; learnLog.textContent+=`${currentLearn.index+1}. ${flashcardEl.dataset.front} — ${known?'✔':'✖'}\n`; currentLearn.index++; progressText.textContent=`${currentLearn.index} / ${currentLearn.total}`; if(currentLearn.index>=currentLearn.total){ learnLog.textContent+=`\nFinished. Correct: ${currentLearn.known} / ${currentLearn.total}`; saveProgressForCapsule(currentLearn.capsule.id,{lastStudied:Date.now(), lastScore:currentLearn.known,total:currentLearn.total}); return;} flipToFront(); }  
-function saveProgressForCapsule(id,data){ const c=findById(id); if(!c)return; c.progress=Object.assign({},c.progress||{},data); upsertCapsule(c); renderLibrary(searchEl.value); }  
-  
-// ===== Export / Import =====  
-function downloadJson(obj,filename='export.json'){ const blob=new Blob        <h5 id="learnTitle" class="modal-title">Learn</h5>  
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>  
-      </div>  
-      <div class="modal-body">  
-        <div id="learnBody">  
-          <div class="d-flex justify-content-between align-items-center mb-3">  
-            <div><strong id="learnCapsuleTitle"></strong><div class="small-muted" id="learnDesc"></div></div>  
-            <div><span id="progressText"></span></div>  
-          </div>  
-          <div id="flashcard-area" class="card p-3 mb-3">  
-            <div id="flashcard" class="flashcard">کارت خالی</div>  
-            <div class="d-flex gap-2 justify-content-center">  
-              <button id="show-answer" class="btn btn-outline-primary">نمایش پاسخ</button>  
-              <button id="know-btn" class="btn btn-success">بلد بودم</button>  
-              <button id="dontknow-btn" class="btn btn-danger">نمی‌دانم</button>  
-            </div>  
-          </div>  
-          <div id="learnLog" class="small-muted"></div>  
-        </div>  
-      </div>  
-      <div class="modal-footer">  
-        <button class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>  
-      </div>  
-    </div>  
-  </div>  
-</div>  
-  
-/* ======= Storage / Utilities ======= */  
-const KEY = 'pocket:capsules:v1';  
-  
-function uid(prefix='c'){  
-  return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);  
-}  
-  
-function loadAll(){  
-  try {  
-    const raw = localStorage.getItem(KEY);  
-    return raw ? JSON.parse(raw) : [];  
-  } catch(e) { console.error(e); return []; }  
-}  
-function saveAll(arr){  
-  localStorage.setItem(KEY, JSON.stringify(arr));  
-}  
-function findById(id){  
-  return loadAll().find(c => c.id === id);  
-}  
-function upsertCapsule(capsule){  
-  const all = loadAll();  
-  const i = all.findIndex(x=>x.id===capsule.id);  
-  if(i>=0) all[i]=capsule; else all.unshift(capsule);  
-  saveAll(all);  
-}  
-function deleteCapsule(id){  
-  const all = loadAll().filter(x=>x.id!==id);  
-  saveAll(all);  
-}  
-  
-/* defaults sample if empty */  
-if(loadAll().length===0){  
-  const sample = {  
-    id: uid('sample'),  
-    schema: 'pocket-classroom/v1',  
-    meta:{ title:'مثال: ریاضی پایه', description:'فلش‌کارت‌های نمونه', tags:['ریاضی','مثال'], created: Date.now(), updated: Date.now() },  
-    cards:[  
-      {id:uid('card'), front:'۲+۲ چند است؟', back:'۴'},  
-      {id:uid('card'), front:'مساحت مربع با ضلع a؟', back:'a×a'},  
-    ],  
-    progress:{}  
-  };  
-  saveAll([sample]);  
-}  
-  
-/* ======= UI Rendering ======= */  
-const libraryEl = document.getElementById('library');  
-const searchEl = document.getElementById('search');  
-const newCapsuleBtn = document.getElementById('new-capsule-btn');  
-const authorModal = new bootstrap.Modal(document.getElementById('authorModal'), {backdrop:'static'});  
-const learnModal = new bootstrap.Modal(document.getElementById('learnModal'));  
-const importModal = new bootstrap.Modal(document.getElementById('importModal'));  
-const themeToggle = document.getElementById('toggle-theme');  
-  
-function renderLibrary(filter=''){  
-  const all = loadAll();  
-  const q = filter.trim().toLowerCase();  
-  const filtered = all.filter(c=>{  
-    if(!q) return true;  
-    const m = c.meta || {};  
-    return (m.title||'').toLowerCase().includes(q) ||  
-           (m.description||'').toLowerCase().includes(q) ||  
-           (m.tags||[]).join(' ').toLowerCase().includes(q) ||  
-           (c.cards||[]).some(cd => (cd.front+cd.back).toLowerCase().includes(q));  
-  });  
-  if(filtered.length===0){  
-    libraryEl.innerHTML = `<div class="col-12"><div class="alert alert-info">هیچ کپسولی پیدا نشد.</div></div>`;  
-    return;  
-  }  
-  libraryEl.innerHTML = filtered.map(c=>{  
-    const m=c.meta||{};  
-    const tags=(m.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('');  
-    const count = (c.cards||[]).length;  
-    const created = new Date(m.created||Date.now()).toLocaleDateString('fa-IR');  
-    return `  
-      <div class="col-sm-6 col-md-4">  
-        <div class="card p-3 capsule-card">  
-          <div class="d-flex justify-content-between">  
-            <div>  
-              <h5 class="mb-1">${escapeHtml(m.title||'بدون عنوان')}</h5>  
-              <div class="small-muted">${escapeHtml(m.description||'')}</div>  
-              <div class="mt-2">${tags}</div>  
-            </div>  
-            <div class="text-end">  
-              <div class="small-muted">${count} کارت</div>  
-              <div class="small-muted">${created}</div>  
-            </div>  
-          </div>  
-          <div class="mt-3 d-flex gap-2 justify-content-end">  
-            <button class="btn btn-sm btn-outline-primary" data-action="learn" data-id="${c.id}"><i class="bi bi-book"></i> یادگیری</button>  
-            <button class="btn btn-sm btn-outline-secondary" data-action="edit" data-id="${c.id}"><i class="bi bi-pencil"></i> ویرایش</button>  
-            <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${c.id}"><i class="bi bi-trash"></i> حذف</button>  
-            <button class="btn btn-sm btn-outline-dark" data-action="export" data-id="${c.id}"><i class="bi bi-file-earmark-arrow-up"></i></button>  
-          </div>  
-        </div>  
-      </div>  
-    `;  
-  }).join('');  
-}  
-  
-/* escape helper */  
-function escapeHtml(s=''){ return s.replaceAll && s.replaceAll(/[&<>"']/g, ch=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[ch]) || s; }  
-  
-/* click handlers for library buttons */  
-libraryEl.addEventListener('click', e=>{  
-  const btn = e.target.closest('button');  
-  if(!btn) return;  
-  const action = btn.dataset.action;  
-  const id = btn.dataset.id;  
-  if(action === 'learn') openLearn(id);  
-  if(action === 'edit') openAuthorForEdit(id);  
-  if(action === 'delete') {  
-    if(confirm('آیا از حذف این کپسول اطمینان دارید؟')) { deleteCapsule(id); renderLibrary(searchEl.value); }  
-  }  
-  if(action === 'export'){ const c=findById(id); downloadJson([c], `capsule-${c.id}.json`); }  
-});  
-  
-/* ======= Author (create/edit) ======= */  
-const authorForm = document.getElementById('authorForm');  
-const capsTitle = document.getElementById('capsule-title');  
-const capsDesc = document.getElementById('capsule-desc');  
-const capsTags = document.getElementById('capsule-tags');  
-const capsId = document.getElementById('capsule-id');  
-const cardsList = document.getElementById('cards-list');  
-const newFront = document.getElementById('new-front');  
-const newBack = document.getElementById('new-back');  
-const addCardBtn = document.getElementById('add-card');  
-const saveCapsuleBtn = document.getElementById('save-capsule');  
-const authorModalTitle = document.getElementById('authorModalTitle');  
-  
-function resetAuthorForm(){  
-  capsId.value=''; capsTitle.value=''; capsDesc.value=''; capsTags.value=''; cardsList.innerHTML='';  
-}  
-  
-newCapsuleBtn.addEventListener('click', ()=>{  
-  resetAuthorForm();  
-  authorModalTitle.textContent = 'ساخت کپسول جدید';  
-  authorModal.show();  
-});  
-  
-function renderCardsList(items){  
-  cardsList.innerHTML = (items||[]).map(cd=>`  
-    <div class="d-flex align-items-center gap-2 mb-2">  
-      <div class="flex-grow-1 p-2 border rounded">  
-        <div><strong>${escapeHtml(cd.front||'')}</strong></div>  
-        <div class="small-muted">${escapeHtml(cd.back||'')}</div>  
-      </div>  
-      <button class="btn btn-sm btn-outline-danger" data-action="del-card" data-id="${cd.id}"><i class="bi bi-x"></i></button>  
-    </div>  
-  `).join('');  
-}  
-  
-cardsList.addEventListener('click', e=>{  
-  const btn = e.target.closest('button');  
-  if(!btn) return;  
-  const id = btn.dataset.id;  
-  const action = btn.dataset.action;  
-  if(action==='del-card'){  
-    const arr = getWorkingCards();  
-    const idx = arr.findIndex(x=>x.id===id);  
-    if(idx>=0){ arr.splice(idx,1); setWorkingCards(arr); renderCardsList(arr); }  
-  }  
-});  
-  
-function getWorkingCards(){  
-  const w = authorForm.dataset.working;  
-  return w ? JSON.parse(w) : [];  
-}  
-function setWorkingCards(arr){ authorForm.dataset.working = JSON.stringify(arr); }  
-  
-addCardBtn.addEventListener('click', e=>{  
-  e.preventDefault();  
-  const f = newFront.value.trim(); const b = newBack.value.trim();  
-  if(!f && !b) return;  
-  const arr = getWorkingCards();  
-  arr.push({id: uid('card'), front: f, back: b});  
-  setWorkingCards(arr); renderCardsList(arr);  
-  newFront.value=''; newBack.value=''; newFront.focus();  
-});  
-  
-saveCapsuleBtn.addEventListener('click', ()=>{  
-  const title = capsTitle.value.trim();  
-  if(!title){ alert('عنوان الزامی است'); return; }  
-  const id = capsId.value || uid('caps');  
-  const tags = capsTags.value.split(',').map(t=>t.trim()).filter(Boolean);  
-  const meta = { title, description: capsDesc.value.trim(), tags, created: Date.now(), updated: Date.now() };  
-  const cards = getWorkingCards();  
-  const capsule = { id, schema: 'pocket-classroom/v1', meta, cards, progress: {} };  
-  upsertCapsule(capsule);  
-  authorModal.hide();  
-  renderLibrary(searchEl.value);  
-});  
-  
-function openAuthorForEdit(id){  
-  const c = findById(id);  
-  if(!c) { alert('کپسول پیدا نشد'); return; }  
-  capsId.value = c.id;  
-  capsTitle.value = c.meta.title || '';  
-  capsDesc.value = c.meta.description || '';  
-  capsTags.value = (c.meta.tags||[]).join(',');  
-  setWorkingCards(c.cards || []);  
-  renderCardsList(c.cards || []);  
-  authorModalTitle.textContent = 'ویرایش کپسول';  
-  authorModal.show();  
-}  
-  
-/* ======= Learn Mode ======= */  
-let currentLearn = { capsule:null, index:0, order:[], known:0, total:0 };  
-const flashcardEl = document.getElementById('flashcard');  
-const showAnswerBtn = document.getElementById('show-answer');  
-const knowBtn = document.getElementById('know-btn');  
-const dontKnowBtn = document.getElementById('dontknow-btn');  
-const learnCapsuleTitle = document.getElementById('learnCapsuleTitle');  
-const learnDesc = document.getElementById('learnDesc');  
-const progressText = document.getElementById('progressText');  
-const learnLog = document.getElementById('learnLog');  
-  
-function openLearn(id){  
-  const c = findById(id);  
-  if(!c || !c.cards || c.cards.length===0) { alert('کپسول خالی است یا پیدا نشد'); return; }  
-  currentLearn.capsule = c;  
-  currentLearn.order = c.cards.map((_,i)=>i).sort(()=>Math.random()-0.5);  
-  currentLearn.index = 0;  
-  currentLearn.known = 0;  
-  currentLearn.total = c.cards.length;  
-  learnCapsuleTitle.textContent = c.meta.title;  
-  learnDesc.textContent = c.meta.description || '';  
-  progressText.textContent = `0 / ${currentLearn.total}`;  
-  flipToFront();  
-  learnLog.textContent = '';  
-  learnModal.show();  
-}  
-  
-function flipToFront(){  
-  const ci = currentLearn.order[currentLearn.index];  
-  const card = currentLearn.capsule.cards[ci];  
-  flashcardEl.textContent = card.front || '[جلو خالی]';  
-  flashcardEl.dataset.back = card.back || '';  
-  flashcardEl.dataset.front = card.front || '';  
-  flashcardEl.dataset.cardId = card.id;  
-  flashcardEl.classList.remove('show-back');  
-}  
-  
-showAnswerBtn.addEventListener('click', ()=> {  
-  flashcardEl.textContent = flashcardEl.dataset.back || '[پاسخ خالی]';  
-});  
-  
-knowBtn.addEventListener('click', ()=>{  
-  markAnswer(true);  
-});  
-dontKnowBtn.addEventListener('click', ()=>{ markAnswer(false); });  
-  
-function markAnswer(known){  
-  if(typeof known !== 'boolean') known=false;  
-  if(known) currentLearn.known++;  
-  // log  
-  const id = flashcardEl.dataset.cardId;  
-  learnLog.textContent += `${currentLearn.index+1}. ${escapeHtml(flashcardEl.dataset.front)} — ${known ? '✔' : '✖'}\n`;  
-  // advance  
-  currentLearn.index++;  
-  progressText.textContent = `${currentLearn.index} / ${currentLearn.total}`;  
-  if(currentLearn.index >= currentLearn.total){  
-    learnLog.textContent += `\nپایان. درست: ${currentLearn.known} از ${currentLearn.total}`;  
-    saveProgressForCapsule(currentLearn.capsule.id, { lastStudied: Date.now(), lastScore: currentLearn.known, total: currentLearn.total });  
-    return;  
-  }  
-  flipToFront();  
-}  
-  
-/* progress save */  
-function saveProgressForCapsule(id, data){  
-  const c = findById(id);  
-  if(!c) return;  
-  c.progress = Object.assign({}, c.progress||{}, data);  
-  upsertCapsule(c);  
-  renderLibrary(searchEl.value);  
-}  
-  
-/* ======= Export / Import ======= */  
-function downloadJson(obj, filename='export.json'){  
-  const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});  
-  const url = URL.createObjectURL(blob);  
-  const a = document.createElement('a');  
-  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();  
-  URL.revokeObjectURL(url);  
-}  
-  
-document.getElementById('export-btn').addEventListener('click', ()=>{  
-  const all = loadAll();  
-  downloadJson(all, `pocket-capsules-backup-${new Date().toISOString().slice(0,10)}.json`);  
-});  
-  
-document.getElementById('import-btn').addEventListener('click', ()=>{  
-  document.getElementById('importText').value = '';  
-  importModal.show();  
-});  
-  
-document.getElementById('doImport').addEventListener('click', ()=>{  
-  const fileInput = document.getElementById('importFile');  
-  const txt = document.getElementById('importText').value.trim();  
-  if(fileInput.files && fileInput.files.length>0){  
-    const fr = new FileReader();  
-    fr.onload = () => {  
-      try { const arr = JSON.parse(fr.result); handleImportArray(arr); importModal.hide(); renderLibrary(searchEl.value); }  
-      catch(e){ alert('فایل JSON معتبر نیست'); }  
-    };  
-    fr.readAsText(fileInput.files[0]);  
-  } else if(txt){  
-    try { const arr = JSON.parse(txt); handleImportArray(arr); importModal.hide(); renderLibrary(searchEl.value); }  
-    catch(e){ alert('متن JSON معتبر نیست'); }  
-  } else {  
-    alert('فایل یا متن وارد کنید');  
-  }  
-});  
-  
-function handleImportArray(arr){  
-  if(!Array.isArray(arr)) arr = [arr];  
-  const existing = loadAll();  
-  // we append new ones but keep same ids (or create new if id collision)  
-  arr.forEach(it=>{  
-    if(!it.id) it.id = uid('imp');  
-    // ensure shape  
-    it.schema = it.schema || 'pocket-classroom/v1';  
-    it.meta = it.meta || { title: it.meta?.title || 'Imported', created: Date.now(), updated: Date.now() };  
-    it.cards = Array.isArray(it.cards) ? it.cards : [];  
-    // if id exists, create new id  
-    if(existing.some(x=>x.id===it.id)) it.id = uid('imp');  
-    existing.unshift(it);  
-  });  
-  saveAll(existing);  
-}  
-  
-/* helper: download individual capsule export when clicking export button in card (handled earlier) */  
-  
-/* ======= Theme toggle ======= */  
-function setTheme(isDark){  
-  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');  
-  themeToggle.textContent = isDark ? 'حالت روشن' : 'حالت تاریک';  
-  localStorage.setItem('pocket:theme', isDark ? 'dark' : 'light');  
-}  
-themeToggle.addEventListener('click', ()=>{  
-  const cur = localStorage.getItem('pocket:theme') === 'dark';  
-  setTheme(!cur);  
-});  
-setTheme(localStorage.getItem('pocket:theme') === 'dark');  
-  
-/* ======= Search ======= */  
-searchEl.addEventListener('input', ()=> renderLibrary(searchEl.value));  
-  
-/* ======= Helpers & Init ======= */  
-function init(){  
-  renderLibrary();  
-  // drag & drop import  
-  const importArea = document.getElementById('importModal');  
-  // restore some UI on load if needed  
-}  
-init();  
-  
-/* simple download fallback for export from library view */  
-function downloadJson(obj, filename='export.json'){ // override earlier to ensure single definition  
-  try{  
-    const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});  
-    const url = URL.createObjectURL(blob);  
-    const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();  
-    URL.revokeObjectURL(url);  
-  }catch(e){ console.error(e); alert('خطا در خروجی گرفتن'); }  
-}  
-</script>  </body>  
-</html>  <input id="capsuleSubject" class="form-control" placeholder="Subject">  
-  <select id="capsuleLevel" class="form-select">  
-    <option value="Easy">Easy</option>  
-    <option value="Medium">Medium</option>  
-    <option value="Hard">Hard</option>  
-  </select>  
-  <button id="addCapsuleBtn" class="btn btn-primary mt-2"><i class="bi bi-plus-lg"></i> Add Capsule</button>  
-</div>  <div class="mt-3">  
-  <button id="exportBtn" class="btn btn-success me-2"><i class="bi bi-box-arrow-up-right"></i> Export All</button>  
-  <button id="importBtn" class="btn btn-secondary me-2"><i class="bi bi-file-earmark-arrow-up"></i> Import</button>  
-  <input type="file" id="importFile" style="display:none;">  
-</div>  <script>  
-document.addEventListener('DOMContentLoaded', () => {  
-  let capsules = JSON.parse(localStorage.getItem('pocket_capsules')) || [];  
-  
-  function saveAll() { localStorage.setItem('pocket_capsules', JSON.stringify(capsules)); }  
-  
-  document.getElementById('toggleDark').addEventListener('click', () => {  
-    document.body.classList.toggle('dark-mode');  
-  });  
-  
-  // ===== Tabs =====  
-  const tabs = document.querySelectorAll('#tabs .nav-link');  
-  tabs.forEach(tab => {  
-    tab.addEventListener('click', () => {  
-      tabs.forEach(t => t.classList.remove('active'));  
-      tab.classList.add('active');  
-      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('d-none'));  
-      document.getElementById(tab.dataset.tab+'Tab').classList.remove('d-none');  
-      if(tab.dataset.tab==='learn') renderLearn();  
-      if(tab.dataset.tab==='library') renderLibrary();  
-    });  
-  });  
-  
-  // ===== Library =====  
-  const libraryContainer = document.getElementById('libraryContainer');  
-  function renderLibrary(){  
-    libraryContainer.innerHTML='';  
-    if(capsules.length===0){  
-      libraryContainer.innerHTML='<div class="card text-center p-4">No capsules. Use Author tab to add one.</div>';  
-      return;  
-    }  
-    capsules.forEach(cap=>{  
-      const div=document.createElement('div'); div.className='capsule-row';  
-      div.innerHTML=`  
-        <div><strong>${cap.title}</strong> | ${cap.subject} | ${cap.level} | Updated: ${cap.updatedAt}</div>  
-        <div>  
-          <button class="btn btn-sm btn-primary editBtn"><i class="bi bi-pencil-square"></i></button>  
-          <button class="btn btn-sm btn-danger deleteBtn"><i class="bi bi-trash"></i></button>  
-          <button class="btn btn-sm btn-success learnBtn"><i class="bi bi-book"></i></button>  
-          <button class="btn btn-sm btn-warning exportBtn"><i class="bi bi-box-arrow-up-right"></i></button>  
-        </div>`;  
-      div.querySelector('.editBtn').addEventListener('click', e=>{  
-        e.stopPropagation();  
-        const newTitle=prompt('Title:',cap.title);  
-        const newSubject=prompt('Subject:',cap.subject);  
-        const newLevel=prompt('Level:',cap.level);  
-        if(newTitle && newSubject && newLevel){  
-          cap.title=newTitle; cap.subject=newSubject; cap.level=newLevel;  
-          cap.updatedAt=new Date().toISOString().split('T')[0]; saveAll(); renderLibrary();  
-        }  
-      });  
-      div.querySelector('.deleteBtn').addEventListener('click', e=>{  
-        e.stopPropagation(); capsules=capsules.filter(c=>c.id!==cap.id); saveAll(); renderLibrary();  
-      });  
-      div.querySelector('.learnBtn').addEventListener('click', e=>{  
-        e.stopPropagation(); window.dispatchEvent(new CustomEvent('openLearn',{detail:{id:cap.id}}));  
-      });  
-      div.querySelector('.exportBtn').addEventListener('click', e=>{  
-        e.stopPropagation(); const blob=new Blob([JSON.stringify(cap,null,2)],{type:'application/json'});  
-        const a=document.createElement('a'); a.href=URL.createObjectURL(blob);  
-        a.download=cap.title.replace(/\s+/g,'_')+'.json'; a.click();  
-      });  
-      libraryContainer.appendChild(div);  
-    });  
-  }  
-  renderLibrary();  
-  
-  // ===== Author =====  
-  document.getElementById('addCapsuleBtn').addEventListener('click', ()=>{  
-    const title=document.getElementById('capsuleTitle').value.trim();  
-    const subject=document.getElementById('capsuleSubject').value.trim();  
-    const level=document.getElementById('capsuleLevel').value;  
-    if(!title||!subject)return alert('Please fill Title and Subject');  
-    capsules.push({  
-      id:Date.now(), title, subject, level,  
-      updatedAt:new Date().toISOString().split('T')[0],  
-      notes:[],  
-      flashcards:[],  
-      quiz:[]  
-    });  
-    saveAll(); renderLibrary();  
-    document.getElementById('capsuleTitle').value=''; document.getElementById('capsuleSubject').value='';  
-  });  
-  
-  // ===== Learn =====  
-  const learnContainer=document.getElementById('learnContainer');  
-  function renderLearn(){  
-    learnContainer.innerHTML='';  
-    capsules.forEach(cap=>{  
-      const div=document.createElement('div'); div.className='card p-3 mb-3';  
-      let flashcardsHTML='';  
-      cap.flashcards.forEach(fc=>{ flashcardsHTML+=`<div>Q: ${fc.question} | A: ${fc.answer}</div>`; });  
-      div.innerHTML=`<strong>${cap.title}</strong> | Notes: ${cap.notes.length} | Flashcards: ${cap.flashcards.length} | Quiz: ${cap.quiz.length}<div class="mt-2">${flashcardsHTML}</div>`;  
-      learnContainer.appendChild(div);  
-    });  
-  }  
-  
-  // ===== Export / Import =====  
-  document.getElementById('exportBtn').addEventListener('click', ()=>{  
-    const blob=new Blob([JSON.stringify(capsules,null,2)],{type:'application/json'});  
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pocket_classroom.json'; a.click();  
-  });  
-  document.getElementById('importBtn').addEventListener('click', ()=>document.getElementById('importFile').click());  
-  document.getElementById('importFile').addEventListener('change', e=>{  
-    const file=e.target.files[0]; if(!file) return;  
-    const reader=new FileReader();  
-    reader.onload=function(evt){  
-      try{ const data=JSON.parse(evt.target.result); capsules=data; saveAll(); renderLibrary(); alert('Import successful!'); }  
-      catch(err){ alert('Invalid JSON'); }  
-    };  
-    reader.readAsText(file);  
-  });  
-  
-});  
-</script>  </body>  
-</html>  </div>
-</div>
-
-<!-- Learn Modal -->
-<div class="modal fade" id="learnModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content card">
-      <div class="modal-header">
-        <h5 id="learnTitle" class="modal-title">Learn</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div id="learnBody">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <strong id="learnCapsuleTitle"></strong>
-              <div class="small-muted" id="learnDesc"></div>
-              <div class="small-muted" id="learnMeta"></div>
-            </div>
-            <div><span id="progressText"></span></div>
-          </div>
-
-          <div id="flashcard-area" class="card p-3 mb-3">
-            <div id="flashcard" class="flashcard">Empty Card</div>
-            <div class="d-flex gap-2 justify-content-center mt-3">
-              <button id="show-answer" class="btn btn-outline-primary">Show Answer</button>
-              <button id="know-btn" class="btn btn-success">I Know</button>
-              <button id="dontknow-btn" class="btn btn-danger">I Don’t Know</button>
-            </div>
-          </div>
-
-          <div>
-            <h6>Session Log</h6>
-            <pre id="learnLog" class="learn-log small-muted"></pre>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Import Modal -->
-<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-md modal-dialog-centered">
-    <div class="modal-content card">
-      <div class="modal-header"><h5 class="modal-title">Import JSON</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p class="small-muted">Drag & drop JSON file or paste JSON text below.</p>
-        <input id="importFile" type="file" accept=".json" class="form-control mb-2"/>
-        <textarea id="importText" rows="6" class="form-control" placeholder='[{"id":"...","meta":{...},"cards":[...]}]'></textarea>
-      </div>
-      <div class="modal-footer">
-        <button id="doImport" class="btn btn-success">Import</button>
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Bootstrap bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-/* =========================
-   Pocket Classroom - single-file app
-   All UI text in English
-   ========================= */
-
-const STORAGE_KEY = 'pocket:capsules:v1';
-
-// Utilities
-function uid(prefix='c'){ return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
-function nowISO(){ return new Date().toISOString(); }
-function escapeHtml(s=''){ return String(s).replaceAll(/[&<>"']/g, ch=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[ch]); }
-
-function loadAll(){ try{ const raw=localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; } catch(e){ console.error(e); return []; } }
-function saveAll(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
-function findById(id){ return loadAll().find(c=>c.id===id); }
-function upsertCapsule(capsule){ const all=loadAll(); const i=all.findIndex(x=>x.id===capsule.id); if(i>=0) all[i]=capsule; else all.unshift(capsule); saveAll(all); }
-function deleteCapsule(id){ saveAll(loadAll().filter(x=>x.id!==id)); }
-
-// Ensure sample
-if(loadAll().length===0){
-  const sample={ id: uid('sample'), schema:'pocket-classroom/v1',
-    meta:{ title:'Sample Math', description:'Sample flashcards', tags:['Math','Sample'], subject:'Math', level:'Easy', created: Date.now(), updated: Date.now() },
-    cards:[
-      { id: uid('card'), front:'2 + 2 = ?', back:'4' },
-      { id: uid('card'), front:'Area of square with side a?', back:'a × a' }
-    ],
-    progress:{} };
-  saveAll([sample]);
-}
-
-/* ===== UI refs & modals ===== */
-const libraryEl = document.getElementById('library');
-const searchEl = document.getElementById('search');
-const newCapsuleBtn = document.getElementById('new-capsule-btn');
-const authorModalEl = document.getElementById('authorModal');
-const authorModal = new bootstrap.Modal(authorModalEl, { backdrop: 'static' });
-const learnModal = new bootstrap.Modal(document.getElementById('learnModal'));
-const importModal = new bootstrap.Modal(document.getElementById('importModal'));
-
-const toggleThemeBtn = document.getElementById('toggle-theme');
-const exportAllBtn = document.getElementById('export-all-btn');
-const importOpenBtn = document.getElementById('import-open-btn');
-
-/* Author form elements */
-const authorForm = document.getElementById('authorForm');
-const capsIdEl = document.getElementById('capsule-id');
-const capsTitleEl = document.getElementById('capsule-title');
-const capsSubjectEl = document.getElementById('capsule-subject');
-const capsLevelEl = document.getElementById('capsule-level');
-const capsDescEl = document.getElementById('capsule-desc');
-const capsTagsEl = document.getElementById('capsule-tags');
-const cardsListEl = document.getElementById('cards-list');
-const newFrontEl = document.getElementById('new-front');
-const newBackEl = document.getElementById('new-back');
-const addCardBtn = document.getElementById('add-card');
-const saveCapsuleBtn = document.getElementById('save-capsule');
-const authorModalTitle = document.getElementById('authorModalTitle');
-
-/* Learn elements */
-const flashcardEl = document.getElementById('flashcard');
-const showAnswerBtn = document.getElementById('show-answer');
-const knowBtn = document.getElementById('know-btn');
-const dontKnowBtn = document.getElementById('dontknow-btn');
-const learnCapsuleTitle = document.getElementById('learnCapsuleTitle');
-const learnDesc = document.getElementById('learnDesc');
-const learnMeta = document.getElementById('learnMeta');
-const progressText = document.getElementById('progressText');
-const learnLog = document.getElementById('learnLog');
-
-/* Import elements */
-const importFileInput = document.getElementById('importFile');
-const importTextEl = document.getElementById('importText');
-const doImportBtn = document.getElementById('doImport');
-
-/* ===== Render Library ===== */
-function renderLibrary(filter=''){
-  const all = loadAll();
-  const q = String(filter||'').trim().toLowerCase();
-  const filtered = all.filter(c=>{
-    if(!q) return true;
-    const m = c.meta || {};
-    const inCards = (c.cards||[]).some(cd => (String(cd.front||'') + ' ' + String(cd.back||'')).toLowerCase().includes(q));
-    return (String(m.title||'').toLowerCase().includes(q) ||
-            String(m.description||'').toLowerCase().includes(q) ||
-            (m.tags||[]).join(' ').toLowerCase().includes(q) ||
-            String(m.subject||'').toLowerCase().includes(q) ||
-            inCards );
-  });
-
-  if(filtered.length === 0){
-    libraryEl.innerHTML = '<div class="col-12"><div class="alert alert-info">No capsules found.</div></div>';
-    return;
-  }
-
-  libraryEl.innerHTML = filtered.map(c=>{
-    const m = c.meta || {};
-    const tags = (m.tags||[]).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join(' ');
-    const count = (c.cards||[]).length;
-    const created = new Date(m.created || Date.now()).toLocaleDateString('en-US');
-    const updated = new Date(m.updated || Date.now()).toLocaleDateString('en-US');
-    const subj = escapeHtml(m.subject || '');
-    const level = escapeHtml(m.level || '');
-
-    return `
-      <div class="col-sm-6 col-md-4">
-        <div class="card p-3 capsule-card">
-          <div class="d-flex justify-content-between">
-            <div>
-              <h5 class="mb-1">${escapeHtml(m.title||'Untitled')}</h5>
-              <div class="small-muted">${escapeHtml(m.description||'')}</div>
-              <div class="mt-2">${tags}</div>
-            </div>
-            <div class="text-end">
-              <div class="small-muted">${count} cards</div>
-              <div class="small-muted">${subj} • ${level}</div>
-              <div class="small-muted">Updated: ${updated}</div>
-            </div>
-          </div>
-          <div class="mt-3 d-flex gap-2 justify-content-end">
-            <button class="btn btn-sm btn-outline-primary" data-action="learn" data-id="${c.id}"><i class="bi bi-book"></i> Learn</button>
-            <button class="btn btn-sm btn-outline-secondary" data-action="edit" data-id="${c.id}"><i class="bi bi-pencil"></i> Edit</button>
-            <button class="btn btn-sm btn-outline-danger" data-action="delete" data-id="${c.id}"><i class="bi bi-trash"></i> Delete</button>
-            <button class="btn btn-sm btn-outline-dark" data-action="export" data-id="${c.id}"><i class="bi bi-file-earmark-arrow-up"></i> Export</button>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-/* ===== Author (Create / Edit) ===== */
-function resetAuthorForm(){
-  capsIdEl.value = '';
-  capsTitleEl.value = '';
-  capsSubjectEl.value = '';
-  capsLevelEl.value = 'Easy';
-  capsDescEl.value = '';
-  capsTagsEl.value = '';
-  cardsListEl.innerHTML = '';
-  authorForm.dataset.working = JSON.stringify([]);
-}
-
-newCapsuleBtn.addEventListener('click', () => {
-  resetAuthorForm();
-  authorModalTitle.textContent = 'Add New Capsule';
-  authorModal.show();
-});
-
-function getWorkingCards(){ return authorForm.dataset.working ? JSON.parse(authorForm.dataset.working) : []; }
-function setWorkingCards(arr){ authorForm.dataset.working = JSON.stringify(arr); }
-
-function renderCardsList(items){
-  cardsListEl.innerHTML = (items||[]).map(cd => `
-    <div class="d-flex align-items-center gap-2 mb-2">
-      <div class="flex-grow-1 p-2 border rounded">
-        <div><strong>${escapeHtml(cd.front||'')}</strong></div>
-        <div class="small-muted">${escapeHtml(cd.back||'')}</div>
-      </div>
-      <button class="btn btn-sm btn-outline-danger" data-action="del-card" data-id="${cd.id}"><i class="bi bi-x"></i></button>
-    </div>
-  `).join('');
-}
-
-cardsListEl.addEventListener('click', e=>{
-  const btn = e.target.closest('button');
-  if(!btn) return;
-  if(btn.dataset.action === 'del-card'){
-    const id = btn.dataset.id;
-    const arr = getWorkingCards();
-    const idx = arr.findIndex(x=>x.id===id);
-    if(idx>=0){ arr.splice(idx,1); setWorkingCards(arr); renderCardsList(arr); }
-  }
-});
-
-addCardBtn.addEventListener('click', (e)=>{
-  e.preventDefault();
-  const f = newFrontEl.value.trim();
-  const b = newBackEl.value.trim();
-  if(!f && !b) return;
-  const arr = getWorkingCards();
-  arr.push({ id: uid('card'), front: f, back: b });
-  setWorkingCards(arr);
-  renderCardsList(arr);
-  newFrontEl.value = ''; newBackEl.value = ''; newFrontEl.focus();
-});
-
-saveCapsuleBtn.addEventListener('click', ()=>{
-  const title = capsTitleEl.value.trim();
-  if(!title){ alert('Title is required'); return; }
-  const id = capsIdEl.value || uid('caps');
-  const tags = capsTagsEl.value.split(',').map(t=>t.trim()).filter(Boolean);
-  const meta = { title, description: capsDescEl.value.trim(), tags, subject: capsSubjectEl.value.trim(), level: capsLevelEl.value, created: Date.now(), updated: Date.now() };
-  const cards = getWorkingCards();
-  const capsule = { id, schema:'pocket-classroom/v1', meta, cards, progress:{} };
-  upsertCapsule(capsule);
-  authorModal.hide();
-  renderLibrary(searchEl.value);
-});
-
-/* Edit open */
-function openAuthorForEdit(id){
-  const c = findById(id);
-  if(!c){ alert('Capsule not found'); return; }
-  capsIdEl.value = c.id;
-  capsTitleEl.value = c.meta.title || '';
-  capsSubjectEl.value = c.meta.subject || '';
-  capsLevelEl.value = c.meta.level || 'Easy';
-  capsDescEl.value = c.meta.description || '';
-  capsTagsEl.value = (c.meta.tags || []).join(',');
-  setWorkingCards(c.cards || []);
-  renderCardsList(c.cards || []);
-  authorModalTitle.textContent = 'Edit Capsule';
-  authorModal.show();
-}
-
-/* ===== Library buttons delegation ===== */
-libraryEl.addEventListener('click', e=>{
-  const btn = e.target.closest('button');
-  if(!btn) return;
-  const action = btn.dataset.action;
-  const id = btn.dataset.id;
-  if(action === 'learn') openLearn(id);
-  if(action === 'edit') openAuthorForEdit(id);
-  if(action === 'delete'){
-    if(confirm('Are you sure you want to delete this capsule?')){
-      deleteCapsule(id);
-      renderLibrary(searchEl.value);
-    }
-  }
-  if(action === 'export'){
-    const c = findById(id);
-    if(!c) return;
-    downloadJson([c], `capsule-${c.id}.json`);
-  }
-});
-
-/* ===== Learn Mode ===== */
-let currentLearn = { capsule:null, order:[], index:0, known:0, total:0 };
-
-function openLearn(id){
-  const c = findById(id);
-  if(!c || !Array.isArray(c.cards) || c.cards.length===0){ alert('Empty or missing capsule'); return; }
-  currentLearn.capsule = c;
-  currentLearn.order = c.cards.map((_,i)=>i).sort(()=>Math.random()-0.5);
-  currentLearn.index = 0;
-  currentLearn.known = 0;
-  currentLearn.total = c.cards.length;
-  learnCapsuleTitle.textContent = c.meta.title;
-  learnDesc.textContent = c.meta.description || '';
-  learnMeta.textContent = `${c.meta.subject || ''} • ${c.meta.level || ''}`;
-  progressText.textContent = `0 / ${currentLearn.total}`;
-  learnLog.textContent = '';
-  flipToFront();
-  learnModal.show();
-}
-
-function flipToFront(){
-  const ci = currentLearn.order[currentLearn.index];
-  const card = currentLearn.capsule.cards[ci];
-  flashcardEl.textContent = card.front || '[Empty]';
-  flashcardEl.dataset.back = card.back || '';
-  flashcardEl.dataset.front = card.front || '';
-  flashcardEl.dataset.cardId = card.id;
-}
-
-showAnswerBtn.addEventListener('click', ()=> {
-  flashcardEl.textContent = flashcardEl.dataset.back || '[Empty]';
-});
-
-knowBtn.addEventListener('click', ()=> markAnswer(true));
-dontKnowBtn.addEventListener('click', ()=> markAnswer(false));
-
-function markAnswer(known){
-  if(typeof known !== 'boolean') known = false;
-  if(known) currentLearn.known++;
-  const front = flashcardEl.dataset.front || '';
-  learnLog.textContent += `${currentLearn.index+1}. ${front} — ${known ? '✔' : '✖'}\n`;
-  currentLearn.index++;
-  progressText.textContent = `${currentLearn.index} / ${currentLearn.total}`;
-  if(currentLearn.index >= currentLearn.total){
-    learnLog.textContent += `\nFinished. Correct: ${currentLearn.known} / ${currentLearn.total}`;
-    saveProgressForCapsule(currentLearn.capsule.id, { lastStudied: Date.now(), lastScore: currentLearn.known, total: currentLearn.total });
-    return;
-  }
-  flipToFront();
-}
-
-/* Save progress */
-function saveProgressForCapsule(id, data){
-  const c = findById(id);
-  if(!c) return;
-  c.progress = Object.assign({}, c.progress || {}, data);
-  c.meta.updated = Date.now();
-  upsertCapsule(c);
-  
-
-/* Import handler */
-doImportBtn.addEventListener('click', ()=>{
-  if(importFileInput.files && importFileInput.files.length > 0){
-    const fr = new FileReader();
-    fr.onload = ()=> {
-      try { const arr = JSON.parse(fr.result); handleImportArray(arr); importModal.hide(); renderLibrary(searchEl.value); alert('Import successful'); }
-      catch(e){ alert('Invalid JSON file'); }
-    };
-    fr.readAsText(importFileInput.files[0]);
-    return;
-  }
-  const txt = importTextEl.value.trim();
-  if(txt){
-    try { const arr = JSON.parse(txt); handleImportArray(arr); importModal.hide(); renderLibrary(searchEl.value); alert('Import successful'); }
-    catch(e){ alert('Invalid JSON text'); }
-    return;
-  }
-  alert('Please provide a JSON file or paste JSON text');
-});
-
-function handleImportArray(arr){
-  if(!Array.isArray(arr)) arr = [arr];
-  const existing = loadAll();
-  arr.forEach(it=>{
-    // Normalize imported shape
-    const copy = JSON.parse(JSON.stringify(it));
-    if(!copy.id) copy.id = uid('imp');
-    copy.schema = copy.schema || 'pocket-classroom/v1';
-    copy.meta = copy.meta || {};
-    copy.meta.title = copy.meta.title || (copy.title || 'Imported');
-    copy.meta.created = copy.meta.created || Date.now();
-    copy.meta.updated = copy.meta.updated || Date.now();
-    // ensure subject/level/tags fields exist
-    copy.meta.subject = copy.meta.subject || (copy.subject || '');
-    copy.meta.level = copy.meta.level || (copy.level || 'Easy');
-    copy.meta.tags = Array.isArray(copy.meta.tags) ? copy.meta.tags : (copy.tags ? (String(copy.tags).split(',').map(t=>t.trim()).filter(Boolean)) : []);
-    copy.cards = Array.isArray(copy.cards) ? copy.cards : (Array.isArray(copy.flashcards) ? copy.flashcards.map(fc => ({ id: uid('card'), front: fc.question||fc.front||'', back: fc.answer||fc.back||'' })) : []);
-    // avoid id collision
-    if(existing.some(x=>x.id === copy.id)) copy.id = uid('imp');
-    existing.unshift(copy);
-  });
-  saveAll(existing);
-}
-
-/* ===== Theme toggle ===== */
-function setTheme(isDark){
-  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-  toggleThemeBtn.textContent = isDark ? 'Light Mode' : 'Dark Mode';
-  localStorage.setItem('pocket:theme', isDark ? 'dark' : 'light');
-}
-toggleThemeBtn.addEventListener('click', ()=> {
-  const cur = localStorage.getItem('pocket:theme') === 'dark';
-  setTheme(!cur);
-});
-setTheme(localStorage.getItem('pocket:theme') === 'dark');
-
-/* ===== Search ===== */
-searchEl.addEventListener('input', ()=> renderLibrary(searchEl.value));
-
-/* ===== Helpers & Init ===== */
-function init(){
-  renderLibrary();
-}
-init();
-
-</script>
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Pocket Classroom — Pro Edition</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎓 Pocket Classroom — Mini E-Learning Platform</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet">\n  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: #121212;
+    --card-bg: #1f1f1f;
+    --accent: #4fc3f7;
+    --text: #ffffff;
+    --muted: #bbbbbb;
+    --error: #ff5252;
+    --success: #4caf50;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", sans-serif;
+    min-height: 100vh;
+  }
+
+  .navbar {
+    background-color: var(--card-bg);
+  }
+
+  .navbar .nav-btn.active {
+    color: var(--bg);
+    background-color: var(--accent);
+  }
+
+  .card {
+    background-color: var(--card-bg);
+    border: none;
+    margin-bottom: 1rem;
+  }
+
+  .form-control, .form-select {
+    background-color: #2a2a2a;
+    color: var(--text);
+    border: 1px solid #444;
+  }
+
+  .form-control:focus, .form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 0.2rem rgba(79, 195, 247, 0.25);
+    background-color: #2a2a2a;
+    color: var(--text);
+  }
+
+  button {
+    transition: 0.2s;
+  }
+
+  button:hover {
+    opacity: 0.85;
+  }
+
+  .capsule-card:hover {
+    transform: translateY(-3px);
+    transition: 0.2s;
+  }
+
+  .tag {
+    display: inline-block;
+    background-color: #333;
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 4px;
+    font-size: 0.8rem;
+  }
+
+  .flashcard {
+    cursor: pointer;
+    perspective: 1000px;
+    margin-bottom: 1rem;
+  }
+
+  .flashcard-inner {
+    position: relative;
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+  }
+
+  .flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+  }
+
+  .flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    backface-visibility: hidden;
+    padding: 1rem;
+    border-radius: 8px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .flashcard-front {
+    background-color: #333;
+  }
+
+  .flashcard-back {
+    background-color: var(--accent);
+    color: var(--bg);
+    transform: rotateY(180deg);
+  }
+
+  .progress {
+    height: 20px;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .d-flex.gap-3 {
+      flex-direction: column;
+      gap: 1rem !important;
+    }
+  }
+</style>
 </head>
-<body class="theme-dark">
-<header class="navbar sticky-top navbar-dark bg-navbar shadow-sm">
-  <div class="container-fluid d-flex align-items-center gap-3">
-    <a class="navbar-brand d-flex align-items-center gap-3" href="#">
-      <img src="assets/logo.svg" alt="PC" class="logo-img" width="46" height="46">
-      <div class="d-none d-md-block">
-        <div class="h5 mb-0">Pocket Classroom</div>
-        <small class="text-muted">Pro — Offline learning capsules</small>
-      </div>
-    </a>
 
-    <div class="ms-auto d-flex gap-2 align-items-center">
-      <div class="btn-group me-2" role="group">
-        <button id="nav-library" class="btn btn-sm btn-ghost active"><i class="bi bi-journal-bookmark"></i> Library</button>
-        <button id="nav-author" class="btn btn-sm btn-ghost"><i class="bi bi-pencil-square"></i> Author</button>
-        <button id="nav-learn" class="btn btn-sm btn-ghost"><i class="bi bi-mortarboard"></i> Learn</button>
-      </div>
-      <button id="theme-toggle" class="btn btn-sm btn-outline-light" title="Toggle theme"><i class="bi bi-moon-stars"></i></button>
+<body>
+  <!-- Header / Navbar -->
+  <header class="navbar card-panel d-flex align-items-center justify-content-between p-3">
+    <div class="d-flex gap-3 align-items-center">
+      <div class="brand fs-4">🎓 Pocket Classroom</div>
+      <nav>
+        <button class="btn btn-sm btn-outline-light btn-pill nav-btn active" data-section="library">Library</button>
+        <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="create">Create</button>
+        <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="study">Study</button>
+      </nav>
     </div>
+  </header>
+
+  <!-- Main Column -->
+  <div class="container my-4">
+    <!-- Library Section -->
+    <section id="library-section">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Library</h3>
+        <input id="search-input" class="form-control form-control-sm" placeholder="Search capsules..." style="width:200px;">
+      </div>
+      <div id="library-list" class="row"></div>
+    </section>
+
+    <!-- Create Section -->
+    <section id="create-section" class="d-none">
+      <h3>Create Capsule</h3>
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input id="capsule-title" class="form-control" placeholder="Capsule title" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Type</label>
+        <select id="capsule-type" class="form-select">
+          <option value="note">Note</option>
+          <option value="flashcard">Flashcard</option>
+          <option value="quiz">Quiz</option>
+        </select>
+      </div>
+      <div class="mb-3" id="capsule-content-container">
+        <label class="form-label">Content</label>
+        <textarea id="capsule-content" class="form-control" rows="4" placeholder="Write your note here..."></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Tags (comma separated)</label>
+        <input id="capsule-tags" class="form-control" placeholder="e.g. math, physics" />
+      </div>
+      <div id="dynamic-fields"></div>
+      <button id="save-capsule-btn" class="btn btn-primary mt-2">Save Capsule</button>
+    </section>
+
+    <!-- Study Section -->
+    <section id="study-section" class="d-none">
+      <h3>Study</h3>
+      <div class="mb-3">
+        <select id="study-select" class="form-select" style="width: 300px;">
+          <option value="">Select a capsule...</option>
+        </select>
+      </div>
+      <div id="study-container"></div>
+    </section>
   </div>
-</header>
 
-<main class="container py-4">
-  <!-- LIBRARY -->
-  <section id="section-library" class="view">
-    <div class="d-flex align-items-center mb-3 gap-3">
-      <h2 class="me-auto">Library</h2>
-      <div class="d-flex gap-2 align-items-center">
-        <button id="btn-new" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Capsule</button>
-        <label class="btn btn-outline-light mb-0">Import <input id="import-file" type="file" accept=".json" hidden></label>
-        <button id="export-all" class="btn btn-success"><i class="bi bi-download"></i> Export All</button>
-      </div>
-    </div>
+<script>
+  // --- LocalStorage Helper ---
+  function getCapsules() {
+    const data = localStorage.getItem("capsules");
+    return data ? JSON.parse(data) : [];
+  }
+  function saveCapsules(capsules) {
+    localStorage.setItem("capsules", JSON.stringify(capsules));
+  }
 
-    <div id="capsule-grid" class="row g-3 card-grid"></div>
-    <div id="empty-library" class="text-center text-muted mt-5">No capsules — create your first capsule.</div>
-  </section>
+  // --- Navbar Section Switching ---
+  const navButtons = document.querySelectorAll(".nav-btn");
+  const sections = {
+    library: document.getElementById("library-section"),
+    create: document.getElementById("create-section"),
+    study: document.getElementById("study-section"),
+  };
+  navButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      navButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      Object.values(sections).forEach(s => s.classList.add("d-none"));
+      sections[btn.dataset.section].classList.remove("d-none");
+      if(btn.dataset.section === "library") renderLibrary();
+      if(btn.dataset.section === "study") populateStudySelect();
+      resetCreateForm();
+    });
+  });
 
-  <!-- AUTHOR -->
-  <section id="section-author" class="view d-none">
-    <div class="d-flex align-items-center mb-3">
-      <h2 id="author-heading" class="me-auto">Author</h2>
-      <div id="author-actions" class="d-flex gap-2"></div>
-    </div>
-
-    <div class="card bg-panel p-3 shadow-sm">
-      <form id="author-form" class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label">Title *</label>
-          <input id="meta-title" class="form-control" required>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Subject</label>
-          <input id="meta-subject" class="form-control">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Level</label>
-          <select id="meta-level" class="form-select">
-            <option>Beginner</option><option>Intermediate</option><option>Advanced</option>
-          </select>
-        </div>
-        <div class="col-12">
-          <label class="form-label">Description</label>
-          <textarea id="meta-desc" class="form-control" rows="2"></textarea>
-        </div>
-
-        <div class="col-12">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5>Notes <small class="text-muted">markdown-lite</small></h5>
-            <div class="small text-muted">One note per line</div>
+  // --- Library Rendering ---
+  const libraryList = document.getElementById("library-list");
+  const searchInput = document.getElementById("search-input");
+  function renderLibrary() {
+    const capsules = getCapsules();
+    const filter = searchInput.value.toLowerCase();
+    libraryList.innerHTML = capsules
+      .filter(c => c.title.toLowerCase().includes(filter) || c.tags.join().toLowerCase().includes(filter))
+      .map((c, i) => `
+        <div class="col-md-4">
+          <div class="card capsule-card p-3">
+            <h5>${c.title}</h5>
+            <p>Type: ${c.type}</p>
+            <div>${c.tags.map(t => `<span class="tag">${t}</span>`).join(' ')}</div>
+            <div class="mt-2">
+              <button class="btn btn-sm btn-outline-success" onclick="editCapsule(${i})">Edit</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteCapsule(${i})">Delete</button>
+            </div>
           </div>
-          <textarea id="notes-text" class="form-control" rows="4" placeholder="One note per line"></textarea>
         </div>
+      `).join('');
+  }
+  searchInput.addEventListener("input", renderLibrary);
 
-        <div class="col-12">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5>Flashcards</h5>
-            <button id="add-flashcard" class="btn btn-sm btn-outline-light"><i class="bi bi-plus"></i> Add</button>
+  // --- Create Capsule ---
+  const capsuleType = document.getElementById("capsule-type");
+  const capsuleContentContainer = document.getElementById("capsule-content-container");
+  const dynamicFields = document.getElementById("dynamic-fields");
+  function resetCreateForm() {
+    document.getElementById("capsule-title").value = "";
+    document.getElementById("capsule-content").value = "";
+    document.getElementById("capsule-tags").value = "";
+    dynamicFields.innerHTML = "";
+    capsuleContentContainer.classList.remove("d-none");
+  }
+  capsuleType.addEventListener("change", () => {
+    dynamicFields.innerHTML = "";
+    capsuleContentContainer.classList.toggle("d-none", capsuleType.value !== "note");
+    if(capsuleType.value === "flashcard") {
+      dynamicFields.innerHTML = `
+        <div id="flashcards-list"></div>
+        <button class="btn btn-secondary btn-sm mt-2" id="add-flashcard-btn">Add Flashcard</button>
+      `;
+      const list = document.getElementById("flashcards-list");
+      document.getElementById("add-flashcard-btn").addEventListener("click", () => {
+        const idx = list.children.length + 1;
+        const card = document.createElement("div");
+        card.classList.add("mb-2");
+        card.innerHTML = `
+          <input class="form-control mb-1 flash-front" placeholder="Front of card #${idx}">
+          <input class="form-control mb-1 flash-back" placeholder="Back of card #${idx}">
+        `;
+        list.appendChild(card);
+      });
+    }
+    if(capsuleType.value === "quiz") {
+      dynamicFields.innerHTML = `
+        <div id="quiz-list"></div>
+        <button class="btn btn-secondary btn-sm mt-2" id="add-quiz-btn">Add Question</button>
+      `;
+      const list = document.getElementById("quiz-list");
+      document.getElementById("add-quiz-btn").addEventListener("click", () => {
+        const idx = list.children.length + 1;
+        const q = document.createElement("div");
+        q.classList.add("mb-2");
+        q.innerHTML = `
+          <input class="form-control mb-1 quiz-question" placeholder="Question #${idx}">
+          <input class="form-control mb-1 quiz-opt1" placeholder="Option 1">
+          <input class="form-control mb-1 quiz-opt2" placeholder="Option 2">
+          <input class="form-control mb-1 quiz-opt3" placeholder="Option 3">
+          <input class="form-control mb-1 quiz-opt4" placeholder="Option 4">
+          <input class="form-control mb-1 quiz-correct" placeholder="Correct option (1-4)">
+        `;
+        list.appendChild(q);
+      });
+    }
+  });
+
+  document.getElementById("save-capsule-btn").addEventListener("click", () => {
+    const title = document.getElementById("capsule-title").value.trim();
+    const type = capsuleType.value;
+    const tags = document.getElementById("capsule-tags").value.split(",").map(t => t.trim()).filter(Boolean);
+    if(!title) return alert("Title is required.");
+    const capsules = getCapsules();
+    let content = "";
+    if(type === "note") {
+      content = document.getElementById("capsule-content").value.trim();
+      if(!content) return alert("Content is required for note.");
+    }
+    let flashcards = [];
+    if(type === "flashcard") {
+      const fronts = document.querySelectorAll(".flash-front");
+      const backs = document.querySelectorAll(".flash-back");
+      for(let i=0;i<fronts.length;i++){
+        if(fronts[i].value && backs[i].value)
+          flashcards.push({front: fronts[i].value, back: backs[i].value});
+      }
+      if(flashcards.length===0) return alert("Add at least one flashcard.");
+    }
+    let quiz = [];
+    if(type === "quiz") {
+      const qs = document.querySelectorAll(".quiz-question");
+      qs.forEach((q, i)=>{
+        const opts = [
+          document.querySelectorAll(".quiz-opt1")[i].value,
+          document.querySelectorAll(".quiz-opt2")[i].value,
+          document.querySelectorAll(".quiz-opt3")[i].value,
+          document.querySelectorAll(".quiz-opt4")[i].value
+        ];
+        const correct = parseInt(document.querySelectorAll(".quiz-correct")[i].value);
+        if(q.value && opts.every(o=>o) && correct>=1 && correct<=4)
+          quiz.push({question: q.value, options: opts, correct});
+      });
+      if(quiz.length===0) return alert("Add at least one valid quiz question.");
+    }
+    capsules.push({title,type,tags,content,flashcards,quiz});
+    saveCapsules(capsules);
+    alert("Capsule saved!");
+    resetCreateForm();
+  });
+
+  // --- Edit / Delete ---
+  window.deleteCapsule = function(idx){
+    if(confirm("Delete this capsule?")){
+      const capsules = getCapsules();
+      capsules.splice(idx,1);
+      saveCapsules(capsules);
+      renderLibrary();
+    }
+  }
+
+  window.editCapsule = function(idx){
+    const capsules = getCapsules();
+    const c = capsules[idx];
+    document.getElementById("capsule-title").value = c.title;
+    document.getElementById("capsule-tags").value = c.tags.join(",");
+    capsuleType.value = c.type;
+    capsuleType.dispatchEvent(new Event("change"));
+    if(c.type==="note") document.getElementById("capsule-content").value = c.content;
+    if(c.type==="flashcard"){
+      const list = document.getElementById("flashcards-list");
+      list.innerHTML = "";
+      c.flashcards.forEach(f=>{
+        const card = document.createElement("div");
+        card.classList.add("mb-2");
+        card.innerHTML = `<input class="form-control mb-1 flash-front" value="${f.front}">
+                          <input class="form-control mb-1 flash-back" value="${f.back}">`;
+        list.appendChild(card);
+      });
+    }
+    if(c.type==="quiz"){
+      const list = document.getElementById("quiz-list");
+      list.innerHTML = "";
+      c.quiz.forEach(q=>{
+        const div = document.createElement("div");
+        div.classList.add("mb-2");
+        div.innerHTML = `
+          <input class="form-control mb-1 quiz-question" value="${q.question}">
+          <input class="form-control mb-1 quiz-opt1" value="${q.options[0]}">
+          <input class="form-control mb-1 quiz-opt2" value="${q.options[1]}">
+          <input class="form-control mb-1 quiz-opt3" value="${q.options[2]}">
+          <input class="form-control mb-1 quiz-opt4" value="${q.options[3]}">
+          <input class="form-control mb-1 quiz-correct" value="${q.correct}">
+        `;
+        list.appendChild(div);
+      });
+    }
+    sections.create.classList.remove("d-none");
+    navButtons.forEach(b => b.classList.remove("active"));
+    document.querySelector("[data-section=create]").classList.add("active");
+  }
+
+  // --- Study ---
+  const studySelect = document.getElementById("study-select");
+  const studyContainer = document.getElementById("study-container");
+  function populateStudySelect(){
+    const capsules = getCapsules();
+    studySelect.innerHTML = `<option value="">Select a capsule...</option>` + 
+      capsules.map((c,i)=>`<option value="${i}">${c.title} (${c.type})</option>`).join("");
+    studyContainer.innerHTML = "";
+  }
+
+  studySelect.addEventListener("change",()=>{
+    const idx = studySelect.value;
+    if(idx==="") {studyContainer.innerHTML=""; return;}
+    const c = getCapsules()[idx];
+    if(c.type==="note") {
+      studyContainer.innerHTML = `<div class="card p-3"><h5>${c.title}</h5><p>${c.content}</p></div>`;
+    }
+    if(c.type==="flashcard"){
+      studyContainer.innerHTML = "";
+      c.flashcards.forEach(f=>{
+        const div = document.createElement("div");
+        div.classList.add("flashcard");
+        div.innerHTML = `
+          <div class="flashcard-inner">
+            <div class="flashcard-front">${f.front}</div>
+            <div class="flashcard-back">${f.back}</div>
           </div>
-          <div id="flashcards-rows" class="mt-2"></div>
-        </div>
-
-        <div class="col-12">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5>Quiz</h5>
-            <button id="add-quiz" class="btn btn-sm btn-outline-light"><i class="bi bi-plus"></i> Add question</button>
+        `;
+        div.addEventListener("click",()=>div.classList.toggle("flipped"));
+        studyContainer.appendChild(div);
+      });
+    }
+    if(c.type==="quiz"){
+      let current = 0;
+      let score = 0;
+      function showQuestion(){
+        if(current>=c.quiz.length){
+          studyContainer.innerHTML = `<div class="card p-3"><h5>Quiz Completed!</h5><p>Score: ${score} / ${c.quiz.length}</p></div>`;
+          return;
+        }
+        const q = c.quiz[current];
+        studyContainer.innerHTML = `
+          <div class="card p-3">
+            <h5>Q${current+1}: ${q.question}</h5>
+            ${q.options.map((o,i)=>`<button class="btn btn-outline-light btn-sm mb-1 w-100 option-btn" data-idx="${i}">${o}</button>`).join('')}
           </div>
-          <div id="quiz-rows" class="mt-2"></div>
-        </div>
+        `;
+        document.querySelectorAll(".option-btn").forEach(btn=>{
+          btn.addEventListener("click",()=>{
+            if(parseInt(btn.dataset.idx)+1===q.correct) score++;
+            current++;
+            showQuestion();
+          });
+        });
+      }
+      showQuestion();
+    }
+  });
 
-        <div class="col-12 d-flex gap-2">
-          <button id="save-capsule" class="btn btn-success"><i class="bi bi-save"></i> Save</button>
-          <button id="cancel-edit" type="button" class="btn btn-secondary">Cancel</button>
-          <div id="author-message" class="ms-auto text-success align-self-center"></div>
-        </div>
-      </form>
-    </div>
-  </section>
+  // Initial Render
+  renderLibrary();
 
-  <!-- LEARN -->
-  <section id="section-learn" class="view d-none">
-    <div class="d-flex align-items-center mb-3">
-      <h2 id="learn-heading" class="me-auto">Learn</h2>
-      <select id="learn-select" class="form-select w-auto"></select>
-    </div>
-
-    <div class="card bg-panel p-3 shadow-sm">
-      <div class="d-flex justify-content-between mb-3">
-        <div class="btn-group">
-          <button id="tab-notes" class="btn btn-outline-light">Notes</button>
-          <button id="tab-flash" class="btn btn-outline-light">Flashcards</button>
-          <button id="tab-quiz" class="btn btn-outline-light">Quiz</button>
-        </div>
-        <div>
-          <button id="export-capsule" class="btn btn-sm btn-outline-success">Export</button>
-        </div>
-      </div>
-
-      <div id="learn-content">
-        <div id="notes-panel" class="learn-panel d-none">
-          <input id="notes-search" class="form-control mb-2" placeholder="Search notes...">
-          <ol id="notes-list" class="ps-3"></ol>
-        </div>
-
-        <div id="flash-panel" class="learn-panel d-none text-center">
-          <div id="flashcard" class="flashcard" tabindex="0" role="button" aria-label="Flashcard (Space flip)">
-            <div class="front"></div>
-            <div class="back d-none"></div>
-          </div>
-          <div class="mt-3 d-flex justify-content-center gap-2">
-            <button id="prev-card" class="btn btn-sm btn-outline-light">Prev</button>
-            <button id="known-card" class="btn btn-sm btn-success">Known</button>
-            <button id="unknown-card" class="btn btn-sm btn-danger">Unknown</button>
-            <button id="next-card" class="btn btn-sm btn-outline-light">Next</button>
-          </div>
-          <div id="flash-stats" class="mt-2 small text-muted"></div>
-        </div>
-
-        <div id="quiz-panel" class="learn-panel d-none">
-          <div id="quiz-question" class="fw-bold"></div>
-          <div id="quiz-choices" class="list-group my-2"></div>
-          <div class="d-flex">
-            <button id="quiz-next" class="btn btn-sm btn-outline-light ms-auto">Next</button>
-          </div>
-          <div id="quiz-score" class="mt-2 small text-muted"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>\n\n<!-- flip sound and helpers -->\n<script type="module" src="js/flip-sound.js"></script>
-
-<footer class="text-center text-muted py-3">Pocket Classroom — Pro Edition</footer>
-
-<script type="module" src="js/main.js"></script>
-</body>
-</html>
-
-</body>
-</html>
+</script>
+</
