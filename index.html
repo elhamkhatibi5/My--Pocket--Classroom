@@ -2,70 +2,43 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎓 Pocket Classroom — Enhanced Mini E-Learning Platform</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎓 Pocket Classroom — Mini E-Learning Platform</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-  /* --- Root & Theme --- */
-  :root {
-    --bg: #0f1720; --card: #0b1220; --muted: #9aa4b2; --accent: #0ea5a4;
-    --accent-hover: #14b8b4; --text-light: #e6eef6;
+  :root{
+    --bg:#0f1720; --card:#0b1220; --muted:#9aa4b2; --accent:#0ea5a4;
   }
-  body {
-    background: var(--bg); color: var(--text-light); font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    transition: background 0.3s, color 0.3s;
+  body{background:var(--bg); color:#e6eef6; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+  .app-shell{min-height:100vh; display:grid; grid-template-columns: 1fr 360px; gap:20px; padding:20px;}
+  .main-col{display:flex; flex-direction:column; gap:18px;}
+  header.navbar{background:linear-gradient(90deg,#083042,#0b2540); border-radius:12px; padding:12px 18px;}
+  .brand{font-weight:700; font-size:1.15rem;}
+  .card-panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.03);}
+  .library-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}
+  .capsule-card{background:var(--card); border-radius:10px; padding:12px; border:1px solid rgba(255,255,255,0.03);}
+  .muted{color:var(--muted); font-size:0.9rem;}
+  .tag{background:rgba(255,255,255,0.04); color:var(--muted); border-radius:999px; padding:4px 8px; font-size:0.75rem; margin-right:6px;}
+  .btn-pill{border-radius:999px;}
+  .small-input{height:36px;}
+  .notes-panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04)); border-radius:12px; padding:12px; height:calc(100vh - 160px); overflow:auto;}
+  textarea#notes{width:100%; min-height:320px; resize:vertical; background:transparent; color:inherit; border:1px dashed rgba(255,255,255,0.04); padding:12px; border-radius:8px;}
+  .flashcard-item{background:rgba(255,255,255,0.02); padding:8px; border-radius:8px; margin-bottom:8px;}
+  .learn-card{min-height:180px;}
+  footer{opacity:0.6; font-size:0.85rem;}
+  .kbd{background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px; font-size:0.9rem;}
+  @media (max-width: 900px){
+    .app-shell{grid-template-columns: 1fr; padding:12px;}
+    .notes-panel{height:280px;}
   }
-  a { text-decoration: none; }
-
-  /* --- App layout --- */
-  .app-shell { min-height: 100vh; display: grid; grid-template-columns: 1fr 360px; gap: 20px; padding: 20px; }
-  .main-col { display: flex; flex-direction: column; gap: 18px; }
-
-  /* --- Header --- */
-  header.navbar { background: linear-gradient(90deg,#083042,#0b2540); border-radius:12px; padding:12px 18px; transition: background 0.3s; }
-  .brand { font-weight:700; font-size:1.15rem; }
-  .nav-btn.active { background: var(--accent); color:#fff; }
-
-  /* --- Cards --- */
-  .card-panel { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.03); transition: transform 0.2s, box-shadow 0.2s; }
-  .card-panel:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
-
-  /* --- Library --- */
-  .library-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap:12px; }
-  .capsule-card { background: var(--card); border-radius:10px; padding:12px; border:1px solid rgba(255,255,255,0.03); transition: transform 0.2s; }
-  .capsule-card:hover { transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,0,0,0.3); }
-  .tag { background: rgba(255,255,255,0.04); color: var(--muted); border-radius:999px; padding: 4px 8px; font-size:0.75rem; margin-right:6px; }
-
-  /* --- Inputs & Buttons --- */
-  .btn-pill { border-radius:999px; transition: background 0.2s; }
-  .btn-pill:hover { background: var(--accent-hover); color:#fff; }
-  .small-input { height:36px; }
-  .muted { color: var(--muted); font-size:0.9rem; }
-
-  /* --- Notes Panel --- */
-  .notes-panel { background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04)); border-radius:12px; padding:12px; height:calc(100vh - 160px); overflow:auto; }
-  .notes-panel h5 { position: sticky; top: 0; background: var(--card); padding: 8px 0; }
-
-  textarea#notes { width:100%; min-height:320px; resize: vertical; background:transparent; color: inherit; border:1px dashed rgba(255,255,255,0.04); padding:12px; border-radius:8px; }
-
-  /* --- Flashcards --- */
-  #flashcard-study { perspective: 1000px; }
-  #fc-front-display, #fc-back-display { backface-visibility: hidden; transition: transform 0.6s; }
-  .flipped { transform: rotateY(180deg); }
-
-  /* --- Quiz --- */
-  .quiz-option.correct { background: lightgreen; color:#000; }
-  .quiz-option.wrong { background: #ffb3b3; color:#000; }
-
-  /* --- Responsive --- */
-  @media (max-width:900px){ .app-shell{grid-template-columns: 1fr; padding:12px;} .notes-panel{height:280px;} }
 </style>
 </head>
 <body>
 <div class="container-fluid">
 <div class="app-shell">
-  <!-- MAIN COLUMN -->
+  <!-- LEFT / MAIN COLUMN -->
   <div class="main-col">
+    <!-- Header / Nav -->
     <header class="navbar card-panel d-flex align-items-center justify-content-between">
       <div class="d-flex gap-3 align-items-center">
         <div class="brand">🎓 Pocket Classroom</div>
@@ -76,7 +49,7 @@
         </nav>
       </div>
       <div class="d-flex gap-2 align-items-center">
-        <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..."/>
+        <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags...">
         <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">
           <option value="date-desc">Newest first</option>
           <option value="date-asc">Oldest first</option>
@@ -89,17 +62,19 @@
       </div>
     </header>
 
-    <!-- Library -->
+    <!-- Library Section -->
     <section id="library" class="card-panel">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Your Library</h4>
         <div class="muted">Capsules: <span id="capsule-count">0</span></div>
       </div>
       <div id="library-list" class="library-grid"></div>
-      <div id="empty-state" class="text-center muted mt-4">No capsules yet. Click <span class="kbd">Create</span> to add your first learning capsule.</div>
+      <div id="empty-state" class="text-center muted mt-4">
+        No capsules yet. Click <span class="kbd">Create</span> to add your first learning capsule.
+      </div>
     </section>
 
-    <!-- Author -->
+    <!-- Author / Create Section -->
     <section id="author" class="card-panel d-none">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Create / Edit Capsule</h4>
@@ -109,252 +84,335 @@
         <input type="hidden" id="editing-index" value="">
         <div class="mb-2">
           <label class="muted">Title</label>
-          <input id="capsule-title" class="form-control" placeholder="e.g., Intro to Photosynthesis" required>
+          <input id="capsule-title" class="form-control" placeholder="e.g., Intro to Photosynthesis" required autocomplete="off">
         </div>
         <div class="mb-2 d-flex gap-2">
           <div style="flex:1">
             <label class="muted">Tags (comma separated)</label>
-            <input id="capsule-tags" class="form-control" placeholder="e.g., Biology, Plant">
+            <input id="capsule-tags" class="form-control" placeholder="e.g., Biology, Plant" autocomplete="off">
           </div>
           <div style="width:200px">
             <label class="muted">Capsule type</label>
             <select id="capsule-type" class="form-select">
               <option value="note">Note</option>
               <option value="flashcards">Flashcards</option>
-              <option value="quiz">Quiz</option>
+              <option value="quiz">Quiz (multiple choice)</option>
             </select>
           </div>
         </div>
+
         <div id="note-content-wrapper" class="mb-2">
           <label class="muted">Content (for Notes)</label>
           <textarea id="capsule-content" class="form-control" rows="4" placeholder="Write summary, lecture notes, or instructions..."></textarea>
         </div>
+
+        <!-- Flashcards builder -->
         <div id="flashcards-wrapper" class="mb-2 d-none">
           <label class="muted">Flashcards</label>
           <div id="flashcards-list" class="mb-2"></div>
           <div class="d-flex gap-2">
-            <input id="fc-front" class="form-control" placeholder="Front (question/term)">
-            <input id="fc-back" class="form-control" placeholder="Back (answer/definition)">
+            <input id="fc-front" class="form-control" placeholder="Front (question/term)" autocomplete="off">
+            <input id="fc-back" class="form-control" placeholder="Back (answer/definition)" autocomplete="off">
             <button id="add-fc" type="button" class="btn btn-primary btn-pill">Add</button>
           </div>
         </div>
+
+        <!-- Quiz builder -->
         <div id="quiz-wrapper" class="mb-2 d-none">
-
-
-<label class="muted">Quiz Questions</label>
+          <label class="muted">Quiz Questions</label>
           <div id="quiz-list" class="mb-2"></div>
           <div class="d-flex gap-2">
-            <input id="quiz-q" class="form-control" placeholder="Question">
-            <input id="quiz-a" class="form-control" placeholder="Answer">
-            <button id="add-quiz" type="button" class="btn btn-primary btn-pill">Add</button>
+            <input id="q-text" class="form-control" placeholder="Question text" autocomplete="off">
+            <input id="q-opt1" class="form-control" placeholder="Option A" autocomplete="off">
+            <input id="q-opt2" class="form-control" placeholder="Option B" autocomplete="off">
+          </div>
+          <div class="d-flex gap-2 mt-2">
+            <input id="q-opt3" class="form-control" placeholder="Option C (optional)" autocomplete="off">
+            <input id="q-opt4" class="form-control" placeholder="Option D (optional)" autocomplete="off">
+            <select id="q-correct" class="form-select" style="width:120px;">
+              <option value="1">A</option><option value="2">B</option><option value="3">C</option><option value="4">D</option>
+            </select>
+            <button id="add-q" type="button" class="btn btn-primary btn-pill">Add Q</button>
           </div>
         </div>
-        <button type="submit" class="btn btn-success btn-pill mt-2">Save Capsule</button>
+
+        <div class="d-flex gap-2 mt-3">
+          <button class="btn btn-success btn-pill" type="submit">Save Capsule</button>
+          <button id="cancel-edit" type="button" class="btn btn-outline-light btn-pill">Cancel</button>
+          <button id="new-capsule" type="button" class="btn btn-secondary btn-pill ms-auto">New Capsule</button>
+        </div>
       </form>
     </section>
 
-    <!-- Study -->
+    <!-- Learn / Study Section -->
     <section id="learn" class="card-panel d-none">
-      <h4 class="mb-3">Study</h4>
-      <div id="study-container" class="card-panel p-3">
-        <div id="flashcard-study" class="text-center mb-3">
-          <div id="fc-front-display" class="card-panel p-4 mb-2" style="cursor:pointer;">Front</div>
-          <div id="fc-back-display" class="card-panel p-4 mb-2 flipped" style="cursor:pointer; display:none;">Back</div>
-          <button id="next-fc" class="btn btn-pill btn-accent">Next Card</button>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">Study</h4>
+        <div class="muted">Mode: <span id="study-mode">Flashcards</span></div>
+      </div>
+      <div id="study-controls" class="mb-3 d-flex gap-2 align-items-center">
+        <select id="study-capsule-select" class="form-select" style="width:300px;">
+          <option value="">Choose a capsule to study...</option>
+        </select>
+        <button id="start-study" class="btn btn-primary btn-pill">Start</button>
+        <button id="shuffle-study" class="btn btn-outline-light btn-pill">Shuffle</button>
+        <div class="muted ms-auto">Progress: <span id="study-progress">0 / 0</span></div>
+      </div>
+      <div id="study-area" class="learn-card card-panel">
+        <div id="study-empty" class="muted">Select a capsule and press Start to begin studying flashcards or quizzes.</div>
+
+        <div id="flashcard-study" class="d-none">
+          <div class="mb-2 muted small" id="fc-meta"></div>
+          <div id="fc-front-display" class="h5 fw-bold mb-2"></div>
+          <div id="fc-back-display" class="muted mb-3" style="display:none"></div>
+          <div class="d-flex gap-2">
+            <button id="show-answer"
+              class="btn btn-outline-light btn-pill">Show Answer</button>
+            <button id="next-fc" class="btn btn-success btn-pill">Next</button>
+          </div>
         </div>
+
         <div id="quiz-study" class="d-none">
-          <h5 id="quiz-question"></h5>
-          <div id="quiz-options" class="d-flex flex-column gap-2 mt-2"></div>
-          <button id="next-quiz" class="btn btn-pill btn-accent mt-2">Next Question</button>
+          <div class="mb-2 muted small" id="quiz-meta"></div>
+          <div id="quiz-question" class="h5 fw-bold mb-3"></div>
+          <div id="quiz-options" class="d-flex flex-column gap-2"></div>
+          <div id="quiz-feedback" class="mt-2 muted"></div>
+          <div class="d-flex gap-2 mt-3">
+            <button id="next-quiz" class="btn btn-success btn-pill">Next Question</button>
+          </div>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- Notes / Sidebar -->
+  <!-- RIGHT / Notes Column -->
   <aside class="notes-panel">
-    <h5>Notes Panel</h5>
-    <textarea id="notes" placeholder="Personal notes go here..."></textarea>
+    <h5>Quick Notes</h5>
+    <textarea id="notes" placeholder="Write notes here..."></textarea>
   </aside>
 </div>
+<footer class="text-center mt-3">© 2025 Pocket Classroom. All rights reserved.</footer>
 </div>
 
 <script>
-  // --- Basic App State ---
-  let capsules = [];
-  let currentStudy = { type:'', index:0 };
+  // Utility
+  const escapeHtml = (text) => text.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
-  // --- Elements ---
-  const navBtns = document.querySelectorAll('.nav-btn');
-  const sections = document.querySelectorAll('section');
-  const capsuleCount = document.getElementById('capsule-count');
-  const libraryList = document.getElementById('library-list');
-  const emptyState = document.getElementById('empty-state');
+  // Storage
+  let capsules = JSON.parse(localStorage.getItem('capsules')||'[]');
+  const saveCapsules = ()=>localStorage.setItem('capsules',JSON.stringify(capsules));
 
-  const capsuleForm = document.getElementById('capsule-form');
-  const editingIndex = document.getElementById('editing-index');
-  const capsuleTitle = document.getElementById('capsule-title');
-  const capsuleTags = document.getElementById('capsule-tags');
-  const capsuleType = document.getElementById('capsule-type');
-  const capsuleTypeLabel = document.getElementById('capsule-type-label');
-
-  const noteContentWrapper = document.getElementById('note-content-wrapper');
-  const capsuleContent = document.getElementById('capsule-content');
-  const flashcardsWrapper = document.getElementById('flashcards-wrapper');
-  const fcFrontInput = document.getElementById('fc-front');
-  const fcBackInput = document.getElementById('fc-back');
-  const flashcardsList = document.getElementById('flashcards-list');
-  const addFcBtn = document.getElementById('add-fc');
-
-  const quizWrapper = document.getElementById('quiz-wrapper');
-  const quizQInput = document.getElementById('quiz-q');
-  const quizAInput = document.getElementById('quiz-a');
-  const quizList = document.getElementById('quiz-list');
-  const addQuizBtn = document.getElementById('add-quiz');
-
-  const fcFrontDisplay = document.getElementById('fc-front-display');
-  const fcBackDisplay = document.getElementById('fc-back-display');
-  const nextFcBtn = document.getElementById('next-fc');
-  const quizStudy = document.getElementById('quiz-study');
-  const quizQuestion = document.getElementById('quiz-question');
-  const quizOptions = document.getElementById('quiz-options');
-  const nextQuizBtn = document.getElementById('next-quiz');
-
-  // --- Navigation ---
-  navBtns.forEach(btn=>{
-    btn.addEventListener('click',()=> {
-      navBtns.forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const target = btn.dataset.section;
-      sections.forEach(s=>s.classList.add('d-none'));
-      document.getElementById(target).classList.remove('d-none');
-    });
+  // Sections
+  const sections = {library:document.getElementById('library'), author:document.getElementById('author'), learn:document.getElementById('learn')};
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{showSection(btn.dataset.section)});
   });
 
-  // --- Capsule Type Toggle ---
-  capsuleType.addEventListener('change',()=>{
-    const val = capsuleType.value;
-    capsuleTypeLabel.textContent = val.charAt(0).toUpperCase() + val.slice(1);
-    noteContentWrapper.classList.toggle('d-none', val!=='note');
-    flashcardsWrapper.classList.toggle('d-none', val!=='flashcards');
-    quizWrapper.classList.toggle('d-none', val!=='quiz');
-  });
+  function showSection(sec){
+    Object.values(sections).forEach(s=>s.classList.add('d-none'));
+    sections[sec].classList.remove('d-none');
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector(`.nav-btn[data-section="${sec}"]`).classList.add('active');
+    if(sec==='library') renderLibrary();
+    if(sec==='learn') populateStudySelect();
+  }
 
-  // --- Flashcards Add ---
-  addFcBtn.addEventListener('click',()=>{
-    const front = fcFrontInput.value.trim();
-    const back = fcBackInput.value.trim();
-    if(!front || !back) return;
-    const div = document.createElement('div');
-    div.className = 'card-panel mb-1 p-2 d-flex justify-content-between align-items-center';
-    div.textContent = `${front} → ${back}`;
-    flashcardsList.appendChild(div);
-    fcFrontInput.value=''; fcBackInput.value='';
-  });
-
-  // --- Quiz Add ---
-  addQuizBtn.addEventListener('click',()=>{
-    const q = quizQInput.value.trim();
-    const a = quizAInput.value.trim();
-    if(!q||!a) return;
-    const div = document.createElement('div');
-    div.className='card-panel mb-1 p-2';
-    div.textContent = `${q} → ${a}`;
-    quizList.appendChild(div);
-    quizQInput.value=''; quizAInput.value='';
-  });
-
-  // --- Save Capsule ---
-  capsuleForm.addEventListener('submit',e=>{
-    e.preventDefault();
-    const type = capsuleType.value;
-    let data = { title:capsuleTitle.value, tags:capsuleTags.value.split(',').map(t=>t.trim()), type };
-    if(type==='note') data.content = capsuleContent.value;
-    if(type==='flashcards') {
-      data.flashcards = Array.from(flashcardsList.children).map(div=>{
-        const [front,back] = div.textContent.split(' → ');
-        return {front,back};
-      });
-    }
-    if(type==='quiz') {
-      data.quiz = Array.from(quizList.children).map(div=>{
-        const [q,a] = div.textContent.split(' → ');
-        return {q,a};
-      });
-    }
-    const idx = editingIndex.value;
-    if(idx) { capsules[idx]=data; editingIndex.value=''; }
-    else capsules.push(data);
-    renderLibrary(); resetForm();
-  });
-
+  // Render Library
   function renderLibrary(){
-    libraryList.innerHTML='';
-    if(capsules.length===0){ emptyState.style.display='block'; capsuleCount.textContent=0; return; }
-    emptyState.style.display='none'; capsuleCount.textContent=capsules.length;
+    const list=document.getElementById('library-list'); list.innerHTML='';
+    document.getElementById('capsule-count').textContent=capsules.length;
+    if(!capsules.length){document.getElementById('empty-state').style.display='block'; return;}
+    document.getElementById('empty-state').style.display='none';
     capsules.forEach((c,i)=>{
-      const div = document.createElement('div'); div.className='capsule-card';
-      div.innerHTML=`<strong>${c.title}</strong><br>${c.tags.map(t=>`<span class="tag">${t}</span>`).join('')}`;
-      div.addEventListener('click',()=>startStudy(i));
-      libraryList.appendChild(div);
+      const div=document.createElement('div'); div.className='capsule-card';
+      div.innerHTML=`<div class="fw-bold">${escapeHtml(c.title)}</div>
+                     <div>${(c.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+                     <div class="mt-2 d-flex gap-2">
+                       <button class="btn btn-sm btn-outline-light btn-pill edit-btn" data-index="${i}">Edit</button>
+                       <button class="btn btn-sm btn-danger btn-pill delete-btn" data-index="${i}">Delete</button>
+                     </div>`;
+      list.appendChild(div);
     });
+    document.querySelectorAll('.edit-btn').forEach(b=>b.addEventListener('click',()=>editCapsule(b.dataset.index)));
+    document.querySelectorAll('.delete-btn').forEach(b=>b.addEventListener('click',()=>deleteCapsule(b.dataset.index)));
   }
 
-  function resetForm(){
-    capsuleForm.reset();
-    flashcardsList.innerHTML='';
-    quizList.innerHTML='';
-    noteContentWrapper.classList.remove('d-none');
-    flashcardsWrapper.classList.add('d-none');
-    quizWrapper.classList.add('d-none');
-    capsuleTypeLabel.textContent='Note';
+  function editCapsule(idx){
+    showSection('author');
+    const c=capsules[idx];
+    document.getElementById('editing-index').value=idx;
+    document.getElementById('capsule-title').value=c.title;
+    document.getElementById('capsule-tags').value=(c.tags||[]).join(',');
+    document.getElementById('capsule-type').value=c.type;
+    updateTypeUI(c.type);
+    if(c.type==='note') document.getElementById('capsule-content').value=c.content||'';
+    if(c.type==='flashcards'){flashcardsList=c.flashcards||[]; renderFlashcards();}
+    if(c.type==='quiz'){quizList=c.quiz||[]; renderQuiz();}
   }
 
-  // --- Study Mode ---
-  function startStudy(index){
-    const c = capsules[index];
-    currentStudy = { ...currentStudy, type:c.type, index:0, capsule:c };
-    document.querySelector('.nav-btn[data-section="learn"]').click();
-    if(c.type==='flashcards'){ showFlashcard(); }
-    if(c.type==='quiz'){ showQuiz(); }
+  function deleteCapsule(idx){
+    if(confirm('Delete this capsule?')){capsules.splice(idx,1); saveCapsules(); renderLibrary();}
+  }
+
+  // Create / Edit Capsule
+  document.getElementById('capsule-form').addEventListener('submit',e=>{
+    e.preventDefault();
+    const idx=document.getElementById('editing-index').value;
+    const title=document.getElementById('capsule-title').value.trim();
+    const tags=document.getElementById('capsule-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+    const type=document.getElementById('capsule-type').value;
+    const data={title,tags,type};
+    if(type==='note') data.content=document.getElementById('capsule-content').value;
+    if(type==='flashcards') data.flashcards=flashcardsList||[];
+    if(type==='quiz') data.quiz=quizList||[];
+    if(idx===''){capsules.push(data);}else{capsules[idx]=data;}
+    saveCapsules();
+    alert('Saved!');
+    showSection('library');
+  });
+
+  // Cancel / New Capsule
+  document.getElementById('cancel-edit').addEventListener('click',()=>showSection('library'));
+  document.getElementById('new-capsule').addEventListener('click',()=>{
+    document.getElementById('editing-index').value='';
+    document.getElementById('capsule-form').reset();
+    flashcardsList=[]; quizList=[];
+    updateTypeUI('note');
+  });
+
+  // Type change
+  const fcWrapper=document.getElementById('flashcards-wrapper');
+  const quizWrapper=document.getElementById('quiz-wrapper');
+  const noteWrapper=document.getElementById('note-content-wrapper');
+  document.getElementById('capsule-type').addEventListener('change',e=>updateTypeUI(e.target.value));
+  function updateTypeUI(type){
+    document.getElementById('capsule-type-label').textContent=type.charAt(0).toUpperCase()+type.slice(1);
+    fcWrapper.classList.toggle('d-none',type!=='flashcards');
+    quizWrapper.classList.toggle('d-none',type!=='quiz');
+    noteWrapper.classList.toggle('d-none',type!=='note');
+  }
+
+  // Flashcards
+  let flashcardsList=[];
+  document.getElementById('add-fc').addEventListener('click',()=>{
+    const f=document.getElementById('fc-front').value.trim();
+    const b=document.getElementById('fc-back').value.trim();
+    if(f&&b){flashcardsList.push({front:f,back:b}); renderFlashcards(); document.getElementById('fc-front').value=''; document.getElementById('fc-back').value='';}
+  });
+  function renderFlashcards(){
+    const list=document.getElementById('flashcards-list'); list.innerHTML='';
+    flashcardsList.forEach((fc,i)=>{
+      const div=document.createElement('div'); div.className='flashcard-item';
+      div.innerHTML=`<strong>${escapeHtml(fc.front)}</strong> → ${escapeHtml(fc.back)}
+                     <button class="btn btn-sm btn-danger btn-pill float-end" data-i="${i}">X</button>`;
+      list.appendChild(div);
+    });
+    list.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{flashcardsList.splice(b.dataset.i,1); renderFlashcards();}));
+  }
+
+  // Quiz
+  let quizList=[];
+  document.getElementById('add-q').addEventListener('click',()=>{
+    const q=document.getElementById('q-text').value.trim();
+    const opts=[document.getElementById('q-opt1').value.trim(),document.getElementById('q-opt2').value.trim(),
+                document.getElementById('q-opt3').value.trim(),document.getElementById('q-opt4').value.trim()].filter(Boolean);
+    const correct=parseInt(document.getElementById('q-correct').value);
+    if(q&&opts.length>=2&&correct<=opts.length){quizList.push({question:q,options:opts,answer:correct-1}); renderQuiz();
+      document.getElementById('q-text').value=''; document.getElementById('q-opt1').value=''; document.getElementById('q-opt2').value=''; document.getElementById('q-opt3').value=''; document.getElementById('q-opt4').value='';}
+  });
+  function renderQuiz(){
+    const list=document.getElementById('quiz-list'); list.innerHTML='';
+    quizList.forEach((q,i)=>{
+      const div=document.createElement('div'); div.className='flashcard-item';
+      div.innerHTML=`<strong>${escapeHtml(q.question)}</strong> <button class="btn btn-sm btn-danger btn-pill float-end" data-i="${i}">X</button>`;
+      list.appendChild(div);
+    });
+    list.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{quizList.splice(b.dataset.i,1); renderQuiz();}));
+  }
+
+  // Notes save
+  const notesEl=document.getElementById('notes');
+  notesEl.value=localStorage.getItem('quickNotes')||'';
+  notesEl.addEventListener('input',()=>localStorage.setItem('quickNotes',notesEl.value));
+
+  // Study Section
+  function populateStudySelect(){
+    const sel=document.getElementById('study-capsule-select'); sel.innerHTML='<option value="">Choose a capsule to study...</option>';
+    capsules.forEach((c,i)=>{sel.innerHTML+=`<option value="${i}">${escapeHtml(c.title)} [${c.type}]</option>`;});
+  }
+
+  let studyList=[], studyIndex=0, studyType='flashcards';
+
+  document.getElementById('start-study').addEventListener('click',()=>{
+    const sel=document.getElementById('study-capsule-select').value;
+    if(sel==='') return alert('Select a capsule!');
+    const cap=capsules[sel]; studyType=cap.type;
+    document.getElementById('study-mode').textContent=studyType.charAt(0).toUpperCase()+studyType.slice(1);
+    studyIndex=0;
+    studyList=JSON.parse(JSON.stringify(cap[studyType==='flashcards'?'flashcards':'quiz']||[]));
+    if(studyList.length===0) return alert('This capsule has no items to study!');
+    showStudy();
+  });
+
+  document.getElementById('shuffle-study').addEventListener('click',()=>{studyList.sort(()=>Math.random()-0.5); studyIndex=0; showStudy();});
+
+  function showStudy(){
+    document.getElementById('flashcard-study').style.display='none';
+    document.getElementById('quiz-study').style.display='none';
+    document.getElementById('study-empty').style.display='none';
+    document.getElementById('study-progress').textContent=`${studyIndex+1} / ${studyList.length}`;
+    if(studyType==='flashcards') showFlashcard();
+    if(studyType==='quiz') showQuiz();
   }
 
   function showFlashcard(){
-    const fc = currentStudy.capsule.flashcards[currentStudy.index];
-    fcFrontDisplay.textContent = fc.front;
-    fcBackDisplay.textContent = fc.back;
-    fcFrontDisplay.style.display='block'; fcBackDisplay.style.display='none';
+    const fc=studyList[studyIndex];
+    document.getElementById('flashcard-study').style.display='block';
+    document.getElementById('fc-meta').textContent=`Card ${studyIndex+1} of ${studyList.length}`;
+    document.getElementById('fc-front-display').textContent=fc.front;
+    document.getElementById('fc-back-display').style.display='none'; document.getElementById('fc-back-display').textContent=fc.back;
   }
 
-  fcFrontDisplay.addEventListener('click',()=>{ fcFrontDisplay.style.display='none'; fcBackDisplay.style.display='block'; });
-  fcBackDisplay.addEventListener('click',()=>{ fcFrontDisplay.style.display='block'; fcBackDisplay.style.display='none'; });
-  nextFcBtn.addEventListener('click',()=>{
-    const fcs = currentStudy.capsule.flashcards;
-    currentStudy.index = (currentStudy.index+1)%fcs.length; showFlashcard();
+  document.getElementById('show-answer').addEventListener('click',()=>document.getElementById('fc-back-display').style.display='block');
+  document.getElementById('next-fc').addEventListener('click',()=>{
+    if(studyIndex<studyList.length-1){studyIndex++; showStudy();}else alert('End of flashcards!');
   });
 
   function showQuiz(){
-    const qz = currentStudy.capsule.quiz[currentStudy.index];
-    quizStudy.classList.remove('d-none');
-    quizQuestion.textContent=qz.q;
-    quizOptions.innerHTML='';
-    const opts=[qz.a,...shuffleArray(['Option1','Option2','Option3'])];
-    opts.forEach(o=>{
-      const btn=document.createElement('button');
-      btn.className='btn btn-light btn-pill quiz-option';
-      btn.textContent=o;
-      btn.addEventListener('click',()=>{ btn.classList.add(o===qz.a?'correct':'wrong'); });
-      quizOptions.appendChild(btn);
+    const q=studyList[studyIndex];
+    document.getElementById('quiz-study').style.display='block';
+    document.getElementById('quiz-meta').textContent=`Question ${studyIndex+1} of ${studyList.length}`;
+    document.getElementById('quiz-question').textContent=q.question;
+    const optsEl=document.getElementById('quiz-options'); optsEl.innerHTML='';
+    q.options.forEach((o,i)=>{
+      const btn=document.createElement('button'); btn.className='btn btn-outline-light btn-pill'; btn.textContent=o;
+      btn.addEventListener('click',()=>{document.getElementById('quiz-feedback').textContent=(i===q.answer?'Correct!':'Wrong!');});
+      optsEl.appendChild(btn);
     });
+    document.getElementById('quiz-feedback').textContent='';
   }
 
-  nextQuizBtn.addEventListener('click',()=>{
-    currentStudy.index=(currentStudy.index+1)%currentStudy.capsule.quiz.length;
-    showQuiz();
+  document.getElementById('next-quiz').addEventListener('click',()=>{
+    if(studyIndex<studyList.length-1){studyIndex++; showStudy();}else alert('End of quiz!');
   });
 
-  function shuffleArray(arr){ return arr.sort(()=>Math.random()-0.5); }
+  // Export / Import
+  document.getElementById('export-all').addEventListener('click',()=>{
+    const data=JSON.stringify(capsules,null,2);
+    const blob=new Blob([data],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='capsules.json'; a.click(); URL.revokeObjectURL(url);
+  });
 
+  document.getElementById('import-all').addEventListener('click',()=>document.getElementById('file-import').click());
+  document.getElementById('file-import').addEventListener('change',e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=()=>{try{capsules=JSON.parse(reader.result); saveCapsules(); alert('Imported!'); renderLibrary();}catch(err){alert('Invalid JSON!');}};
+    reader.readAsText(file);
+  });
+
+  // Initial render
   renderLibrary();
 </script>
 </body>
