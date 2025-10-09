@@ -1,85 +1,170 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pocket Classroom — Mini E-Learning Platform</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#051022;
-      --nav-start:#06345a;
-      --nav-end:#02060a;
-      --card:#071426;
-      --muted:#9aa4b2;
-      --accent:#06b6b4;
-      --glass: rgba(255,255,255,0.03);
-      --glass-2: rgba(255,255,255,0.02);
-      --success:#16a34a;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocket Classroom — Mini E-Learning Platform</title>
+
+<!-- Favicon SVG بدون نیاز به آپلود -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle fill='%234facfe' cx='50' cy='50' r='50'/><text x='50%' y='55%' font-size='50' text-anchor='middle' fill='white' font-family='Segoe UI' dy='.3em'>📚</text></svg>">
+
+<style>
+  /* Reset */
+  * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+  body {background: #f5f7fa; color:#333; scroll-behavior: smooth;}
+
+  /* Navbar */
+  nav {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.7rem 1.5rem;
+    flex-wrap: wrap;
+    position: sticky;
+    top:0;
+    z-index:100;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+
+  nav .logo {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  nav .logo svg {
+    width:36px;
+    height:36px;
+    transition: transform 0.3s;
+  }
+
+  nav .logo:hover svg {
+    transform: rotate(15deg);
+  }
+
+  nav ul {
+    display: flex;
+    list-style: none;
+    gap: 1rem;
+  }
+
+  nav ul li a {
+    color:white;
+    text-decoration:none;
+    padding: 0.55rem 1.2rem;
+    border-radius: 10px;
+    transition: 0.3s;
+    font-weight:500;
+    background: rgba(255,255,255,0.1);
+  }
+
+  nav ul li a:hover {
+    background: rgba(255,255,255,0.25);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  /* Hamburger */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap:5px;
+  }
+
+  .hamburger div {
+    width:28px;
+    height:3px;
+    background:white;
+    border-radius:2px;
+    transition: all 0.3s;
+  }
+
+  .hamburger.active div:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  .hamburger.active div:nth-child(2) {
+    opacity:0;
+  }
+  .hamburger.active div:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+
+  /* Mobile */
+  @media (max-width:768px){
+    nav ul {
+      flex-direction: column;
+      width:100%;
+      display:none;
+      margin-top:0.6rem;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border-radius:8px;
+      overflow:hidden;
+      transition: all 0.3s ease-in-out;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg, rgba(3,10,18,1) 0%, var(--bg) 100%);
-      color:#e6eef6; -webkit-font-smoothing:antialiased;
+
+    nav ul.show {
+      display:flex;
+      animation: slideDown 0.4s ease forwards;
     }
 
-    /* NAVBAR */
-    .pc-nav{
-      background: linear-gradient(90deg, var(--nav-start), var(--nav-end));
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 8px 30px rgba(2,6,10,0.6);
-      padding:10px 18px;
-      position:sticky; top:0; z-index:95;
-    }
-    .pc-brand{font-weight:700; letter-spacing:0.3px; font-size:1.05rem}
-    .pc-nav .nav-link{color: rgba(230,238,246,0.85)}
-    .pc-nav .nav-link.active, .pc-nav .nav-link:hover{color:white; background: rgba(255,255,255,0.03); border-radius:10px}
-
-    /* Layout */
-    .app{display:grid; grid-template-columns: 1fr 360px; gap:20px; padding:22px; min-height:calc(100vh - 68px);}
-    .main {display:flex; flex-direction:column; gap:18px}
-    .panel{background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.03); box-shadow: 0 6px 18px rgba(0,0,0,0.35)}
-
-    .library-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px}
-    .capsule-card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));
-      padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .capsule-card:hover{transform:translateY(-6px); box-shadow: 0 8px 30px rgba(2,6,10,0.6)}
-    .tag{background:rgba(255,255,255,0.03); color:var(--muted); padding:4px 8px; border-radius:999px; font-size:0.78rem; margin-right:6px}
-
-    .muted{color:var(--muted)}
-    .kbd{background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px}
-
-    /* Study panel specifics */
-    .study-dashboard{display:grid; grid-template-columns: 1fr 360px; gap:14px;}
-    .study-left{display:flex; flex-direction:column; gap:12px}
-    .study-queue{max-height:420px; overflow:auto}
-    .study-item{padding:8px; border-radius:8px; background:var(--glass); margin-bottom:8px; display:flex; gap:8px; align-items:center}
-    .progress-pill{background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); padding:6px 10px; border-radius:999px; font-weight:600}
-
-    .study-card{
-      min-height:220px; display:flex; flex-direction:column; gap:12px; justify-content:flex-start; align-items:flex-start;
-      border-radius:10px; padding:18px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.05));
-      border:1px solid rgba(255,255,255,0.02);
+    @keyframes slideDown {
+      0% {opacity:0; transform: translateY(-10px);}
+      100% {opacity:1; transform: translateY(0);}
     }
 
-    .btn-pill{border-radius:999px}
-    .muted.small{font-size:0.82rem}
-
-    footer.pc-foot{opacity:0.6; font-size:0.85rem; text-align:center; padding:12px 0}
-
-    @media (max-width:1100px){
-      .app{grid-template-columns:1fr; padding:12px}
-      .study-dashboard{grid-template-columns:1fr; gap:12px}
-      .app .panel{padding:12px}
+    .hamburger {
+      display:flex;
     }
-  </style>
+  }
+
+  /* Optional smooth hover for all links */
+  a {transition: all 0.3s;}
+</style>
 </head>
 <body>
+
+<nav>
+  <div class="logo">
+    <!-- Inline SVG Logo -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="32" fill="#fff"/>
+      <path d="M16 48 L32 16 L48 48 Z" fill="#4facfe"/>
+    </svg>
+    Pocket Classroom
+  </div>
+
+  <ul id="nav-links">
+    <li><a href="#">Library</a></li>
+    <li><a href="#">Create</a></li>
+    <li><a href="#">Study</a></li>
+    <li><a href="#">Quiz</a></li>
+  </ul>
+
+  <div class="hamburger" id="hamburger">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</nav>
+
+<script>
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('nav-links');
+
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('show');
+    hamburger.classList.toggle('active');
+  });
+</script>
+
+</body>
+</html>
   <!-- NAV -->
   <nav class="pc-nav d-flex align-items-center justify-content-between">
     <div class="d-flex gap-3 align-items-center">
