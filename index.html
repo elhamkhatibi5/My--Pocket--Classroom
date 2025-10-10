@@ -1,355 +1,508 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎓 Pocket Classroom — Mini E-Learning Platform</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#0f1720; --card:#0b1220; --muted:#9aa4b2; --accent:#0ea5a4; --hover:#1c293b;
-}
-body{
-  background:var(--bg);
-  color:#e6eef6;
-  font-family:'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-}
-a{color:inherit;text-decoration:none;}
-.app-shell{
-  min-height:100vh;
-  display:grid;
-  grid-template-columns: 1fr 360px;
-  gap:20px;
-  padding:20px;
-}
-.main-col{display:flex; flex-direction:column; gap:18px;}
-header.navbar{
-  background:linear-gradient(90deg,#083042,#0b2540);
-  border-radius:12px;
-  padding:12px 18px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.3);
-}
-header.navbar .brand{font-weight:700;font-size:1.25rem;}
-.card-panel{
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
-  border-radius:12px;
-  padding:16px;
-  border:1px solid rgba(255,255,255,0.03);
-  transition:transform 0.15s ease, box-shadow 0.15s ease;
-}
-.card-panel:hover{transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.4);}
-.library-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:12px;
-}
-.capsule-card{
-  background:var(--card);
-  border-radius:12px;
-  padding:14px;
-  border:1px solid rgba(255,255,255,0.03);
-  display:flex;
-  flex-direction:column;
-  transition:0.2s;
-}
-.capsule-card:hover{background:var(--hover);}
-.muted{color:var(--muted); font-size:0.9rem;}
-.tag{
-  background:rgba(255,255,255,0.05);
-  color:var(--muted);
-  border-radius:999px;
-  padding:4px 10px;
-  font-size:0.75rem;
-  margin-right:6px;
-}
-.btn-pill{border-radius:999px;}
-.small-input{height:36px;}
-.notes-panel{
-  background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04));
-  border-radius:12px;
-  padding:12px;
-  height:calc(100vh - 160px);
-  overflow:auto;
-  display:flex;
-  flex-direction:column;
-}
-.notes-panel textarea{
-  width:100%; flex:1; resize:vertical; background:transparent; color:inherit;
-  border:1px dashed rgba(255,255,255,0.04);
-  padding:12px; border-radius:8px; margin-bottom:12px;
-}
-.flashcard-item{
-  background:rgba(255,255,255,0.02);
-  padding:10px;
-  border-radius:8px;
-  margin-bottom:8px;
-  display:flex;
-  justify-content:space-between;
-  align-items:start;
-}
-.learn-card{min-height:180px;}
-footer{opacity:0.6; font-size:0.85rem;}
-.kbd{background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px; font-size:0.9rem;}
-button{transition:0.2s;}
-button:hover{opacity:0.85;}
-@media (max-width:900px){
-  .app-shell{grid-template-columns:1fr; padding:12px;}
-  .notes-panel{height:280px;}
-}
-</style>
-</head>
-<body>
-<div class="container-fluid">
-<div class="app-shell">
+Perfect! I’ll provide a complete, fully integrated, ready-to-run HTML for your Pocket Classroom e-learning platform, all in one piece, no cut-off. It will include:
 
-<!-- MAIN COLUMN -->
-<div class="main-col">
-<header class="navbar card-panel d-flex align-items-center justify-content-between">
-  <div class="d-flex gap-3 align-items-center">
-    <div class="brand">🎓 Pocket Classroom</div>
-    <nav>
-      <button class="btn btn-sm btn-outline-light btn-pill nav-btn active" data-section="library">Library</button>
-      <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="author">Create</button>
-      <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="learn">Study</button>
-    </nav>
-  </div>
-  <div class="d-flex gap-2 align-items-center">
-    <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..." />
-    <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">
-      <option value="date-desc">Newest first</option>
-      <option value="date-asc">Oldest first</option>
-      <option value="title-asc">Title A→Z</option>
-      <option value="title-desc">Title Z→A</option>
-    </select>
-    <button id="export-all" class="btn btn-sm btn-success btn-pill">Export</button>
-    <button id="import-all" class="btn btn-sm btn-secondary btn-pill">Import</button>
-    <input id="file-import" type="file" accept=".json" style="display:none">
-  </div>
-</header>
+Navbar / header
 
-<section id="library" class="card-panel">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">Your Library</h4>
-    <div class="muted">Capsules: <span id="capsule-count">0</span></div>
-  </div>
-  <div id="library-list" class="library-grid"></div>
-  <div id="empty-state" class="text-center muted mt-4">
-    No capsules yet. Click <span class="kbd">Create</span> to add your first learning capsule.
-  </div>
-</section>
+Library view
 
-<!-- Author / Create Section -->
-<section id="author" class="card-panel d-none">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">Create / Edit Capsule</h4>
-    <div class="muted">Type: <span id="capsule-type-label">Note</span></div>
-  </div>
-  <form id="capsule-form">
-    <input type="hidden" id="editing-index" value="">
-    <div class="mb-2">
-      <label class="muted">Title</label>
-      <input id="capsule-title" class="form-control" placeholder="e.g., Intro to Photosynthesis" required>
-    </div>
-    <div class="mb-2 d-flex gap-2 flex-wrap">
-      <div style="flex:1">
-        <label class="muted">Tags (comma separated)</label>
-        <input id="capsule-tags" class="form-control" placeholder="e.g., Biology, Plant">
-      </div>
-      <div style="width:200px">
-        <label class="muted">Capsule type</label>
-        <select id="capsule-type" class="form-select">
-          <option value="note">Note</option>
-          <option value="flashcards">Flashcards</option>
-          <option value="quiz">Quiz (multiple choice)</option>
-        </select>
-      </div>
-    </div>
+Capsule creation (notes, flashcards, quiz)
 
-    <div id="note-content-wrapper" class="mb-2">
-      <label class="muted">Content (for Notes)</label>
-      <textarea id="capsule-content" class="form-control" rows="4" placeholder="Write summary, lecture notes, or instructions..."></textarea>
-    </div>
+Study mode (flashcards & quiz)
 
-    <div id="flashcards-wrapper" class="mb-2 d-none">
-      <label class="muted">Flashcards</label>
-      <div id="flashcards-list" class="mb-2"></div>
-      <div class="d-flex gap-2 flex-wrap">
-        <input id="fc-front" class="form-control" placeholder="Front (question/term)">
-        <input id="fc-back" class="form-control" placeholder="Back (answer/definition)">
-        <button id="add-fc" type="button" class="btn btn-primary btn-pill">Add</button>
-      </div>
-    </div>
+Notes panel
 
-    <div id="quiz-wrapper" class="mb-2 d-none">
-      <label class="muted">Quiz Questions</label>
-      <div id="quiz-list" class="mb-2"></div>
-      <div class="d-flex gap-2 flex-wrap">
-        <input id="q-text" class="form-control" placeholder="Question text">
-        <input id="q-opt1" class="form-control" placeholder="Option A">
-        <input id="q-opt2" class="form-control" placeholder="Option B">
-        <input id="q-opt3" class="form-control" placeholder="Option C (optional)">
-        <input id="q-opt4" class="form-control" placeholder="Option D (optional)">
-        <select id="q-correct" class="form-select" style="width:120px;">
-          <option value="1">A</option><option value="2">B</option><option value="3">C</option><option value="4">D</option>
-        </select>
-        <button id="add-q" type="button" class="btn btn-primary btn-pill">Add Q</button>
-      </div>
-    </div>
+Import/export JSON
 
-    <div class="d-flex gap-2 mt-3 flex-wrap">
-      <button class="btn btn-success btn-pill" type="submit">Save Capsule</button>
-      <button id="cancel-edit" type="button" class="btn btn-outline-light btn-pill">Cancel</button>
-      <button id="new-capsule" type="button" class="btn btn-secondary btn-pill ms-auto">New Capsule</button>
-    </div>
-  </form>
-</section>
+Fully styled with Bootstrap + custom CSS
 
-<!-- Study Section -->
-<section id="learn" class="card-panel d-none">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">Study</h4>
-    <div class="muted">Mode: <span id="study-mode">Flashcards</span></div>
-  </div>
-  <div id="study-controls" class="mb-3 d-flex gap-2 align-items-center flex-wrap">
-    <select id="study-capsule-select" class="form-select" style="width:300px;">
-      <option value="">Choose a capsule to study...</option>
-    </select>
-    <button id="start-study" class="btn btn-primary btn-pill">Start</button>
-    <button id="shuffle-study" class="btn btn-outline-light btn-pill">Shuffle</button>
-    <div class="muted ms-auto">Progress: <span id="study-progress">0 / 0</span></div>
-  </div>
-  <div id="study-area" class="learn-card card-panel">
-    <div id="study-empty" class="muted">Select a capsule and press Start to begin studying flashcards or quizzes.</div>
+Here’s the complete HTML file:
 
-    <div id="flashcard-study" class="d-none">
-      <div class="mb-2 muted small" id="fc-meta"></div>
-      <div id="fc-front-display" class="h5 fw-bold mb-2"></div>
-      <div id="fc-back-display" class="muted mb-3" style="display:none"></div>
-      <div class="d-flex gap-2 flex-wrap">
-        <button id="show-answer" class="btn btn-outline-light btn-pill">Show Answer</button>
-        <button id="mark-learned" class="btn btn-success btn-pill">Mark Learned</button>
-        <button id="next-card" class="btn btn-secondary btn-pill ms-auto">Next</button>
-      </div>
-    </div>
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+<meta charset="utf-8">  
+<meta name="viewport" content="width=device-width,initial-scale=1">  
+<title>🎓 Pocket Classroom — Mini E-Learning Platform</title>  
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">  
+<style>  
+:root{  
+  --bg:#0f1720;  
+  --card:#0b1220;  
+  --muted:#9aa4b2;  
+  --accent:#0ea5a4;  
+}  
+body{  
+  background:var(--bg);  
+  color:#e6eef6;  
+  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;  
+}  
+.app-shell{  
+  min-height:100vh;  
+  display:grid;  
+  grid-template-columns:1fr 360px;  
+  gap:20px;  
+  padding:20px;  
+}  
+.main-col{display:flex; flex-direction:column; gap:18px;}  
+header.navbar{  
+  background:linear-gradient(90deg,#083042,#0b2540);  
+  border-radius:12px;  
+  padding:12px 18px;  
+}  
+.brand{font-weight:700; font-size:1.15rem;}  
+.card-panel{  
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));  
+  border-radius:12px;  
+  padding:16px;  
+  border:1px solid rgba(255,255,255,0.03);  
+}  
+.library-grid{  
+  display:grid;  
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));  
+  gap:12px;  
+}  
+.capsule-card{  
+  background:var(--card);  
+  border-radius:10px;  
+  padding:12px;  
+  border:1px solid rgba(255,255,255,0.03);  
+}  
+.muted{color:var(--muted); font-size:0.9rem;}  
+.tag{  
+  background:rgba(255,255,255,0.04);  
+  color:var(--muted);  
+  border-radius:999px;  
+  padding:4px 8px;  
+  font-size:0.75rem;  
+  margin-right:6px;  
+}  
+.btn-pill{border-radius:999px;}  
+.small-input{height:36px;}  
+.notes-panel{  
+  background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04));  
+  border-radius:12px;  
+  padding:12px;  
+  height:calc(100vh - 160px);  
+  overflow:auto;  
+}  
+textarea#notes{  
+  width:100%;  
+  min-height:320px;  
+  resize:vertical;  
+  background:transparent;  
+  color:inherit;  
+  border:1px dashed rgba(255,255,255,0.04);  
+  padding:12px;  
+  border-radius:8px;  
+}  
+.flashcard-item{  
+  background:rgba(255,255,255,0.02);  
+  padding:8px;  
+  border-radius:8px;  
+  margin-bottom:8px;  
+}  
+.learn-card{min-height:180px;}  
+footer{opacity:0.6; font-size:0.85rem;}  
+.kbd{  
+  background:rgba(255,255,255,0.03);  
+  padding:4px 8px;  
+  border-radius:6px;  
+  font-size:0.9rem;  
+}  
+@media (max-width:900px){  
+  .app-shell{grid-template-columns:1fr; padding:12px;}  
+  .notes-panel{height:280px;}  
+}  
+</style>  
+</head>  
+<body>  
+<div class="container-fluid">  
+  <div class="app-shell">  
+    <!-- MAIN COLUMN -->  
+    <div class="main-col">  
+      <!-- Header / Navbar -->  
+      <header class="navbar card-panel d-flex align-items-center justify-content-between">  
+        <div class="d-flex gap-3 align-items-center">  
+          <div class="brand">🎓 Pocket Classroom</div>  
+          <nav>  
+            <button class="btn btn-sm btn-outline-light btn-pill nav-btn active" data-section="library">Library</button>  
+            <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="author">Create</button>  
+            <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="learn">Study</button>  
+          </nav>  
+        </div>  
+        <div class="d-flex gap-2 align-items-center">  
+          <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..." />  
+          <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">  
+            <option value="date-desc">Newest first</option>  
+            <option value="date-asc">Oldest first</option>  
+            <option value="title-asc">Title A→Z</option>  
+            <option value="title-desc">Title Z→A</option>  
+          </select>  
+          <button id="export-all" class="btn btn-sm btn-success btn-pill">Export</button>  
+          <button id="import-all" class="btn btn-sm btn-secondary btn-pill">Import</button>  
+          <input id="file-import" type="file" accept=".json" style="display:none">  
+        </div>  
+      </header>  <!-- Library Section -->  
+  <section id="library" class="card-panel">  
+    <div class="d-flex justify-content-between align-items-center mb-3">  
+      <h4 class="mb-0">Your Library</h4>  
+      <div class="muted">Capsules: <span id="capsule-count">0</span></div>  
+    </div>  
+    <div id="library-list" class="library-grid"></div>  
+    <div id="empty-state" class="text-center muted mt-4">  
+      No capsules yet. Click <span class="kbd">Create</span> to add your first learning capsule.  
+    </div>  
+  </section>  
 
-    <div id="quiz-study" class="d-none">
-      <div id="q-text-display" class="h5 fw-bold mb-2"></div>
-      <div id="q-options" class="d-flex flex-column gap-2 mb-3"></div>
-      <div class="d-flex gap-2">
-        <button id="q-next" class="btn btn-secondary btn-pill ms-auto">Next</button>
-      </div>
-      <div id="q-feedback" class="mt-2 muted"></div>
-    </div>
-  </div>
-</section>
+  <!-- Author Section -->  
+  <section id="author" class="card-panel d-none">  
+    <div class="d-flex justify-content-between align-items-center mb-3">  
+      <h4 class="mb-0">Create / Edit Capsule</h4>  
+      <div class="muted">Type: <span id="capsule-type-label">Note</span></div>  
+    </div>  
+    <form id="capsule-form">  
+      <input type="hidden" id="editing-index" value="">  
+      <div class="mb-2">  
+        <label class="muted">Title</label>  
+        <input id="capsule-title" class="form-control" placeholder="e.g., Intro to Photosynthesis" required>  
+      </div>  
+      <div class="mb-2 d-flex gap-2">  
+        <div style="flex:1">  
+          <label class="muted">Tags (comma separated)</label>  
+          <input id="capsule-tags" class="form-control" placeholder="e.g., Biology, Plant">  
+        </div>  
+        <div style="width:200px">  
+          <label class="muted">Capsule type</label>  
+          <select id="capsule-type" class="form-select">  
+            <option value="note">Note</option>  
+            <option value="flashcards">Flashcards</option>  
+            <option value="quiz">Quiz (multiple choice)</option>  
+          </select>  
+        </div>  
+      </div>  
+      <div id="note-content-wrapper" class="mb-2">  
+        <label class="muted">Content (for Notes)</label>  
+        <textarea id="capsule-content" class="form-control" rows="4" placeholder="Write summary, lecture notes, or instructions..."></textarea>  
+      </div>  
+      <div id="flashcards-wrapper" class="mb-2 d-none">  
+        <label class="muted">Flashcards</label>  
+        <div id="flashcards-list" class="mb-2"></div>  
+        <div class="d-flex gap-2">  
+          <input id="fc-front" class="form-control" placeholder="Front (question/term)">  
+          <input id="fc-back" class="form-control" placeholder="Back (answer/definition)">  
+          <button id="add-fc" type="button" class="btn btn-primary btn-pill">Add</button>  
+        </div>  
+      </div>  
+      <div id="quiz-wrapper" class="mb-2 d-none">  
+        <label class="muted">Quiz Questions</label>  
+        <div id="quiz-list" class="mb-2"></div>  
+        <div class="d-flex gap-2">  
+          <input id="q-text" class="form-control" placeholder="Question text">  
+          <input id="q-opt1" class="form-control" placeholder="Option A">  
+          <input id="q-opt2" class="form-control" placeholder="Option B">  
+        </div>  
+        <div class="d-flex gap-2 mt-2">  
+          <input id="q-opt3" class="form-control" placeholder="Option C (optional)">  
+          <input id="q-opt4" class="form-control" placeholder="Option D (optional)">  
+          <select id="q-correct" class="form-select" style="width:120px;">  
+            <option value="1">A</option><option value="2">B</option><option value="3">C</option><option value="4">D</option>  
+          </select>  
+          <button id="add-q" type="button" class="btn btn-primary btn-pill">Add Q</button>  
+        </div>  
+      </div>  
+      <div class="d-flex gap-2 mt-3">  
+        <button class="btn btn-success btn-pill" type="submit">Save Capsule</button>  
+        <button id="cancel-edit" type="button" class="btn btn-outline-light btn-pill">Cancel</button>  
+        <button id="new-capsule" type="button" class="btn btn-secondary btn-pill ms-auto">New Capsule</button>  
+      </div>  
+    </form>  
+  </section>  
 
-<footer class="text-center muted mt-2">
-  © 2025 Pocket Classroom — Offline · LocalStorage · Export/Import JSON
-</footer>
-</div>
+  <!-- Learn Section -->  
+  <section id="learn" class="card-panel d-none">  
+    <div class="d-flex justify-content-between align-items-center mb-3">  
+      <h4 class="mb-0">Study</h4>  
+      <div class="muted">Mode: <span id="study-mode">Flashcards</span></div>  
+    </div>  
+    <div id="study-controls" class="mb-3 d-flex gap-2 align-items-center">  
+      <select id="study-capsule-select" class="form-select" style="width:300px;">  
+        <option value="">Choose a capsule to study...</option>  
+      </select>  
+      <button id="start-study" class="btn btn-primary btn-pill">Start</button>  
+      <button id="shuffle-study" class="btn btn-outline-light btn-pill">Shuffle</button>  
+      <div class="muted ms-auto">Progress: <span id="study-progress">0 / 0</span></div>  
+    </div>  
+    <div id="study-area" class="learn-card card-panel">  
+      <div id="study-empty" class="muted">Select a capsule and press Start to begin studying flashcards or quizzes.</div>  
+      <div id="flashcard-study" class="d-none">  
+        <div class="mb-2 muted small" id="fc-meta"></div>  
+        <div id="fc-front-display" class="h5 fw-bold mb-2"></div>  
+        <div id="fc-back-display" class="muted mb-3" style="display:none"></div>  
+        <div class="d-flex gap-2">  
+          <button id="show-answer" class="btn btn-outline-light btn-pill">Show Answer</button>  
+          <button id="mark-learned" class="btn btn-success btn-pill">Mark Learned</button>  
+          <button id="next-card" class="btn btn-secondary btn-pill ms-auto">Next</button>  
+        </div>  
+      </div>  
+      <div id="quiz-study" class="d-none">  
+        <div id="quiz-question" class="h5 fw-bold mb-3"></div>  
+        <div id="quiz-options" class="d-flex flex-column gap-2"></div>  
+        <div class="mt-2 muted" id="quiz-feedback"></div>  
+        <button id="next-quiz" class="btn btn-secondary btn-pill mt-2 d-none">Next</button>  
+      </div>  
+    </div>  
+  </section>  
+</div>  
 
-<!-- Notes panel -->
-<aside class="notes-panel">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 class="mb-0">Quick Notes</h5>
-    <div class="muted small">Autosaved</div>
-  </div>
-  <textarea id="notes" placeholder="Type quick study notes, TODOs, reminders..."></textarea>
-  <div class="mt-3">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <h6 class="mb-0">Recent Imports / Exports</h
-                                                 <h6 class="mb-0">Recent Imports / Exports</h6>
-    </div>
-    <ul id="recent-files" class="list-unstyled mb-0">
-      <!-- JS will populate recent import/export files here -->
-    </ul>
-  </div>
+<!-- RIGHT / Notes Column -->  
+<aside class="notes-panel">  
+  <h5>Notes</h5>  
+  <textarea id="notes" placeholder="Write personal notes..."></textarea>  
+  <button id="save-notes" class="btn btn-sm btn-success btn-pill mt-2">Save Notes</button>  
 </aside>
 
-</div> <!-- end of app-shell -->
-</div> <!-- end of container-fluid -->
-
-<script>
-// --- Data storage ---
-let capsules = JSON.parse(localStorage.getItem('capsules')) || [];
-let notesContent = localStorage.getItem('quick-notes') || '';
-let recentFiles = JSON.parse(localStorage.getItem('recentFiles')) || [];
-
-// --- Notes autosave ---
-const notesTextarea = document.getElementById('notes');
-notesTextarea.value = notesContent;
-notesTextarea.addEventListener('input', () => {
-  localStorage.setItem('quick-notes', notesTextarea.value);
-});
-
-// --- Recent Imports / Exports ---
-function updateRecentFiles() {
-  const list = document.getElementById('recent-files');
-  list.innerHTML = '';
-  recentFiles.slice(-5).reverse().forEach(file => {
-    const li = document.createElement('li');
-    li.className = 'muted small';
-    li.textContent = file;
-    list.appendChild(li);
-  });
-}
-updateRecentFiles();
-
-// --- Navigation ---
-const sections = document.querySelectorAll('section');
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    sections.forEach(s => s.classList.add('d-none'));
-    document.getElementById(btn.dataset.section).classList.remove('d-none');
-    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
-// --- Export / Import ---
-document.getElementById('export-all').addEventListener('click', () => {
-  const dataStr = JSON.stringify(capsules, null, 2);
-  const blob = new Blob([dataStr], {type: "application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const timestamp = new Date().toISOString().replace(/[:.]/g,'-');
-  const filename = `pocket_classroom_backup_${timestamp}.json`;
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-
-  recentFiles.push(filename);
-  localStorage.setItem('recentFiles', JSON.stringify(recentFiles));
-  updateRecentFiles();
-});
-
-document.getElementById('import-all').addEventListener('click', () => {
-  document.getElementById('file-import').click();
-});
-document.getElementById('file-import').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    try {
-      const imported = JSON.parse(ev.target.result);
-      if (Array.isArray(imported)) {
-        capsules = capsules.concat(imported);
-        localStorage.setItem('capsules', JSON.stringify(capsules));
-        recentFiles.push(file.name);
-        localStorage.setItem('recentFiles', JSON.stringify(recentFiles));
-        updateRecentFiles();
-        alert('Import successful!');
-        location.reload(); // refresh to update library
-      } else throw "Invalid format";
-    } catch(err) {
-      alert('Failed to import: ' + err);
-    }
-  };
-  reader.readAsText(file);
-});
-</script>
-
-</body>
-</html>
-                                                 
+  </div>  
+</div>  <footer class="text-center mt-4 mb-2">© 2025 Pocket Classroom</footer>  <script>  
+/* DATA STORAGE */  
+let capsules = JSON.parse(localStorage.getItem('capsules') || '[]');  
+let notes = localStorage.getItem('notes') || '';  
+document.getElementById('notes').value = notes;  
+  
+/* NAVIGATION */  
+const sections = document.querySelectorAll('section');  
+document.querySelectorAll('.nav-btn').forEach(btn=>{  
+  btn.addEventListener('click',()=>{      
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));  
+    btn.classList.add('active');  
+    const sec = btn.dataset.section;  
+    sections.forEach(s=>s.id===sec?s.classList.remove('d-none'):s.classList.add('d-none'));  
+    if(sec==='library') renderLibrary();  
+    if(sec==='learn') populateStudySelect();  
+  });  
+});  
+  
+/* RENDER LIBRARY */  
+function renderLibrary(){  
+  const list = document.getElementById('library-list');  
+  list.innerHTML='';  
+  capsules.forEach((c,i)=>{  
+    const div = document.createElement('div');  
+    div.className='capsule-card';  
+    div.innerHTML=`<strong>${c.title}</strong><div class="muted">${c.type}</div>  
+      <div>${c.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>  
+      <div class="mt-2 d-flex gap-2">  
+        <button class="btn btn-sm btn-outline-light btn-pill" onclick="editCapsule(${i})">Edit</button>  
+        <button class="btn btn-sm btn-danger btn-pill" onclick="deleteCapsule(${i})">Delete</button>  
+      </div>`;  
+    list.appendChild(div);  
+  });  
+  document.getElementById('capsule-count').textContent=capsules.length;  
+  document.getElementById('empty-state').style.display=capsules.length? 'none':'block';  
+}  
+  
+/* CAPSULE CRUD */  
+function editCapsule(i){  
+  const c=capsules[i];  
+  document.getElementById('editing-index').value=i;  
+  document.getElementById('capsule-title').value=c.title;  
+  document.getElementById('capsule-tags').value=c.tags.join(',');  
+  document.getElementById('capsule-type').value=c.type;  
+  document.getElementById('capsule-type-label').textContent=c.type;  
+  toggleAuthorFields(c.type);  
+  if(c.type==='note') document.getElementById('capsule-content').value=c.content;  
+  if(c.type==='flashcards'){  
+    document.getElementById('flashcards-list').innerHTML='';  
+    c.flashcards.forEach(fc=>addFlashcardToDOM(fc.front,fc.back));  
+  }  
+  if(c.type==='quiz'){  
+    document.getElementById('quiz-list').innerHTML='';  
+    c.quiz.forEach(q=>{  
+      addQuizToDOM(q.question,q.options,q.correct);  
+    });  
+  }  
+  document.querySelector('.nav-btn[data-section="author"]').click();  
+}  
+function deleteCapsule(i){  
+  if(confirm('Delete this capsule?')){capsules.splice(i,1); saveCapsules(); renderLibrary();}  
+}  
+function saveCapsules(){localStorage.setItem('capsules',JSON.stringify(capsules));}  
+  
+/* FORM SUBMIT */  
+document.getElementById('capsule-form').addEventListener('submit',e=>{  
+  e.preventDefault();  
+  const i=document.getElementById('editing-index').value;  
+  const t=document.getElementById('capsule-title').value.trim();  
+  const tg=document.getElementById('capsule-tags').value.split(',').map(x=>x.trim()).filter(Boolean);  
+  const type=document.getElementById('capsule-type').value;  
+  let cap={title:t,tags:tg,type:type};  
+  if(type==='note') cap.content=document.getElementById('capsule-content').value;  
+  if(type==='flashcards') cap.flashcards=Array.from(document.querySelectorAll('#flashcards-list .flashcard-item')).map(fc=>{  
+    return {front:fc.dataset.front, back:fc.dataset.back};  
+  });  
+  if(type==='quiz') cap.quiz=Array.from(document.querySelectorAll('#quiz-list .flashcard-item')).map(q=>{  
+    return {question:q.dataset.q, options:JSON.parse(q.dataset.opts), correct:q.dataset.correct};  
+  });  
+  if(i){capsules[i]=cap;}else{capsules.push(cap);}  
+  saveCapsules(); renderLibrary();  
+  document.getElementById('capsule-form').reset();  
+});  
+  
+/* TOGGLE FIELDS */  
+document.getElementById('capsule-type').addEventListener('change',e=>{  
+  const val=e.target.value;  
+  document.getElementById('capsule-type-label').textContent=val;  
+  toggleAuthorFields(val);  
+});  
+function toggleAuthorFields(type){  
+  document.getElementById('note-content-wrapper').classList.toggle('d-none',type!=='note');  
+  document.getElementById('flashcards-wrapper').classList.toggle('d-none',type!=='flashcards');  
+  document.getElementById('quiz-wrapper').classList.toggle('d-none',type!=='quiz');  
+}  
+  
+/* FLASHCARDS ADD */  
+document.getElementById('add-fc').addEventListener('click',()=>{  
+  const f=document.getElementById('fc-front').value.trim();  
+  const b=document.getElementById('fc-back').value.trim();  
+  if(f && b){addFlashcardToDOM(f,b);}  
+  document.getElementById('fc-front').value=''; document.getElementById('fc-back').value='';  
+});  
+function addFlashcardToDOM(f,b){  
+  const div=document.createElement('div');  
+  div.className='flashcard-item';  
+  
+div.dataset.front=f;  
+  div.dataset.back=b;  
+  div.innerHTML=`<strong>${f}</strong><br><small>${b}</small>`;  
+  document.getElementById('flashcards-list').appendChild(div);  
+}  
+  
+/* QUIZ ADD */  
+document.getElementById('add-q').addEventListener('click',()=>{  
+  const q=document.getElementById('q-text').value.trim();  
+  const opts=[document.getElementById('q-opt1').value.trim(),  
+              document.getElementById('q-opt2').value.trim(),  
+              document.getElementById('q-opt3').value.trim(),  
+              document.getElementById('q-opt4').value.trim()].filter(Boolean);  
+  const correct=document.getElementById('q-correct').value;  
+  if(q && opts.length>=2){addQuizToDOM(q,opts,correct);}  
+  document.getElementById('q-text').value='';  
+  document.getElementById('q-opt1').value='';  
+  document.getElementById('q-opt2').value='';  
+  document.getElementById('q-opt3').value='';  
+  document.getElementById('q-opt4').value='';  
+});  
+function addQuizToDOM(q,opts,c){  
+  const div=document.createElement('div');  
+  div.className='flashcard-item';  
+  div.dataset.q=q;  
+  div.dataset.opts=JSON.stringify(opts);  
+  div.dataset.correct=c;  
+  div.innerHTML=`<strong>${q}</strong><br><small>${opts.map((o,i)=>String.fromCharCode(65+i)+'. '+o).join(' | ')}</small>`;  
+  document.getElementById('quiz-list').appendChild(div);  
+}  
+  
+/* NEW / CANCEL */  
+document.getElementById('new-capsule').addEventListener('click',()=>document.getElementById('capsule-form').reset());  
+document.getElementById('cancel-edit').addEventListener('click',()=>document.getElementById('capsule-form').reset());  
+  
+/* NOTES SAVE */  
+document.getElementById('save-notes').addEventListener('click',()=>{  
+  localStorage.setItem('notes',document.getElementById('notes').value);  
+  alert('Notes saved!');  
+});  
+  
+/* IMPORT / EXPORT */  
+document.getElementById('export-all').addEventListener('click',()=>{  
+  const data={capsules,capsulesNotes:document.getElementById('notes').value};  
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});  
+  const url=URL.createObjectURL(blob);  
+  const a=document.createElement('a');  
+  a.href=url; a.download='pocket-classroom.json';  
+  a.click();  
+  URL.revokeObjectURL(url);  
+});  
+document.getElementById('import-all').addEventListener('click',()=>document.getElementById('file-import').click());  
+document.getElementById('file-import').addEventListener('change',e=>{  
+  const file=e.target.files[0];  
+  if(file){const reader=new FileReader();  
+    reader.onload=()=>{try{  
+      const data=JSON.parse(reader.result);  
+      capsules=data.capsules||[];  
+      document.getElementById('notes').value=data.capsulesNotes||'';  
+      saveCapsules(); renderLibrary();  
+      alert('Import successful!');  
+    }catch(err){alert('Invalid JSON file');}};  
+    reader.readAsText(file);  
+  }  
+});  
+  
+/* STUDY MODE */  
+let studyCards=[], studyIndex=0;  
+function populateStudySelect(){  
+  const sel=document.getElementById('study-capsule-select');  
+  sel.innerHTML='<option value="">Choose a capsule to study...</option>';  
+  capsules.forEach((c,i)=>sel.innerHTML+=`<option value="${i}">${c.title} (${c.type})</option>`);  
+}  
+  
+document.getElementById('start-study').addEventListener('click',()=>{  
+  const idx=document.getElementById('study-capsule-select').value;  
+  if(idx===''){alert('Select a capsule!'); return;}  
+  const cap=capsules[idx];  
+  studyIndex=0;  
+  if(cap.type==='flashcards'){  
+    studyCards=cap.flashcards.slice();  
+    document.getElementById('study-mode').textContent='Flashcards';  
+    document.getElementById('flashcard-study').classList.remove('d-none');  
+    document.getElementById('quiz-study').classList.add('d-none');  
+    showFlashcard();  
+  }else if(cap.type==='quiz'){  
+    studyCards=cap.quiz.slice();  
+    document.getElementById('study-mode').textContent='Quiz';  
+    document.getElementById('quiz-study').classList.remove('d-none');  
+    document.getElementById('flashcard-study').classList.add('d-none');  
+    showQuiz();  
+  }  
+});  
+  
+function showFlashcard(){  
+  if(studyIndex>=studyCards.length){alert('All cards reviewed'); return;}  
+  const c=studyCards[studyIndex];  
+  document.getElementById('fc-meta').textContent=`Card ${studyIndex+1} / ${studyCards.length}`;  
+  document.getElementById('fc-front-display').textContent=c.front;  
+  document.getElementById('fc-back-display').style.display='none';  
+  document.getElementById('fc-back-display').textContent=c.back;  
+  document.getElementById('study-progress').textContent=`${studyIndex} / ${studyCards.length}`;  
+}  
+document.getElementById('show-answer').addEventListener('click',()=>document.getElementById('fc-back-display').style.display='block');  
+document.getElementById('next-card').addEventListener('click',()=>{studyIndex++; showFlashcard();});  
+document.getElementById('mark-learned').addEventListener('click',()=>{studyCards.splice(studyIndex,1); if(studyIndex>=studyCards.length) studyIndex=0; showFlashcard();});  
+document.getElementById('shuffle-study').addEventListener('click',()=>{studyCards.sort(()=>Math.random()-0.5); studyIndex=0; showFlashcard();});  
+  
+/* QUIZ FUNCTIONS */  
+function showQuiz(){  
+  if(studyIndex>=studyCards.length){alert('All questions done'); return;}  
+  const q=studyCards[studyIndex];  
+  document.getElementById('quiz-question').textContent=q.question;  
+  const optsDiv=document.getElementById('quiz-options');  
+  optsDiv.innerHTML='';  
+  q.options.forEach((o,i)=>{  
+    const btn=document.createElement('button');  
+    btn.className='btn btn-outline-light btn-pill';  
+    btn.textContent=String.fromCharCode(65+i)+'. '+o;  
+    btn.addEventListener('click',()=>checkQuizAnswer(i+1));  
+    optsDiv.appendChild(btn);  
+  });  
+  document.getElementById('quiz-feedback').textContent='';  
+  document.getElementById('next-quiz').classList.add('d-none');  
+  document.getElementById('study-progress').textContent=`${studyIndex} / ${studyCards.length}`;  
+}  
+function checkQuizAnswer(sel){  
+  const q=studyCards[studyIndex];  
+  if(sel==q.correct){document.getElementById('quiz-feedback').textContent='✅ Correct!';}   
+  else{document.getElementById('quiz-feedback').textContent=`❌ Wrong! Correct: ${String.fromCharCode(64+q.correct)}.`;}  
+  document.getElementById('next-quiz').classList.remove('d-none');  
+}  
+document.getElementById('next-quiz').addEventListener('click',()=>{studyIndex++; showQuiz();});  
+  
+/* INITIAL RENDER */  
+renderLibrary();  
+</script>  </body>  
+</html> 
