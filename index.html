@@ -99,67 +99,75 @@ header.navbar{
         </nav>
       </header>
 
-    <div class="d-flex gap-2 align-items-center">  
-      <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..." />  
-      <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">  
-        <option value="date-desc">Newest first</option>  
-        <option value="date-asc">Oldest first</option>  
-        <option value="title-asc">Title A→Z</option>  
-        <option value="title-desc">Title Z→A</option>  
-      </select>  
-      <button id="export-all" class="btn btn-sm btn-success btn-pill">Export</button>  
-      <button id="import-all" class="btn btn-sm btn-secondary btn-pill">Import</button>  
-      <input id="file-import" type="file" accept=".json" style="display:none">  
-    </div>  
+<!-- Header / Actions -->
+<header class="card-panel d-flex flex-wrap gap-2 align-items-center mb-3" style="background: #102940; border-radius: 10px; padding: 12px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <input id="global-search" class="form-control form-control-sm" placeholder="Search capsules, tags..." style="flex:1; min-width:200px;">
+  <select id="sort-select" class="form-select form-select-sm" style="width:180px;">
+    <option value="date-desc">Newest first</option>
+    <option value="date-asc">Oldest first</option>
+    <option value="title-asc">Title A→Z</option>
+    <option value="title-desc">Title Z→A</option>
+  </select>
+  <button id="export-all" class="btn btn-sm btn-info">Export</button>
+  <button id="import-all" class="btn btn-sm btn-secondary">Import</button>
+  <input id="file-import" type="file" accept=".json" style="display:none">
+</header>
 
-  <!-- Library Section -->  
-  <section id="library" class="card-panel">  
-    <div class="d-flex justify-content-between align-items-center mb-3">  
-      <h4 class="mb-0">Your Library</h4>  
-      <div class="muted">Capsules: <span id="capsule-count">0</span></div>  
-    </div>  
+<!-- Library Section -->
+<section id="library" class="card-panel" style="background: #102940; border-radius: 10px; padding: 16px;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Your Library</h4>
+    <div class="text-muted">Capsules: <span id="capsule-count">0</span></div>
+  </div>
 
-    <div id="library-list" class="library-grid"></div>  
+  <div id="library-list" class="library-grid d-grid gap-3" style="grid-template-columns: repeat(auto-fill,minmax(240px,1fr));"></div>
 
-    <div id="empty-state" class="text-center muted mt-4">  
-      No capsules yet. Click <span class="kbd">Create</span> to add your first learning capsule.  
-    </div>  
-  </section>  
+  <div id="empty-state" class="text-center text-muted mt-4">
+    No capsules yet. Click <span class="kbd">Create</span> to add your first learning capsule.
+  </div>
+</section>
 
-  <!-- Author / Create Section -->  
-  <section id="author" class="card-panel d-none">  
-    <div class="d-flex justify-content-between align-items-center mb-3">  
-      <h4 class="mb-0">Create / Edit Capsule</h4>  
-      <div class="muted">Type: <span id="capsule-type-label">Note</span></div>  
-    </div>  
+<!-- Author / Create Section -->
+<section id="author" class="card-panel d-none" style="background: #102940; border-radius: 10px; padding: 16px;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Create / Edit Capsule</h4>
+    <div class="text-muted">Type: <span id="capsule-type-label">Note</span></div>
+  </div>
 
-    <form id="capsule-form">  
-      <input type="hidden" id="editing-index" value="">  
-      <div class="mb-2">  
-        <label class="muted">Title</label>  
-        <input id="capsule-title" class="form-control" placeholder="e.g., Intro to Photosynthesis" required>  
-      </div>  
+  <form id="capsule-form">
+    <input type="hidden" id="editing-index" value="">
 
-      <div class="mb-2 d-flex gap-2">  
-        <div style="flex:1">  
-          <label class="muted">Tags (comma separated)</label>  
-          <input id="capsule-tags" class="form-control" placeholder="e.g., Biology, Plant">  
-        </div>  
-        <div style="width:200px">  
-          <label class="muted">Capsule type</label>  
-          <select id="capsule-type" class="form-select">  
-            <option value="note">Note</option>  
-            <option value="flashcards">Flashcards</option>  
-            <option value="quiz">Quiz (multiple choice)</option>  
-          </select>  
-        </div>  
-      </div>  
+    <div class="mb-3">
+      <label class="form-label text-muted">Title</label>
+      <input id="capsule-title" class="form-control" placeholder="e.g., Intro to Photosynthesis" required>
+    </div>
 
-      <div id="note-content-wrapper" class="mb-2">  
-        <label class="muted">Content (for Notes)</label>  
-        <textarea id="capsule-content" class="form-control" rows="4" placeholder="Write summary, lecture notes, or instructions..."></textarea>  
-      </div>  
+    <div class="mb-3 d-flex flex-wrap gap-3">
+      <div style="flex:1; min-width:200px;">
+        <label class="form-label text-muted">Tags (comma separated)</label>
+        <input id="capsule-tags" class="form-control" placeholder="e.g., Biology, Plant">
+      </div>
+      <div style="width:200px;">
+        <label class="form-label text-muted">Capsule type</label>
+        <select id="capsule-type" class="form-select">
+          <option value="note">Note</option>
+          <option value="flashcards">Flashcards</option>
+          <option value="quiz">Quiz (multiple choice)</option>
+        </select>
+      </div>
+    </div>
 
+    <div id="note-content-wrapper" class="mb-3">
+      <label class="form-label text-muted">Content (for Notes)</label>
+      <textarea id="capsule-content" class="form-control" rows="4" placeholder="Write summary, lecture notes, or instructions..."></textarea>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-info">Save Capsule</button>
+      <button type="button" id="delete-capsule" class="btn btn-warning d-none">Delete Capsule</button>
+    </div>
+  </form>
+</section>
       <!-- Flashcards builder -->  
       <div id="flashcards-wrapper" class="mb-2 d-none">  
         <label class="muted">Flashcards</label>  
