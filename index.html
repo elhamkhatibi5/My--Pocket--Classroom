@@ -1,174 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>🎓 Pocket Classroom — Mini E-Learning Platform</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg-gradient: linear-gradient(135deg,#0b1d2f,#0f1720); /* پس‌زمینه حرفه‌ای و شیک */
-  --card:#102940;        /* کارت‌ها کمی روشن‌تر */
-  --text:#e6eef6;        /* متن روشن */
-  --muted:#9aa4b2;       /* متن کم‌رنگ */
-  --accent:#0ea5a4;      /* آبی جذاب برای هایلایت */
-  --danger:#f97316;       /* نارنجی-قرمز برای هشدار/حذف */
-}
-body{
-  background: var(--bg-gradient);
-  color: var(--text);
-  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  margin:0;
-  padding:0;
-}
-.app-shell{
-  min-height:100vh;
-  display:grid;
-  grid-template-columns: 1fr 320px;
-  gap:20px;
-  padding:20px;
-}
-.main-col{
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-}
-header.navbar{
-  background: var(--card);
-  border-radius:12px;
-  padding:14px 20px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-.brand{
-  font-weight:700;
-  font-size:1.25rem;
-  color: var(--text);
-}
-.nav-btn{
-  border:none;
-  background:transparent;
-  color: var(--muted);
-  font-weight:500;
-  margin-right:14px;
-  padding:6px 12px;
-  border-radius:8px;
-  transition: all 0.2s ease;
-}
-.nav-btn.active{
-  color: var(--accent);
-  font-weight:600;
-  border-bottom:3px solid var(--accent);
-}
-.nav-btn:hover{
-  color: var(--accent);
-}
-/* دکمه‌های هشدار / حذف */
-.btn-danger{
-  color: #fff;
-  background: var(--danger);
-  border-radius:8px;
-  border:none;
-  padding:6px 14px;
-  font-weight:500;
-  transition: all 0.2s ease;
-}
-.btn-danger:hover{
-  background:#f55a1c;
-}
-@media (max-width: 900px){
-  .app-shell{grid-template-columns: 1fr; padding:12px;}
-}
-</style>
-</head>
-<body>
-<div class="container-fluid">
-  <div class="app-shell">
-    <!-- MAIN COLUMN -->
-    <div class="main-col">
-      <!-- Header / Nav -->
-      <header class="navbar">
-        <div class="brand">🎓 Pocket Classroom</div>
-        <nav>
-          <button class="nav-btn active" data-section="library">Library</button>
-          <button class="nav-btn" data-section="author">Create</button>
-          <button class="nav-btn" data-section="learn">Study</button>
-        </nav>
-      </header>
-<!-- Header / Actions -->
-<div class="card-panel p-3 mb-3" style="background:#102940; border-radius:10px;">
-  <div class="d-flex flex-wrap align-items-center gap-2">
-    <input id="global-search" class="form-control form-control-sm flex-grow-1" placeholder="Search capsules, tags..." style="min-width:150px;">
-    <select id="sort-select" class="form-select form-select-sm" style="width:150px;">
-      <option value="date-desc">Newest first</option>
-      <option value="date-asc">Oldest first</option>
-      <option value="title-asc">Title A→Z</option>
-      <option value="title-desc">Title Z→A</option>
-    </select>
-    <button id="export-all" class="btn btn-sm btn-info">Export</button>
-    <button id="import-all" class="btn btn-sm btn-secondary">Import</button>
-    <input id="file-import" type="file" accept=".json" style="display:none">
-  </div>
-</div>
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+<meta charset="utf-8" />  
+<meta name="viewport" content="width=device-width,initial-scale=1" />  
+<title>ðŸŽ“ Pocket Classroom â€” Mini E-Learning Platform</title>  
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">  
+<style>  
+  :root{  
+    --bg:#0f1720; --card:#0b1220; --muted:#9aa4b2; --accent:#0ea5a4;  
+  }  
+  body{background:var(--bg); color:#e6eef6; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}  
+  .app-shell{min-height:100vh; display:grid; grid-template-columns: 1fr 360px; gap:20px; padding:20px;}  
+  .main-col{display:flex; flex-direction:column; gap:18px;}  
+  header.navbar{background:linear-gradient(90deg,#083042,#0b2540); border-radius:12px; padding:12px 18px;}  
+  .brand{font-weight:700; font-size:1.15rem;}  
+  .card-panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.03);}  
+  .library-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}  
+  .capsule-card{background:var(--card); border-radius:10px; padding:12px; border:1px solid rgba(255,255,255,0.03);}  
+  .muted{color:var(--muted); font-size:0.9rem;}  
+  .tag{background:rgba(255,255,255,0.04); color:var(--muted); border-radius:999px; padding:4px 8px; font-size:0.75rem; margin-right:6px;}  
+  .btn-pill{border-radius:999px;}  
+  .small-input{height:36px;}  
+  .notes-panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04)); border-radius:12px; padding:12px; height:calc(100vh - 160px); overflow:auto;}  
+  textarea#notes{width:100%; min-height:320px; resize:vertical; background:transparent; color:inherit; border:1px dashed rgba(255,255,255,0.04); padding:12px; border-radius:8px;}  
+  .flashcard-item{background:rgba(255,255,255,0.02); padding:8px; border-radius:8px; margin-bottom:8px;}  
+  .learn-card{min-height:180px;}  
+  footer{opacity:0.6; font-size:0.85rem;}  
+  .kbd{background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px; font-size:0.9rem;}  
+  @media (max-width: 900px){  
+    .app-shell{grid-template-columns: 1fr; padding:12px;}  
+    .notes-panel{height:280px;}  
+  }  
+</style>  
+</head>  
+<body>  <div class="container-fluid">  
+  <div class="app-shell">  <!-- LEFT / MAIN COLUMN -->  
+<div class="main-col">  
 
-<!-- Library Section -->
-<section id="library" class="card-panel p-3" style="background:#102940; border-radius:10px;">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 class="mb-0">Your Library</h5>
-    <div class="text-muted">Capsules: <span id="capsule-count">0</span></div>
-  </div>
+  <!-- Header / Nav -->  
+  <header class="navbar card-panel d-flex align-items-center justify-content-between">  
+    <div class="d-flex gap-3 align-items-center">  
+      <div class="brand">ðŸŽ“ Pocket Classroom</div>  
+      <nav>  
+        <button class="btn btn-sm btn-outline-light btn-pill nav-btn active" data-section="library">Library</button>  
+        <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="author">Create</button>  
+        <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="learn">Study</button>  
+      </nav>  
+    </div>  
 
-  <div id="library-list" class="d-grid gap-2" style="grid-template-columns: repeat(auto-fill,minmax(200px,1fr));"></div>
+    <div class="d-flex gap-2 align-items-center">  
+      <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..." />  
+      <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">  
+        <option value="date-desc">Newest first</option>  
+        <option value="date-asc">Oldest first</option>  
+        <option value="title-asc">Title Aâ†’Z</option>  
+        <option value="title-desc">Title Zâ†’A</option>  
+      </select>  
+      <button id="export-all" class="btn btn-sm btn-success btn-pill">Export</button>  
+      <button id="import-all" class="btn btn-sm btn-secondary btn-pill">Import</button>  
+      <input id="file-import" type="file" accept=".json" style="display:none">  
+    </div>  
+  </header>  
 
-  <div id="empty-state" class="text-center text-muted mt-2">
-    No capsules yet. Click <kbd>Create</kbd> to add your first capsule.
-  </div>
-</section>
+  <!-- Library Section -->  
+  <section id="library" class="card-panel">  
+    <div class="d-flex justify-content-between align-items-center mb-3">  
+      <h4 class="mb-0">Your Library</h4>  
+      <div class="muted">Capsules: <span id="capsule-count">0</span></div>  
+    </div>  
 
-<!-- Author / Create Section -->
-<section id="author" class="card-panel p-3 d-none" style="background:#102940; border-radius:10px;">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 class="mb-0">Create / Edit Capsule</h5>
-    <div class="text-muted">Type: <span id="capsule-type-label">Note</span></div>
-  </div>
+    <div id="library-list" class="library-grid"></div>  
 
-  <form id="capsule-form">
-    <input type="hidden" id="editing-index" value="">
+    <div id="empty-state" class="text-center muted mt-4">  
+      No capsules yet. Click <span class="kbd">Create</span> to add your first learning capsule.  
+    </div>  
+  </section>  
 
-    <div class="mb-2">
-      <label class="form-label text-muted">Title</label>
-      <input id="capsule-title" class="form-control form-control-sm" placeholder="e.g., Intro to Photosynthesis" required>
-    </div>
+  <!-- Author / Create Section -->  
+  <section id="author" class="card-panel d-none">  
+    <div class="d-flex justify-content-between align-items-center mb-3">  
+      <h4 class="mb-0">Create / Edit Capsule</h4>  
+      <div class="muted">Type: <span id="capsule-type-label">Note</span></div>  
+    </div>  
 
-    <div class="mb-2 d-flex flex-wrap gap-2">
-      <div class="flex-grow-1 min-w-150">
-        <label class="form-label text-muted">Tags</label>
-        <input id="capsule-tags" class="form-control form-control-sm" placeholder="e.g., Biology, Plant">
-      </div>
-      <div style="width:150px;">
-        <label class="form-label text-muted">Type</label>
-        <select id="capsule-type" class="form-select form-select-sm">
-          <option value="note">Note</option>
-          <option value="flashcards">Flashcards</option>
-          <option value="quiz">Quiz</option>
-        </select>
-      </div>
-    </div>
+    <form id="capsule-form">  
+      <input type="hidden" id="editing-index" value="">  
+      <div class="mb-2">  
+        <label class="muted">Title</label>  
+        <input id="capsule-title" class="form-control" placeholder="e.g., Intro to Photosynthesis" required>  
+      </div>  
 
-    <div id="note-content-wrapper" class="mb-2">
-      <label class="form-label text-muted">Content</label>
-      <textarea id="capsule-content" class="form-control form-control-sm" rows="3" placeholder="Write notes or instructions..."></textarea>
-    </div>
+      <div class="mb-2 d-flex gap-2">  
+        <div style="flex:1">  
+          <label class="muted">Tags (comma separated)</label>  
+          <input id="capsule-tags" class="form-control" placeholder="e.g., Biology, Plant">  
+        </div>  
+        <div style="width:200px">  
+          <label class="muted">Capsule type</label>  
+          <select id="capsule-type" class="form-select">  
+            <option value="note">Note</option>  
+            <option value="flashcards">Flashcards</option>  
+            <option value="quiz">Quiz (multiple choice)</option>  
+          </select>  
+        </div>  
+      </div>  
 
-    <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-sm btn-info">Save</button>
-      <button type="button" id="delete-capsule" class="btn btn-sm btn-warning d-none">Delete</button>
-    </div>
-  </form>
-</section>
+      <div id="note-content-wrapper" class="mb-2">  
+        <label class="muted">Content (for Notes)</label>  
+        <textarea id="capsule-content" class="form-control" rows="4" placeholder="Write summary, lecture notes, or instructions..."></textarea>  
+      </div>  
+
       <!-- Flashcards builder -->  
       <div id="flashcards-wrapper" class="mb-2 d-none">  
         <label class="muted">Flashcards</label>  
@@ -250,7 +190,7 @@ header.navbar{
   </section>  
 
   <footer class="text-center muted mt-2">  
-    © 2025 Pocket Classroom — Offline · LocalStorage · Export/Import JSON  
+    Â© 2025 Pocket Classroom â€” Offline Â· LocalStorage Â· Export/Import JSON  
   </footer>  
 </div>  
 
@@ -274,7 +214,7 @@ header.navbar{
   </div>  
 </div>  <script type="module">  
 /*  
-  Pocket Classroom — single file JS  
+  Pocket Classroom â€” single file JS  
   Features implemented:  
   - LocalStorage persistence for capsules + notes  
   - Create / Edit / Delete / Duplicate capsules  
@@ -456,7 +396,7 @@ function renderStudySelect(){
   app.capsules.forEach(c => {  
     const opt = document.createElement('option');  
     opt.value = c.id;  
-    opt.textContent = `${c.title} — ${c.type}`;  
+    opt.textContent = `${c.title} â€” ${c.type}`;  
     studySelect.appendChild(opt);  
   });  
 }  
@@ -758,8 +698,8 @@ function renderStudyCard(){
       btn.dataset.opt = i+1;  
       btn.addEventListener('click', ()=>{  
         const chosen = Number(btn.dataset.opt);  
-        if(chosen === cur.correct){ qFeedback.textContent = 'Correct ✅'; qFeedback.style.color = 'lightgreen'; }  
-        else { qFeedback.textContent = `Wrong — correct is ${String.fromCharCode(64+cur.correct)}.`; qFeedback.style.color = '#ffb3b3'; }  
+        if(chosen === cur.correct){ qFeedback.textContent = 'Correct âœ…'; qFeedback.style.color = 'lightgreen'; }  
+        else { qFeedback.textContent = `Wrong â€” correct is ${String.fromCharCode(64+cur.correct)}.`; qFeedback.style.color = '#ffb3b3'; }  
         // disable options  
         Array.from(qOptions.children).forEach(b=>b.disabled=true);  
       });  
@@ -825,13 +765,13 @@ newCapsuleBtn.addEventListener('click', clearAuthorForm);
 function initSampleIfEmpty(){  
   if(app.capsules.length===0){  
     const sample = [  
-      {id:uid(), title:'Biology — Photosynthesis', tags:['Biology','Plants'], type:'note', content:'Photosynthesis is the process by which plants convert light to energy...', data:[], createdAt:Date.now()-86400000, updatedAt:Date.now()-86400000},  
-      {id:uid(), title:'Basic Spanish — Vocabulary', tags:['Spanish','Vocab'], type:'flashcards', content:'', data:[  
+      {id:uid(), title:'Biology â€” Photosynthesis', tags:['Biology','Plants'], type:'note', content:'Photosynthesis is the process by which plants convert light to energy...', data:[], createdAt:Date.now()-86400000, updatedAt:Date.now()-86400000},  
+      {id:uid(), title:'Basic Spanish â€” Vocabulary', tags:['Spanish','Vocab'], type:'flashcards', content:'', data:[  
         {id:uid(), front:'Hello', back:'Hola'},  
         {id:uid(), front:'Thank you', back:'Gracias'},  
         {id:uid(), front:'Please', back:'Por favor'}  
       ], createdAt:Date.now()-3600000, updatedAt:Date.now()-3600000},  
-      {id:uid(), title:'JS Quiz — Basics', tags:['JS','Quiz'], type:'quiz', content:'', data:[  
+      {id:uid(), title:'JS Quiz â€” Basics', tags:['JS','Quiz'], type:'quiz', content:'', data:[  
         {id:uid(), text:'Which keyword declares a variable block-scoped?', opts:['var','let','function','const'], correct:2, id:uid()},  
         {id:uid(), text:'Which method converts JSON string to object?', opts:['JSON.parse','JSON.stringify','Object.fromJSON','parseJSON'], correct:1, id:uid()}  
       ], createdAt:Date.now()-1800000, updatedAt:Date.now()-1800000}  
