@@ -1,65 +1,156 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-<meta charset="utf-8" />  
-<meta name="viewport" content="width=device-width,initial-scale=1" />  
-<title>ðŸŽ“ Pocket Classroom â€” Mini E-Learning Platform</title>  
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">  
-<style>  
-  :root{  
-    --bg:#0f1720; --card:#0b1220; --muted:#9aa4b2; --accent:#0ea5a4;  
-  }  
-  body{background:var(--bg); color:#e6eef6; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}  
-  .app-shell{min-height:100vh; display:grid; grid-template-columns: 1fr 360px; gap:20px; padding:20px;}  
-  .main-col{display:flex; flex-direction:column; gap:18px;}  
-  header.navbar{background:linear-gradient(90deg,#083042,#0b2540); border-radius:12px; padding:12px 18px;}  
-  .brand{font-weight:700; font-size:1.15rem;}  
-  .card-panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.03);}  
-  .library-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}  
-  .capsule-card{background:var(--card); border-radius:10px; padding:12px; border:1px solid rgba(255,255,255,0.03);}  
-  .muted{color:var(--muted); font-size:0.9rem;}  
-  .tag{background:rgba(255,255,255,0.04); color:var(--muted); border-radius:999px; padding:4px 8px; font-size:0.75rem; margin-right:6px;}  
-  .btn-pill{border-radius:999px;}  
-  .small-input{height:36px;}  
-  .notes-panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04)); border-radius:12px; padding:12px; height:calc(100vh - 160px); overflow:auto;}  
-  textarea#notes{width:100%; min-height:320px; resize:vertical; background:transparent; color:inherit; border:1px dashed rgba(255,255,255,0.04); padding:12px; border-radius:8px;}  
-  .flashcard-item{background:rgba(255,255,255,0.02); padding:8px; border-radius:8px; margin-bottom:8px;}  
-  .learn-card{min-height:180px;}  
-  footer{opacity:0.6; font-size:0.85rem;}  
-  .kbd{background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px; font-size:0.9rem;}  
-  @media (max-width: 900px){  
-    .app-shell{grid-template-columns: 1fr; padding:12px;}  
-    .notes-panel{height:280px;}  
-  }  
-</style>  
-</head>  
-<body>  <div class="container-fluid">  
-  <div class="app-shell">  <!-- LEFT / MAIN COLUMN -->  
-<div class="main-col">  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🎓 Pocket Classroom — Mini E-Learning Platform</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1720;
+  --card:#1a2230;
+  --muted:#9aa4b2;
+  --accent:#0ea5a4;
+  --accent-hover:#06b2b2;
+  --header-gradient:linear-gradient(90deg,#0b2540,#083042);
+}
+body{
+  background:var(--bg);
+  color:#e6eef6;
+  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  margin:0;
+}
+.app-shell{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns: 1fr 360px;
+  gap:20px;
+  padding:20px;
+}
+.main-col{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+header.navbar{
+  background:var(--header-gradient);
+  border-radius:16px;
+  padding:16px 24px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.5);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  font-weight:700;
+  font-size:1.25rem;
+  gap:8px;
+}
+.brand svg{
+  width:28px;
+  height:28px;
+}
+nav{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.nav-btn{
+  border-radius:999px;
+  transition:0.2s;
+}
+.nav-btn.active,
+.nav-btn:hover{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff !important;
+}
+.d-flex-gap{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+input.small-input, select.small-input{
+  height:38px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.05);
+  color:#e6eef6;
+  padding:0 12px;
+  transition:0.2s;
+}
+input.small-input:focus, select.small-input:focus{
+  border-color:var(--accent);
+  outline:none;
+  background:rgba(0,0,0,0.15);
+}
+button.btn-pill{
+  border-radius:999px;
+  transition:0.2s;
+}
+button.btn-success.btn-pill:hover{
+  background:var(--accent-hover);
+  border-color:var(--accent-hover);
+}
+button.btn-secondary.btn-pill:hover{
+  background:rgba(255,255,255,0.1);
+}
+@media (max-width: 900px){
+  .app-shell{
+    grid-template-columns: 1fr;
+    padding:12px;
+  }
+  header.navbar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .d-flex-gap{
+    width:100%;
+  }
+  input.small-input, select.small-input{
+    flex:1;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="app-shell">
+    <div class="main-col">
+      <header class="navbar">
+        <div class="d-flex gap-3 align-items-center flex-wrap">
+          <div class="brand">
+            <!-- Inline SVG favicon -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L2 7l10 5 10-5-10-5zm0 13l-10-5v10l10 5 10-5V10l-10 5z"/>
+            </svg>
+            Pocket Classroom
+          </div>
+          <nav>
+            <button class="btn btn-sm btn-outline-light btn-pill nav-btn active" data-section="library">Library</button>
+            <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="author">Create</button>
+            <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="learn">Study</button>
+          </nav>
+        </div>
 
-  <!-- Header / Nav -->  
-  <header class="navbar card-panel d-flex align-items-center justify-content-between">  
-    <div class="d-flex gap-3 align-items-center">  
-      <div class="brand">ðŸŽ“ Pocket Classroom</div>  
-      <nav>  
-        <button class="btn btn-sm btn-outline-light btn-pill nav-btn active" data-section="library">Library</button>  
-        <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="author">Create</button>  
-        <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="learn">Study</button>  
-      </nav>  
-    </div>  
-
-    <div class="d-flex gap-2 align-items-center">  
-      <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..." />  
-      <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">  
-        <option value="date-desc">Newest first</option>  
-        <option value="date-asc">Oldest first</option>  
-        <option value="title-asc">Title Aâ†’Z</option>  
-        <option value="title-desc">Title Zâ†’A</option>  
-      </select>  
-      <button id="export-all" class="btn btn-sm btn-success btn-pill">Export</button>  
-      <button id="import-all" class="btn btn-sm btn-secondary btn-pill">Import</button>  
-      <input id="file-import" type="file" accept=".json" style="display:none">  
-    </div>  
-  </header>  
+        <div class="d-flex-gap mt-2 mt-md-0">
+          <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..." />
+          <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">
+            <option value="date-desc">Newest first</option>
+            <option value="date-asc">Oldest first</option>
+            <option value="title-asc">Title A→Z</option>
+            <option value="title-desc">Title Z→A</option>
+          </select>
+          <button id="export-all" class="btn btn-sm btn-success btn-pill">Export</button>
+          <button id="import-all" class="btn btn-sm btn-secondary btn-pill">Import</button>
+          <input id="file-import" type="file" accept=".json" style="display:none">
+        </div>
+      </header>
 
   <!-- Library Section -->  
   <section id="library" class="card-panel">  
