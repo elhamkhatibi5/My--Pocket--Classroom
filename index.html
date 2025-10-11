@@ -579,67 +579,146 @@ let app = {
 };  
   
 function uid(){ return Math.random().toString(36).slice(2,9); }  
-  
-/* --- Storage --- */  
-function loadState(){  
-  try{  
-    const raw = localStorage.getItem(LS_KEY);  
-    app.capsules = raw ? JSON.parse(raw) : [];  
-  }catch(e){ app.capsules = []; }  
-  app.notes = localStorage.getItem(LS_NOTES) || '';  
-  try{ app.ioLog = JSON.parse(localStorage.getItem(LS_IOLOG)) || []; }catch(e){ app.ioLog = []; }  
-}  
-function saveState(){  
-  localStorage.setItem(LS_KEY, JSON.stringify(app.capsules));  
-}  
-function saveNotes(){  
-  localStorage.setItem(LS_NOTES, app.notes);  
-}  
-function saveIoLog(){  
-  localStorage.setItem(LS_IOLOG, JSON.stringify(app.ioLog));  
-}  
-  
-/* --- UI refs --- */  
-const sections = {  
-  library: document.getElementById('library'),  
-  author: document.getElementById('author'),  
-  learn: document.getElementById('learn')  
-};  
-const navBtns = document.querySelectorAll('.nav-btn');  
-const libraryList = document.getElementById('library-list');  
-const capsuleCount = document.getElementById('capsule-count');  
-const emptyState = document.getElementById('empty-state');  
-const globalSearch = document.getElementById('global-search');  
-const sortSelect = document.getElementById('sort-select');  
-const exportAllBtn = document.getElementById('export-all');  
-const importAllBtn = document.getElementById('import-all');  
-const fileImport = document.getElementById('file-import');  
-  
-/* Author elements */  
-const capsuleForm = document.getElementById('capsule-form');  
-const editingIndex = document.getElementById('editing-index');  
-const titleInput = document.getElementById('capsule-title');  
-const tagsInput = document.getElementById('capsule-tags');  
-const typeSelect = document.getElementById('capsule-type');  
-const typeLabel = document.getElementById('capsule-type-label');  
-const noteContentWrapper = document.getElementById('note-content-wrapper');  
-const capsuleContent = document.getElementById('capsule-content');  
-const flashWrapper = document.getElementById('flashcards-wrapper');  
-const flashList = document.getElementById('flashcards-list');  
-const fcFront = document.getElementById('fc-front');  
-const fcBack = document.getElementById('fc-back');  
-const addFcBtn = document.getElementById('add-fc');  
-const quizWrapper = document.getElementById('quiz-wrapper');  
-const quizList = document.getElementById('quiz-list');  
-const qText = document.getElementById('q-text');  
-const qOpt1 = document.getElementById('q-opt1');  
-const qOpt2 = document.getElementById('q-opt2');  
-const qOpt3 = document.getElementById('q-opt3');  
-const qOpt4 = document.getElementById('q-opt4');  
-const qCorrect = document.getElementById('q-correct');  
-const addQBtn = document.getElementById('add-q');  
-const cancelEditBtn = document.getElementById('cancel-edit');  
-const newCapsuleBtn = document.getElementById('new-capsule');  
+/* --- Storage Keys --- */
+const LS_KEY = 'pc_capsules_v1';    // کپسول‌ها
+const LS_NOTES = 'pc_notes_v3';     // یادداشت‌ها (Notes Panel)
+const LS_IOLOG = 'pc_logs_v3';      // Import/Export logs
+
+/* --- Application State --- */
+window.app = window.app || {};
+app.capsules = app.capsules || [];
+app.notes = app.notes || '';
+app.ioLog = app.ioLog || [];
+
+/* --- Storage Functions --- */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    app.capsules = raw ? JSON.parse(raw) : [];
+  } catch(e) {
+    console.warn("Failed to load capsules:", e);
+    app.capsules = [];
+  }
+
+  app.notes = localStorage.getItem(LS_NOTES) || '';
+
+  try {
+    const rawLogs = localStorage.getItem(LS_IOLOG);
+    app.ioLog = rawLogs ? JSON.parse(rawLogs) : [];
+  } catch(e) {
+    console.warn("Failed to load logs:", e);
+    app.ioLog = [];
+  }
+}
+
+function saveState() {
+  localStorage.setItem(LS_KEY, JSON.stringify(app.capsules));
+}
+
+function saveNotes() {
+  localStorage.setItem(LS_NOTES, app.notes);
+}
+
+function saveIoLog() {
+  localStorage.setItem(LS_IOLOG, JSON.stringify(app.ioLog));
+}
+
+/* --- UI References --- */
+const sections = {
+  library: document.getElementById('library'),
+  author: document.getElementById('author'),
+  learn: document.getElementById('learn')
+};
+
+const navBtns = document.querySelectorAll('.nav-btn');
+const libraryList = document.getElementById('library-list');
+const capsuleCount = document.getElementById('capsule-count');
+const emptyState = document.getElementById('empty-state');
+const globalSearch = document.getElementById('global-search');
+const sortSelect = document.getElementById('sort-select');
+const exportAllBtn = document.getElementById('export-all');
+const importAllBtn = document.getElementById('import-all');
+const fileImport = document.getElementById('file-import');
+
+/* --- Author / Capsule Elements --- */
+const capsuleForm = document.getElementById('capsule-form');
+const editingIndex = document.getElementById('editing-index');
+const titleInput = document.getElementById('capsule-title');
+const tagsInput = document.getElementById('capsule-tags');
+const typeSelect = document.getElementById('capsule-type');
+const typeLabel = document.getElementById('capsule-type-label');
+const noteContentWrapper = document.getElementById('note-content-wrapper');
+const capsuleContent = document.getElementById('capsule-content');
+
+/* --- Flashcards --- */
+const flashWrapper = document.getElementById('flashcards-wrapper');
+const flashList = document.getElementById('flashcards-list');
+const fcFront = document.getElementById('fc-front');
+const fcBack = document.getElementById('fc-back');
+const addFcBtn = document.getElementById('add-fc');
+
+/* --- Quiz --- */
+const quizWrapper = document.getElementById('quiz-wrapper');
+const quizList = document.getElementById('quiz-list');
+const qText = document.getElementById('q-text');
+const qOpt1 = document.getElementById('q-opt1');
+const qOpt2 = document.getElementById('q-opt2');
+const qOpt3 = document.getElementById('q-opt3');
+const qOpt4 = document.getElementById('q-opt4');
+const qCorrect = document.getElementById('q-correct');
+const addQBtn = document.getElementById('add-q');
+
+/* --- Buttons --- */
+const cancelEditBtn = document.getElementById('cancel-edit');
+const newCapsuleBtn = document.getElementById('new-capsule');
+
+/* --- Notes Panel --- */
+const notesBox = document.getElementById('notes');
+const logList = document.getElementById('io-log');
+const clearLogsBtn = document.getElementById('clear-logs');
+
+/* --- Utility Functions --- */
+function addLog(message) {
+  const timestamp = new Date().toLocaleString();
+  app.ioLog.unshift(`${timestamp} — ${message}`);
+  if(app.ioLog.length > 30) app.ioLog.pop();
+  saveIoLog();
+  renderLogs();
+}
+
+function renderLogs() {
+  if(!logList) return;
+  if(!app.ioLog.length) {
+    logList.innerHTML = `<li class="text-muted fst-italic">No logs yet.</li>`;
+    return;
+  }
+  logList.innerHTML = app.ioLog
+    .map(log => `<li class="border-bottom py-1"><i class="bi bi-clock me-2 text-info"></i>${log}</li>`)
+    .join('');
+}
+
+/* --- Initialize Notes Panel --- */
+if(notesBox) {
+  notesBox.value = app.notes;
+  notesBox.addEventListener('input', () => {
+    app.notes = notesBox.value;
+    saveNotes();
+  });
+}
+
+if(clearLogsBtn) {
+  clearLogsBtn.addEventListener('click', () => {
+    if(confirm("🗑️ Clear all logs?")) {
+      app.ioLog = [];
+      saveIoLog();
+      renderLogs();
+    }
+  });
+}
+
+/* --- Initial Load --- */
+loadState();
+renderLogs();  
   
 /* Learn elements */  
 const studySelect = document.getElementById('study-capsule-select');  
