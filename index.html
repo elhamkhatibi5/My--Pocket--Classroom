@@ -391,54 +391,153 @@ button.btn-secondary.btn-pill:hover{
 
 <!-- Optional icons: Bootstrap Icons -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<!-- 🔹 Learn / Study Section -->
+<section id="learn" class="card-panel d-none p-3 rounded-3 shadow-sm bg-dark-subtle text-light">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Study</h4>
+    <div class="muted">Mode: <span id="study-mode">Flashcards</span></div>
+  </div>
 
-  <!-- Learn / Study Section -->  
-  <section id="learn" class="card-panel d-none">  
-    <div class="d-flex justify-content-between align-items-center mb-3">  
-      <h4 class="mb-0">Study</h4>  
-      <div class="muted">Mode: <span id="study-mode">Flashcards</span></div>  
-    </div>  
+  <div id="study-controls" class="mb-3 d-flex gap-2 align-items-center flex-wrap">
+    <select id="study-capsule-select" class="form-select" style="width:300px;">
+      <option value="">Choose a capsule to study...</option>
+    </select>
+    <button id="start-study" class="btn btn-primary btn-pill">Start</button>
+    <button id="shuffle-study" class="btn btn-outline-light btn-pill">Shuffle</button>
+    <div class="muted ms-auto">Progress: <span id="study-progress">0 / 0</span></div>
+  </div>
 
-    <div id="study-controls" class="mb-3 d-flex gap-2 align-items-center">  
-      <select id="study-capsule-select" class="form-select" style="width:300px;">  
-        <option value="">Choose a capsule to study...</option>  
-      </select>  
-      <button id="start-study" class="btn btn-primary btn-pill">Start</button>  
-      <button id="shuffle-study" class="btn btn-outline-light btn-pill">Shuffle</button>  
-      <div class="muted ms-auto">Progress: <span id="study-progress">0 / 0</span></div>  
-    </div>  
+  <div id="study-area" class="learn-card card-panel p-3 bg-dark rounded-3">
+    <div id="study-empty" class="muted">Select a capsule and press Start to begin studying flashcards or quizzes.</div>
 
-    <div id="study-area" class="learn-card card-panel">  
-      <div id="study-empty" class="muted">Select a capsule and press Start to begin studying flashcards or quizzes.</div>  
+    <!-- 🔹 Flashcard Study -->
+    <div id="flashcard-study" class="d-none">
+      <div class="mb-2 muted small" id="fc-meta"></div>
+      <div id="fc-front-display" class="h5 fw-bold mb-2"></div>
+      <div id="fc-back-display" class="muted mb-3" style="display:none"></div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button id="show-answer" class="btn btn-outline-light btn-pill">Show Answer</button>
+        <button id="mark-learned" class="btn btn-success btn-pill">Mark Learned</button>
+        <button id="next-card" class="btn btn-secondary btn-pill ms-auto">Next</button>
+      </div>
+    </div>
 
-      <div id="flashcard-study" class="d-none">  
-        <div class="mb-2 muted small" id="fc-meta"></div>  
-        <div id="fc-front-display" class="h5 fw-bold mb-2"></div>  
-        <div id="fc-back-display" class="muted mb-3" style="display:none"></div>  
-        <div class="d-flex gap-2">  
-          <button id="show-answer" class="btn btn-outline-light btn-pill">Show Answer</button>  
-          <button id="mark-learned" class="btn btn-success btn-pill">Mark Learned</button>  
-          <button id="next-card" class="btn btn-secondary btn-pill ms-auto">Next</button>  
-        </div>  
-      </div>  
+    <!-- 🔹 Quiz Study -->
+    <div id="quiz-study" class="d-none">
+      <div id="q-text-display" class="h5 fw-bold mb-2"></div>
+      <div id="q-options" class="d-flex flex-column gap-2 mb-3"></div>
+      <div class="d-flex gap-2">
+        <button id="q-next" class="btn btn-secondary btn-pill ms-auto">Next</button>
+      </div>
+      <div id="q-feedback" class="mt-2 muted"></div>
+    </div>
+  </div>
+</section>
 
-      <div id="quiz-study" class="d-none">  
-        <div id="q-text-display" class="h5 fw-bold mb-2"></div>  
-        <div id="q-options" class="d-flex flex-column gap-2 mb-3"></div>  
-        <div class="d-flex gap-2">  
-          <button id="q-next" class="btn btn-secondary btn-pill ms-auto">Next</button>  
-        </div>  
-        <div id="q-feedback" class="mt-2 muted"></div>  
-      </div>  
+<footer class="text-center muted mt-2 small">
+  © 2025 Pocket Classroom — Offline · LocalStorage · Export/Import JSON
+</footer>
 
-    </div>  
-  </section>  
+<!-- 🔹 JS for Learn / Study -->
+<script>
+let studyCapsules = [];
+let currentCapsule = null;
+let studyIndex = 0;
+let flashcardsMode = true;
 
-  <footer class="text-center muted mt-2">  
-    Â© 2025 Pocket Classroom â€” Offline Â· LocalStorage Â· Export/Import JSON  
-  </footer>  
-</div>  
+// Load capsules from localStorage
+function loadCapsules() {
+  studyCapsules = JSON.parse(localStorage.getItem('capsules') || '[]');
+  const select = document.querySelector('#study-capsule-select');
+  select.innerHTML = '<option value="">Choose a capsule to study...</option>';
+  studyCapsules.forEach((cap, idx) => {
+    select.innerHTML += `<option value="${idx}">${cap.title}</option>`;
+  });
+}
 
+loadCapsules();
+
+// Start Study
+document.querySelector('#start-study').addEventListener('click', () => {
+  const idx = document.querySelector('#study-capsule-select').value;
+  if(idx === '') return alert('Please select a capsule.');
+  currentCapsule = studyCapsules[idx];
+  studyIndex = 0;
+
+  flashcardsMode = currentCapsule.flashcards && currentCapsule.flashcards.length > 0;
+  document.querySelector('#study-mode').innerText = flashcardsMode ? 'Flashcards' : 'Quiz';
+
+  document.querySelector('#study-empty').classList.add('d-none');
+  document.querySelector('#flashcard-study').classList.toggle('d-none', !flashcardsMode);
+  document.querySelector('#quiz-study').classList.toggle('d-none', flashcardsMode);
+
+  updateStudyDisplay();
+});
+
+// Shuffle Study
+document.querySelector('#shuffle-study').addEventListener('click', () => {
+  if(!currentCapsule) return;
+  const arr = flashcardsMode ? currentCapsule.flashcards : currentCapsule.quiz;
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  studyIndex = 0;
+  updateStudyDisplay();
+});
+
+// Update Flashcard / Quiz Display
+function updateStudyDisplay() {
+  if(flashcardsMode){
+    const fc = currentCapsule.flashcards[studyIndex];
+    document.querySelector('#fc-meta').innerText = `Card ${studyIndex + 1} of ${currentCapsule.flashcards.length}`;
+    document.querySelector('#fc-front-display').innerText = fc.front;
+    document.querySelector('#fc-back-display').style.display = 'none';
+    document.querySelector('#fc-back-display').innerText = fc.back;
+    document.querySelector('#study-progress').innerText = `${studyIndex+1} / ${currentCapsule.flashcards.length}`;
+  } else {
+    const q = currentCapsule.quiz[studyIndex];
+    document.querySelector('#q-text-display').innerText = q.q;
+    const opts = document.querySelector('#q-options');
+    opts.innerHTML = '';
+    q.opts.forEach((o,i)=>{
+      opts.innerHTML += `<button class="btn btn-outline-light btn-sm q-option" data-index="${i}">${o}</button>`;
+    });
+    document.querySelector('#q-feedback').innerText = '';
+    document.querySelector('#study-progress').innerText = `${studyIndex+1} / ${currentCapsule.quiz.length}`;
+  }
+}
+
+// Flashcard Buttons
+document.querySelector('#show-answer').addEventListener('click', ()=>{
+  document.querySelector('#fc-back-display').style.display = 'block';
+});
+
+document.querySelector('#mark-learned').addEventListener('click', ()=>{
+  alert('Marked as learned!'); // برای آینده می‌توان در localStorage ذخیره کرد
+});
+
+document.querySelector('#next-card').addEventListener('click', ()=>{
+  studyIndex++;
+  if(studyIndex >= currentCapsule.flashcards.length) studyIndex = 0;
+  updateStudyDisplay();
+});
+
+// Quiz Buttons
+document.querySelector('#q-options').addEventListener('click', (e)=>{
+  if(!e.target.classList.contains('q-option')) return;
+  const idx = parseInt(e.target.dataset.index);
+  const correct = currentCapsule.quiz[studyIndex].correct-1;
+  const feedback = document.querySelector('#q-feedback');
+  feedback.innerText = idx === correct ? '✅ Correct!' : `❌ Wrong! Correct: ${currentCapsule.quiz[studyIndex].opts[correct]}`;
+});
+
+document.querySelector('#q-next').addEventListener('click', ()=>{
+  studyIndex++;
+  if(studyIndex >= currentCapsule.quiz.length) studyIndex = 0;
+  updateStudyDisplay();
+});
+      </script>
 <!-- RIGHT / NOTES PANEL -->  
 <aside class="notes-panel">  
   <div class="d-flex justify-content-between align-items-center mb-2">  
