@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🎓 Pocket Classroom — Complete Offline E-Learning</title>
+<title>🎓 Pocket Classroom — Professional Offline E-Learning</title>
 <style>
-/* --- Fonts & Theme --- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 :root{
   --bg:#0f1720;
@@ -16,19 +15,23 @@
   --btn-hover:#14b8a6;
 }
 *{box-sizing:border-box;font-family:'Inter',sans-serif;margin:0;padding:0;}
-body{background:var(--bg) url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/...') no-repeat center center fixed;background-size:cover;color:#e6eef6;}
+body{
+  background:linear-gradient(rgba(15,23,32,0.7), rgba(15,23,32,0.7)),
+             url('data:image/jpeg;base64,/9j/4AAQSkZJRgABA...') no-repeat center center fixed;
+  background-size:cover;color:#e6eef6;
+}
 h4,h5,h6{margin:0;}
 .container{max-width:1400px;margin:auto;padding:20px;}
-button{cursor:pointer;}
-/* --- Layout --- */
-.app-shell{display:grid;grid-template-columns:1fr 320px;gap:20px;min-height:100vh;}
+button{cursor:pointer;transition:0.2s;}
+button:hover{opacity:0.85;}
+.app-shell{display:grid;grid-template-columns:1fr 350px;gap:20px;min-height:100vh;}
 .main-col{display:flex;flex-direction:column;gap:20px;}
 header.navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(0,0,0,0.6);border-radius:12px;}
 .nav-btn{padding:6px 16px;border-radius:999px;border:1px solid var(--muted);background:transparent;color:inherit;margin-right:6px;}
 .nav-btn.active{background:var(--accent);color:#fff;border:none;}
 .card-panel{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
 .library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
-.capsule-card{padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);}
+.capsule-card{padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);display:flex;flex-direction:column;justify-content:space-between;}
 .muted{color:var(--muted);}
 .tag{background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:999px;margin-right:4px;font-size:0.75rem;}
 .btn-pill{border-radius:999px;border:none;padding:6px 12px;}
@@ -45,7 +48,6 @@ footer{opacity:0.7;text-align:center;margin-top:12px;}
 <div class="app-shell">
 
 <div class="main-col">
-<!-- Header -->
 <header class="navbar">
 <div>
   <span style="font-weight:700;font-size:1.2rem;">🎓 Pocket Classroom</span>
@@ -93,34 +95,37 @@ footer{opacity:0.7;text-align:center;margin-top:12px;}
 
 <div id="note-content-wrapper"><textarea id="capsule-content" rows="4" placeholder="Notes content..."></textarea></div>
 
-<!-- Flashcards -->
 <div id="flashcards-wrapper" style="display:none;margin-bottom:8px;">
+<h5>Flashcards</h5>
 <div id="flashcards-list"></div>
-<div style="display:flex;gap:4px;">
-<input id="fc-front" placeholder="Front">
-<input id="fc-back" placeholder="Back">
-<button type="button" id="add-fc" class="btn-pill" style="background:var(--accent);">Add</button>
+<div style="display:flex;gap:4px;margin-top:4px;">
+<input id="fc-front" placeholder="Front (Question)">
+<input id="fc-back" placeholder="Back (Answer)">
+<button type="button" id="add-fc" class="btn-pill" style="background:var(--accent);">Add Card</button>
 </div>
 </div>
 
-<!-- Quiz -->
 <div id="quiz-wrapper" style="display:none;margin-bottom:8px;">
+<h5>Quiz Questions</h5>
 <div id="quiz-list"></div>
-<div style="display:flex;gap:4px;">
-<input id="q-text" placeholder="Question">
-<input id="q-opt1" placeholder="A">
-<input id="q-opt2" placeholder="B">
-</div>
-<div style="display:flex;gap:4px;margin-top:4px;">
-<input id="q-opt3" placeholder="C">
-<input id="q-opt4" placeholder="D">
-<select id="q-correct"><option value="1">A</option><option value="2">B</option><option value="3">C</option><option value="4">D</option></select>
-<button type="button" id="add-q" class="btn-pill" style="background:var(--accent);">Add Q</button>
+<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">
+<input id="q-text" placeholder="Question" style="flex:1 1 100%;">
+<input id="q-opt1" placeholder="Option A">
+<input id="q-opt2" placeholder="Option B">
+<input id="q-opt3" placeholder="Option C">
+<input id="q-opt4" placeholder="Option D">
+<select id="q-correct">
+<option value="1">A</option>
+<option value="2">B</option>
+<option value="3">C</option>
+<option value="4">D</option>
+</select>
+<button type="button" id="add-q" class="btn-pill" style="background:var(--accent);">Add Question</button>
 </div>
 </div>
 
 <div style="display:flex;gap:6px;margin-top:10px;">
-<button type="submit" class="btn-pill" style="background:green;">Save</button>
+<button type="submit" class="btn-pill" style="background:green;">Save Capsule</button>
 <button type="button" id="cancel-edit" class="btn-pill" style="background:gray;">Cancel</button>
 <button type="button" id="new-capsule" class="btn-pill" style="background:var(--accent);margin-left:auto;">New</button>
 </div>
@@ -174,28 +179,39 @@ footer{opacity:0.7;text-align:center;margin-top:12px;}
 // --- Utilities ---
 function saveToStorage(){localStorage.setItem('pocketCapsules',JSON.stringify(capsules));}
 function loadFromStorage(){return JSON.parse(localStorage.getItem('pocketCapsules')||'[]');}
-function logAction(msg){const l=document.getElementById('logs');l.innerHTML=`<div>${msg}</div>`+l.innerHTML;}
+function logAction(msg){logsEl.innerHTML=`<div>${msg}</div>`+logsEl.innerHTML;}
 
 // --- State ---
-let capsules=loadFromStorage();
-let currentStudyIndex=0;
-let studyCards=[];
-let studyMode='';
+let capsules = loadFromStorage();
+let tempFlashcards = [];
+let tempQuiz = [];
+let currentStudyIndex = 0;
+let studyCards = [];
+let studyMode = '';
 
 // --- Elements ---
-const navBtns=document.querySelectorAll('.nav-btn');
-const sections={library:document.getElementById('library'),author:document.getElementById('author'),learn:document.getElementById('learn')};
-const libraryList=document.getElementById('library-list');
-const capsuleCount=document.getElementById('capsule-count');
-const capsuleForm=document.getElementById('capsule-form');
-const editingIndex=document.getElementById('editing-index');
-const notesEl=document.getElementById('notes');
-const logsEl=document.getElementById('logs');
-const clearLogsBtn=document.getElementById('clear-logs');
+const navBtns = document.querySelectorAll('.nav-btn');
+const sections = {library:document.getElementById('library'),author:document.getElementById('author'),learn:document.getElementById('learn')};
+const libraryList = document.getElementById('library-list');
+const capsuleCount = document.getElementById('capsule-count');
+const capsuleForm = document.getElementById('capsule-form');
+const editingIndex = document.getElementById('editing-index');
+const notesEl = document.getElementById('notes');
+const logsEl = document.getElementById('logs');
+const clearLogsBtn = document.getElementById('clear-logs');
+const flashcardsWrapper = document.getElementById('flashcards-wrapper');
+const quizWrapper = document.getElementById('quiz-wrapper');
+const fcListEl = document.getElementById('flashcards-list');
+const quizListEl = document.getElementById('quiz-list');
 
 // --- Navigation ---
 navBtns.forEach(btn=>{
-btn.addEventListener('click',()=>{navBtns.forEach(b=>b.classList.remove('active'));btn.classList.add('active');Object.keys(sections).forEach(k=>sections[k].style.display='none');sections[btn.dataset.section].style.display='block';});
+  btn.addEventListener('click',()=>{
+    navBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    Object.keys(sections).forEach(k=>sections[k].style.display='none');
+    sections[btn.dataset.section].style.display='block';
+  });
 });
 
 // --- Notes ---
@@ -204,57 +220,144 @@ notesEl.addEventListener('input',()=>{localStorage.setItem('pocketNotes',notesEl
 
 // --- Library ---
 function renderLibrary(){
-libraryList.innerHTML='';
-if(!capsules.length){document.getElementById('empty-state').style.display='block';}
-else{document.getElementById('empty-state').style.display='none';capsules.forEach((c,i)=>{
-const div=document.createElement('div');div.className='capsule-card';
-div.innerHTML=`<div style="font-weight:600;">${c.title}</div><div class="muted" style="font-size:0.8rem;">${c.tags.join(', ')}</div><div style="margin-top:6px;"><button onclick="editCapsule(${i})" class="btn-pill" style="background:var(--accent);">Edit</button><button onclick="deleteCapsule(${i})" class="btn-pill" style="background:red;">Delete</button></div>`;
-libraryList.appendChild(div);
-});}
-capsuleCount.textContent=capsules.length;
-updateStudySelect();
+  libraryList.innerHTML='';
+  if(!capsules.length){document.getElementById('empty-state').style.display='block';}
+  else{
+    document.getElementById('empty-state').style.display='none';
+    capsules.forEach((c,i)=>{
+      const div=document.createElement('div'); div.className='capsule-card';
+      div.innerHTML=`<div style="font-weight:600;">${c.title}</div>
+                     <div class="muted" style="font-size:0.8rem;">${c.tags.join(', ')}</div>
+                     <div style="margin-top:6px;display:flex;gap:4px;">
+                       <button onclick="editCapsule(${i})" class="btn-pill" style="background:var(--accent);flex:1;">Edit</button>
+                       <button onclick="deleteCapsule(${i})" class="btn-pill" style="background:red;flex:1;">Delete</button>
+                     </div>`;
+      libraryList.appendChild(div);
+    });
+  }
+  capsuleCount.textContent=capsules.length;
+  updateStudySelect();
 }
-function editCapsule(i){const c=capsules[i];editingIndex.value=i;document.getElementById('capsule-title').value=c.title;document.getElementById('capsule-tags').value=c.tags.join(',');document.getElementById('capsule-type').value=c.type;document.getElementById('capsule-content').value=c.content||'';flashcardsWrapper.style.display=c.type==='flashcards'?'block':'none';quizWrapper.style.display=c.type==='quiz'?'block':'none';renderFlashcards(c.flashcards||[]);renderQuiz(c.quiz||[]);}
+function editCapsule(i){
+  const c=capsules[i];
+  editingIndex.value=i;
+  document.getElementById('capsule-title').value=c.title;
+  document.getElementById('capsule-tags').value=c.tags.join(',');
+  document.getElementById('capsule-type').value=c.type;
+  document.getElementById('capsule-content').value=c.content||'';
+  flashcardsWrapper.style.display=c.type==='flashcards'?'block':'none';
+  quizWrapper.style.display=c.type==='quiz'?'block':'none';
+  tempFlashcards = c.flashcards? [...c.flashcards] : [];
+  tempQuiz = c.quiz? [...c.quiz] : [];
+  renderFlashcards(tempFlashcards);
+  renderQuiz(tempQuiz);
+}
 function deleteCapsule(i){if(confirm('Delete this capsule?')){capsules.splice(i,1);saveToStorage();renderLibrary();logAction(`Deleted capsule`);}}
-function updateStudySelect(){const sel=document.getElementById('study-capsule-select');sel.innerHTML='<option value="">Choose capsule...</option>';capsules.forEach((c,i)=>{sel.innerHTML+=`<option value="${i}">${c.title}</option>`;});}
+function updateStudySelect(){
+  const sel=document.getElementById('study-capsule-select');
+  sel.innerHTML='<option value="">Choose capsule...</option>';
+  capsules.forEach((c,i)=>{sel.innerHTML+=`<option value="${i}">${c.title}</option>`;});
+}
 
 // --- Capsule Form ---
-const flashcardsWrapper=document.getElementById('flashcards-wrapper');
-const quizWrapper=document.getElementById('quiz-wrapper');
-const fcListEl=document.getElementById('flashcards-list');
-const quizListEl=document.getElementById('quiz-list');
 document.getElementById('capsule-type').addEventListener('change',e=>{
-const t=e.target.value;flashcardsWrapper.style.display=t==='flashcards'?'block':'none';quizWrapper.style.display=t==='quiz'?'block':'none';document.getElementById('note-content-wrapper').style.display=t==='note'?'block':'none';
+  const t=e.target.value;
+  flashcardsWrapper.style.display=t==='flashcards'?'block':'none';
+  quizWrapper.style.display=t==='quiz'?'block':'none';
+  document.getElementById('note-content-wrapper').style.display=t==='note'?'block':'none';
 });
 function renderFlashcards(list){fcListEl.innerHTML='';list.forEach((f,i)=>{const d=document.createElement('div');d.textContent=`${f.front} → ${f.back}`;fcListEl.appendChild(d);});}
-function renderQuiz(list){quizListEl.innerHTML='';list.forEach((q,i)=>{const d=document.createElement('div');d.textContent=`${q.text} [${q.correct}]`;quizListEl.appendChild(d);});}
+function renderQuiz(list){quizListEl.innerHTML='';list.forEach((q,i)=>{const d=document.createElement('div');d.textContent=`${q.text} [Answer: ${q.correct}]`;quizListEl.appendChild(d);});}
 
-document.getElementById('add-fc').addEventListener('click',()=>{const front=document.getElementById('fc-front').value.trim();const back=document.getElementById('fc-back').value.trim();if(!front||!back)return;const idx=editingIndex.value;let cidx=idx!==''?parseInt(idx):-1;let c=cidx>=0?capsules[cidx]:{flashcards:[]};c.flashcards=c.flashcards||[];c.flashcards.push({front,back});renderFlashcards(c.flashcards);document.getElementById('fc-front').value='';document.getElementById('fc-back').value='';});
-document.getElementById('add-q').addEventListener('click',()=>{const text=document.getElementById('q-text').value;const opt1=document.getElementById('q-opt1').value,opt2=document.getElementById('q-opt2').value,opt3=document.getElementById('q-opt3').value,opt4=document.getElementById('q-opt4').value;const correct=document.getElementById('q-correct').value;if(!text||!opt1||!opt2||!opt3||!opt4)return;const idx=editingIndex.value;let cidx=idx!==''?parseInt(idx):-1;let c=cidx>=0?capsules[cidx]:{quiz:[]};c.quiz=c.quiz||[];c.quiz.push({text,options:[opt1,opt2,opt3,opt4],correct});renderQuiz(c.quiz);document.getElementById('q-text').value='';document.getElementById('q-opt1').value='';document.getElementById('q-opt2').value='';document.getElementById('q-opt3').value='';document.getElementById('q-opt4').value='';});
+document.getElementById('add-fc').addEventListener('click',()=>{
+  const front=document.getElementById('fc-front').value.trim();
+  const back=document.getElementById('fc-back').value.trim();
+  if(!front||!back)return;
+  tempFlashcards.push({front,back});
+  renderFlashcards(tempFlashcards);
+  document.getElementById('fc-front').value='';document.getElementById('fc-back').value='';
+});
 
-capsuleForm.addEventListener('submit',e=>{e.preventDefault();const title=document.getElementById('capsule-title').value.trim();const tags=document.getElementById('capsule-tags').value.split(',').map(t=>t.trim()).filter(Boolean);const type=document.getElementById('capsule-type').value;let content=document.getElementById('capsule-content').value;let fc=[],q=[];if(type==='flashcards'){const idx=editingIndex.value;let cidx=idx!==''?parseInt(idx):-1;fc=(cidx>=0?capsules[cidx].flashcards:[])||[];}if(type==='quiz'){const idx=editingIndex.value;let cidx=idx!==''?parseInt(idx):-1;q=(cidx>=0?capsules[cidx].quiz:[])||[];}const data={title,tags,type,content,flashcards:fc,quiz:q};if(editingIndex.value===''){capsules.push(data);logAction(`Created capsule: ${title}`);}else{capsules[parseInt(editingIndex.value)]=data;logAction(`Updated capsule: ${title}`);}editingIndex.value='';capsuleForm.reset();flashcardsWrapper.style.display='none';quizWrapper.style.display='none';document.getElementById('note-content-wrapper').style.display='block';saveToStorage();renderLibrary();});
+document.getElementById('add-q').addEventListener('click',()=>{
+  const text=document.getElementById('q-text').value;
+  const opt1=document.getElementById('q-opt1').value,opt2=document.getElementById('q-opt2').value,opt3=document.getElementById('q-opt3').value,opt4=document.getElementById('q-opt4').value;
+  const correct=document.getElementById('q-correct').value;
+  if(!text||!opt1||!opt2||!opt3||!opt4)return;
+  tempQuiz.push({text,options:[opt1,opt2,opt3,opt4],correct});
+  renderQuiz(tempQuiz);
+  document.getElementById('q-text').value='';document.getElementById('q-opt1').value='';document.getElementById('q-opt2').value='';document.getElementById('q-opt3').value='';document.getElementById('q-opt4').value='';
+});
+
+capsuleForm.addEventListener('submit',e=>{
+  e.preventDefault();
+  const title=document.getElementById('capsule-title').value.trim();
+  const tags=document.getElementById('capsule-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const type=document.getElementById('capsule-type').value;
+  const content=document.getElementById('capsule-content').value;
+  const data = {
+    title,
+    tags,
+    type,
+    content,
+    flashcards: type==='flashcards' ? [...tempFlashcards] : [],
+    quiz: type==='quiz' ? [...tempQuiz] : []
+  };
+
+  if(editingIndex.value===''){ 
+    capsules.push(data); 
+    logAction(`Created capsule: ${title}`);
+  } else {
+    capsules[parseInt(editingIndex.value)] = data;
+    logAction(`Updated capsule: ${title}`);
+  }
+
+  editingIndex.value='';
+  capsuleForm.reset();
+  flashcardsWrapper.style.display='none';
+  quizWrapper.style.display='none';
+  document.getElementById('note-content-wrapper').style.display='block';
+  tempFlashcards = [];
+  tempQuiz = [];
+  saveToStorage();
+  renderLibrary();
+});
+
 // --- New / Cancel ---
 document.getElementById('new-capsule').addEventListener('click',()=>{
   editingIndex.value=''; capsuleForm.reset();
   flashcardsWrapper.style.display='none'; quizWrapper.style.display='none';
   document.getElementById('note-content-wrapper').style.display='block';
+  tempFlashcards = [];
+  tempQuiz = [];
 });
 document.getElementById('cancel-edit').addEventListener('click',()=>{
   editingIndex.value=''; capsuleForm.reset();
   flashcardsWrapper.style.display='none'; quizWrapper.style.display='none';
   document.getElementById('note-content-wrapper').style.display='block';
+  tempFlashcards = [];
+  tempQuiz = [];
 });
 
 // --- Export / Import ---
 document.getElementById('export-all').addEventListener('click',()=>{
   const dataStr="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(capsules));
-  const dlAnchor=document.createElement('a'); dlAnchor.setAttribute('href',dataStr); dlAnchor.setAttribute('download','pocket_capsules.json'); dlAnchor.click();
+  const dlAnchor=document.createElement('a'); 
+  dlAnchor.setAttribute('href',dataStr); 
+  dlAnchor.setAttribute('download','pocket_capsules.json'); 
+  dlAnchor.click();
 });
 document.getElementById('import-all').addEventListener('click',()=>{document.getElementById('file-import').click();});
 document.getElementById('file-import').addEventListener('change',e=>{
   const file=e.target.files[0]; if(!file)return;
   const reader=new FileReader();
-  reader.onload=function(ev){try{const imported=JSON.parse(ev.target.result);if(Array.isArray(imported)){capsules=imported;saveToStorage();renderLibrary();logAction('Imported capsules.');}}catch(err){alert('Invalid JSON file');}}
+  reader.onload=function(ev){
+    try{
+      const imported=JSON.parse(ev.target.result);
+      if(Array.isArray(imported)){
+        capsules=imported; saveToStorage(); renderLibrary(); logAction('Imported capsules.');
+      }
+    }catch(err){alert('Invalid JSON file');}
+  }
   reader.readAsText(file);
 });
 
@@ -280,14 +383,31 @@ const qFeedback=document.getElementById('q-feedback');
 const qNextBtn=document.getElementById('q-next');
 
 function startStudy(){
-  const idx=studySelect.value; if(idx===''){alert('Select capsule'); return;}
-  const capsule=capsules[idx]; currentStudyIndex=0;
-  if(capsule.type==='flashcards'){studyCards=[...capsule.flashcards];studyMode='flashcards';flashcardStudy.style.display='block';quizStudy.style.display='none';fcBackDisplay.style.display='none';renderFlashcard();}
-  if(capsule.type==='quiz'){studyCards=[...capsule.quiz];studyMode='quiz';flashcardStudy.style.display='none';quizStudy.style.display='block';renderQuizQuestion();}
+  const idx=studySelect.value; 
+  if(idx===''){alert('Select a capsule'); return;}
+  const capsule=capsules[idx]; 
+  currentStudyIndex=0;
+  if(capsule.type==='flashcards'){
+    studyCards=[...capsule.flashcards];
+    studyMode='flashcards';
+    flashcardStudy.style.display='block';
+    quizStudy.style.display='none';
+    fcBackDisplay.style.display='none';
+    renderFlashcard();
+  }
+  if(capsule.type==='quiz'){
+    studyCards=[...capsule.quiz];
+    studyMode='quiz';
+    flashcardStudy.style.display='none';
+    quizStudy.style.display='block';
+    renderQuizQuestion();
+  }
   studyProgress.textContent=`${currentStudyIndex+1}/${studyCards.length}`;
   document.getElementById('study-mode').textContent=capsule.type;
 }
+
 function renderFlashcard(){
+  if(studyCards.length===0){fcFrontDisplay.textContent='No cards!'; fcBackDisplay.style.display='none'; return;}
   if(currentStudyIndex>=studyCards.length){alert('Finished!'); return;}
   const c=studyCards[currentStudyIndex];
   fcFrontDisplay.textContent=c.front;
@@ -297,24 +417,54 @@ function renderFlashcard(){
   studyProgress.textContent=`${currentStudyIndex+1}/${studyCards.length}`;
 }
 showAnswerBtn.addEventListener('click',()=>{fcBackDisplay.style.display='block';});
-markLearnedBtn.addEventListener('click',()=>{studyCards.splice(currentStudyIndex,1);if(currentStudyIndex>=studyCards.length)currentStudyIndex=0;renderFlashcard();});
-nextCardBtn.addEventListener('click',()=>{currentStudyIndex=(currentStudyIndex+1)%studyCards.length;renderFlashcard();});
+markLearnedBtn.addEventListener('click',()=>{
+  studyCards.splice(currentStudyIndex,1);
+  if(currentStudyIndex>=studyCards.length) currentStudyIndex=0;
+  renderFlashcard();
+});
+nextCardBtn.addEventListener('click',()=>{
+  if(studyCards.length===0) return;
+  currentStudyIndex=(currentStudyIndex+1)%studyCards.length;
+  renderFlashcard();
+});
 
 function renderQuizQuestion(){
+  if(studyCards.length===0){qTextDisplay.textContent='No questions!'; qOptions.innerHTML=''; return;}
   if(currentStudyIndex>=studyCards.length){alert('Finished!'); return;}
   const q=studyCards[currentStudyIndex];
   qTextDisplay.textContent=q.text;
   qOptions.innerHTML='';
-  q.options.forEach((opt,i)=>{const btn=document.createElement('button'); btn.className='btn-pill'; btn.textContent=opt; btn.style.background='rgba(255,255,255,0.1)'; btn.addEventListener('click',()=>{qFeedback.textContent=(i+1==q.correct)?'Correct!':'Wrong!';}); qOptions.appendChild(btn);});
+  q.options.forEach((opt,i)=>{
+    const btn=document.createElement('button'); 
+    btn.className='btn-pill'; 
+    btn.textContent=opt; 
+    btn.style.background='rgba(255,255,255,0.1)'; 
+    btn.addEventListener('click',()=>{
+      qFeedback.textContent=(i+1==q.correct)?'Correct!':'Wrong!';
+    });
+    qOptions.appendChild(btn);
+  });
   qFeedback.textContent='';
   studyProgress.textContent=`${currentStudyIndex+1}/${studyCards.length}`;
 }
-qNextBtn.addEventListener('click',()=>{currentStudyIndex=(currentStudyIndex+1)%studyCards.length;renderQuizQuestion();});
+
+qNextBtn.addEventListener('click',()=>{
+  if(studyCards.length===0) return;
+  currentStudyIndex=(currentStudyIndex+1)%studyCards.length;
+  renderQuizQuestion();
+});
+
 startStudyBtn.addEventListener('click',startStudy);
-document.getElementById('shuffle-study').addEventListener('click',()=>{studyCards.sort(()=>Math.random()-0.5);currentStudyIndex=0;if(studyMode==='flashcards')renderFlashcard();if(studyMode==='quiz')renderQuizQuestion();});
+document.getElementById('shuffle-study').addEventListener('click',()=>{
+  studyCards.sort(()=>Math.random()-0.5);
+  currentStudyIndex=0;
+  if(studyMode==='flashcards') renderFlashcard();
+  if(studyMode==='quiz') renderQuizQuestion();
+});
 
 // --- Initialize ---
 renderLibrary();
 </script>
 </body>
 </html>
+                                     
