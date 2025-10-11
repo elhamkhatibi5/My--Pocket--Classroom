@@ -1,374 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🎓 Pocket Classroom — Professional Offline E-Learning</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 Pocket Classroom — آفلاین</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-:root{
-  --bg:#0f1720;
-  --card:#1e293b;
-  --accent:#0ea5a4;
-  --muted:#9aa4b2;
-  --btn-bg:#0ea5a4;
-  --btn-hover:#14b8a6;
-}
-*{box-sizing:border-box;font-family:'Inter',sans-serif;margin:0;padding:0;}
-body{
-  background:linear-gradient(rgba(15,23,32,0.7), rgba(15,23,32,0.7)),
-             url('data:image/jpeg;base64,/9j/4AAQSkZJRgABA...') no-repeat center center fixed;
-  background-size:cover;color:#e6eef6;
-}
-h4,h5,h6{margin:0;}
-.container{max-width:1400px;margin:auto;padding:20px;}
-button{cursor:pointer;transition:0.2s;}
-button:hover{opacity:0.85;}
-.app-shell{display:grid;grid-template-columns:1fr 350px;gap:20px;min-height:100vh;}
-.main-col{display:flex;flex-direction:column;gap:20px;}
-header.navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(0,0,0,0.6);border-radius:12px;}
-.nav-btn{padding:6px 16px;border-radius:999px;border:1px solid var(--muted);background:transparent;color:inherit;margin-right:6px;}
-.nav-btn.active{background:var(--accent);color:#fff;border:none;}
-.card-panel{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
-.library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
-.capsule-card{padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);display:flex;flex-direction:column;justify-content:space-between;}
-.muted{color:var(--muted);}
-.tag{background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:999px;margin-right:4px;font-size:0.75rem;}
-.btn-pill{border-radius:999px;border:none;padding:6px 12px;}
-input,textarea,select{border-radius:6px;padding:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;width:100%;}
-textarea{resize:vertical;}
-.notes-panel{background:rgba(0,0,0,0.5);border-radius:12px;padding:12px;height:calc(100vh - 40px);overflow:auto;}
-.learn-card{min-height:180px;}
-footer{opacity:0.7;text-align:center;margin-top:12px;}
-@media(max-width:900px){.app-shell{grid-template-columns:1fr;}.notes-panel{height:200px;}}
+/* --- Reset & Base --- */
+* {margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
+body {background:#f0f4f8; color:#111; min-height:100vh;}
+button {cursor:pointer; transition:0.2s;}
+button:hover {opacity:0.8;}
+
+/* --- Navbar --- */
+nav {display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:#0ea5a4;color:#fff;}
+nav h1 {font-size:1.5rem;}
+nav .nav-buttons button {margin-left:0.5rem;padding:0.4rem 0.8rem;border:none;border-radius:5px;background:#06b6d4;color:#fff;}
+
+/* --- Main Layout --- */
+.container {display:flex;gap:1rem;padding:1rem;}
+.library, .study, .capsule-form {background:#fff;padding:1rem;border-radius:10px;flex:1;box-shadow:0 4px 8px rgba(0,0,0,0.1);}
+.library h2, .study h2, .capsule-form h2 {margin-bottom:0.5rem;}
+
+/* --- Capsule List --- */
+.capsule-item {padding:0.5rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;}
+.capsule-item:last-child {border:none;}
+.capsule-item button {padding:0.2rem 0.5rem;background:#0ea5a4;color:#fff;border:none;border-radius:4px;font-size:0.8rem;}
+
+/* --- Flashcards & Quiz --- */
+.flashcard, .quiz {margin-top:1rem;padding:1rem;border:1px solid #ddd;border-radius:8px;background:#f9fafb;}
+.flashcard div {margin-bottom:0.5rem;}
+#fc-front-display,#fc-back-display,#q-text-display {font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;}
+.btn-pill {margin:0.2rem;padding:0.4rem 0.8rem;border:none;border-radius:20px;background:rgba(14,165,164,0.2);color:#111;}
+
+/* --- Forms --- */
+.capsule-form input, .capsule-form textarea, .capsule-form select {width:100%;margin-bottom:0.5rem;padding:0.4rem;border:1px solid #ccc;border-radius:5px;}
+.capsule-form button {background:#0ea5a4;color:#fff;border:none;padding:0.5rem 1rem;border-radius:5px;margin-top:0.5rem;}
 </style>
 </head>
 <body>
+
+<nav>
+  <h1>🎓 Pocket Classroom</h1>
+  <div class="nav-buttons">
+    <button id="new-capsule">کپسول جدید</button>
+    <button id="export-all">Export</button>
+    <button id="import-all">Import</button>
+    <input type="file" id="file-import" style="display:none">
+  </div>
+</nav>
+
 <div class="container">
-<div class="app-shell">
+  <!-- Library -->
+  <div class="library">
+    <h2>Library</h2>
+    <div id="capsule-list"></div>
+  </div>
 
-<div class="main-col">
-<header class="navbar">
-<div>
-  <span style="font-weight:700;font-size:1.2rem;">🎓 Pocket Classroom</span>
-  <button class="nav-btn active" data-section="library">Library</button>
-  <button class="nav-btn" data-section="author">Create</button>
-  <button class="nav-btn" data-section="learn">Study</button>
-</div>
-<div>
-  <input id="global-search" placeholder="Search..." style="width:180px;">
-  <select id="sort-select" style="width:150px;">
-    <option value="date-desc">Newest</option>
-    <option value="date-asc">Oldest</option>
-    <option value="title-asc">Title A→Z</option>
-    <option value="title-desc">Title Z→A</option>
-  </select>
-  <button id="export-all" class="btn-pill" style="background:green;">Export</button>
-  <button id="import-all" class="btn-pill" style="background:gray;">Import</button>
-  <input type="file" id="file-import" accept=".json" style="display:none;">
-</div>
-</header>
+  <!-- Study Area -->
+  <div class="study">
+    <h2>Study Mode</h2>
+    <select id="study-capsule-select">
+      <option value="">انتخاب کپسول</option>
+    </select>
+    <button id="start-study">شروع مطالعه</button>
+    <button id="shuffle-study">Shuffle</button>
+    <div id="study-progress"></div>
 
-<!-- Library -->
-<section id="library" class="card-panel">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-<h4>Your Library</h4><span class="muted">Capsules: <span id="capsule-count">0</span></span>
-</div>
-<div id="library-list" class="library-grid"></div>
-<div id="empty-state" class="muted" style="margin-top:10px;">No capsules yet. Click Create to start.</div>
-</section>
+    <!-- Flashcard -->
+    <div class="flashcard" id="flashcard-study" style="display:none">
+      <div id="fc-front-display"></div>
+      <div id="fc-back-display" style="display:none"></div>
+      <div id="fc-meta"></div>
+      <button id="show-answer">نمایش جواب</button>
+      <button id="mark-learned">یادگرفته</button>
+      <button id="next-card">بعدی</button>
+    </div>
 
-<!-- Create -->
-<section id="author" class="card-panel" style="display:none;">
-<h4>Create / Edit Capsule</h4>
-<form id="capsule-form">
-<input type="hidden" id="editing-index">
-<div style="margin-bottom:8px;"><input id="capsule-title" placeholder="Title" required></div>
-<div style="margin-bottom:8px;display:flex;gap:8px;">
-<input id="capsule-tags" placeholder="Tags, comma separated">
-<select id="capsule-type">
-<option value="note">Note</option>
-<option value="flashcards">Flashcards</option>
-<option value="quiz">Quiz</option>
-</select>
-</div>
+    <!-- Quiz -->
+    <div class="quiz" id="quiz-study" style="display:none">
+      <div id="q-text-display"></div>
+      <div id="q-options"></div>
+      <div id="q-feedback" style="margin-top:0.5rem;font-weight:bold;"></div>
+      <button id="q-next">بعدی</button>
+    </div>
+  </div>
 
-<div id="note-content-wrapper"><textarea id="capsule-content" rows="4" placeholder="Notes content..."></textarea></div>
+  <!-- Capsule Form -->
+  <div class="capsule-form">
+    <h2>ایجاد / ویرایش کپسول</h2>
+    <input type="text" id="capsule-title" placeholder="عنوان">
+    <input type="text" id="capsule-tags" placeholder="تگ‌ها (با کاما جدا شود)">
+    <select id="capsule-type">
+      <option value="note">Note</option>
+      <option value="flashcards">Flashcards</option>
+      <option value="quiz">Quiz</option>
+    </select>
+    <textarea id="capsule-content" rows="3" placeholder="محتوا"></textarea>
 
-<div id="flashcards-wrapper" style="display:none;margin-bottom:8px;">
-<h5>Flashcards</h5>
-<div id="flashcards-list"></div>
-<div style="display:flex;gap:4px;margin-top:4px;">
-<input id="fc-front" placeholder="Front (Question)">
-<input id="fc-back" placeholder="Back (Answer)">
-<button type="button" id="add-fc" class="btn-pill" style="background:var(--accent);">Add Card</button>
-</div>
-</div>
+    <div id="flashcards-wrapper" style="display:none">
+      <h3>فلش‌کارت‌ها</h3>
+      <div id="flashcards-list"></div>
+      <input type="text" id="fc-front" placeholder="Front">
+      <input type="text" id="fc-back" placeholder="Back">
+      <button id="add-flashcard">اضافه کردن فلش‌کارت</button>
+    </div>
 
-<div id="quiz-wrapper" style="display:none;margin-bottom:8px;">
-<h5>Quiz Questions</h5>
-<div id="quiz-list"></div>
-<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">
-<input id="q-text" placeholder="Question" style="flex:1 1 100%;">
-<input id="q-opt1" placeholder="Option A">
-<input id="q-opt2" placeholder="Option B">
-<input id="q-opt3" placeholder="Option C">
-<input id="q-opt4" placeholder="Option D">
-<select id="q-correct">
-<option value="1">A</option>
-<option value="2">B</option>
-<option value="3">C</option>
-<option value="4">D</option>
-</select>
-<button type="button" id="add-q" class="btn-pill" style="background:var(--accent);">Add Question</button>
-</div>
+    <div id="quiz-wrapper" style="display:none">
+      <h3>کوییز</h3>
+      <div id="quiz-list"></div>
+      <input type="text" id="q-text" placeholder="سوال">
+      <input type="text" id="q-opt1" placeholder="گزینه 1">
+      <input type="text" id="q-opt2" placeholder="گزینه 2">
+      <input type="text" id="q-opt3" placeholder="گزینه 3">
+      <input type="text" id="q-opt4" placeholder="گزینه 4">
+      <input type="number" id="q-correct" placeholder="شماره گزینه صحیح (1-4)">
+      <button id="add-quiz">اضافه کردن سوال</button>
+    </div>
+
+    <button id="save-capsule">ذخیره کپسول</button>
+    <button id="cancel-edit">لغو</button>
+  </div>
 </div>
 
-<div style="display:flex;gap:6px;margin-top:10px;">
-<button type="submit" class="btn-pill" style="background:green;">Save Capsule</button>
-<button type="button" id="cancel-edit" class="btn-pill" style="background:gray;">Cancel</button>
-<button type="button" id="new-capsule" class="btn-pill" style="background:var(--accent);margin-left:auto;">New</button>
-</div>
-</form>
-</section>
-
-<!-- Study -->
-<section id="learn" class="card-panel" style="display:none;">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-<h4>Study</h4><span class="muted">Mode: <span id="study-mode"></span></span>
-</div>
-<div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;">
-<select id="study-capsule-select" style="width:250px;"><option value="">Choose capsule...</option></select>
-<button id="start-study" class="btn-pill" style="background:var(--accent);">Start</button>
-<button id="shuffle-study" class="btn-pill" style="background:gray;">Shuffle</button>
-<span class="muted" style="margin-left:auto;">Progress: <span id="study-progress">0/0</span></span>
-</div>
-<div id="study-area" class="learn-card card-panel" style="background:rgba(255,255,255,0.05);padding:12px;">
-<div id="study-empty" class="muted">Select a capsule and press Start.</div>
-<div id="flashcard-study" style="display:none;">
-<div id="fc-meta" class="muted" style="font-size:0.8rem;"></div>
-<div id="fc-front-display" style="font-weight:bold;font-size:1.2rem;"></div>
-<div id="fc-back-display" class="muted" style="display:none;margin-top:4px;"></div>
-<div style="display:flex;gap:4px;margin-top:4px;">
-<button id="show-answer" class="btn-pill" style="background:gray;">Show Answer</button>
-<button id="mark-learned" class="btn-pill" style="background:green;">Mark Learned</button>
-<button id="next-card" class="btn-pill" style="background:var(--accent);margin-left:auto;">Next</button>
-</div>
-</div>
-<div id="quiz-study" style="display:none;">
-<div id="q-text-display" style="font-weight:bold;font-size:1.1rem;"></div>
-<div id="q-options" style="display:flex;flex-direction:column;gap:4px;margin-top:4px;"></div>
-<div style="display:flex;gap:4px;margin-top:4px;"><button id="q-next" class="btn-pill" style="background:var(--accent);margin-left:auto;">Next</button></div>
-<div id="q-feedback" style="margin-top:4px;" class="muted"></div>
-</div>
-</section>
-
-<footer>© 2025 Pocket Classroom — Offline · LocalStorage</footer>
-</div>
-
-<aside class="notes-panel">
-<h5>Quick Notes <span class="muted" style="font-size:0.8rem;">Autosaved</span></h5>
-<textarea id="notes" placeholder="Type notes..."></textarea>
-<h6 style="margin-top:12px;">Recent Actions <button id="clear-logs" class="btn-pill" style="background:gray;">Clear</button></h6>
-<div id="logs" style="font-size:0.8rem;margin-top:4px;"></div>
-</aside>
-</div>
-</div>
-
-<script>
-// --- Utilities ---
+<script type="module">
+// --- Storage ---
+let capsules = [];
 function saveToStorage(){localStorage.setItem('pocketCapsules',JSON.stringify(capsules));}
-function loadFromStorage(){return JSON.parse(localStorage.getItem('pocketCapsules')||'[]');}
-function logAction(msg){logsEl.innerHTML=`<div>${msg}</div>`+logsEl.innerHTML;}
+function loadFromStorage(){const data=localStorage.getItem('pocketCapsules');if(data) capsules=JSON.parse(data);}
+loadFromStorage();
 
 // --- State ---
-let capsules = loadFromStorage();
 let tempFlashcards = [];
 let tempQuiz = [];
-let currentStudyIndex = 0;
+let editingIndex = '';
 let studyCards = [];
+let currentStudyIndex = 0;
 let studyMode = '';
 
 // --- Elements ---
-const navBtns = document.querySelectorAll('.nav-btn');
-const sections = {library:document.getElementById('library'),author:document.getElementById('author'),learn:document.getElementById('learn')};
-const libraryList = document.getElementById('library-list');
-const capsuleCount = document.getElementById('capsule-count');
-const capsuleForm = document.getElementById('capsule-form');
-const editingIndex = document.getElementById('editing-index');
-const notesEl = document.getElementById('notes');
-const logsEl = document.getElementById('logs');
-const clearLogsBtn = document.getElementById('clear-logs');
-const flashcardsWrapper = document.getElementById('flashcards-wrapper');
-const quizWrapper = document.getElementById('quiz-wrapper');
-const fcListEl = document.getElementById('flashcards-list');
-const quizListEl = document.getElementById('quiz-list');
-
-// --- Navigation ---
-navBtns.forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    navBtns.forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    Object.keys(sections).forEach(k=>sections[k].style.display='none');
-    sections[btn.dataset.section].style.display='block';
-  });
-});
-
-// --- Notes ---
-notesEl.value=localStorage.getItem('pocketNotes')||'';
-notesEl.addEventListener('input',()=>{localStorage.setItem('pocketNotes',notesEl.value);});
-
-// --- Library ---
-function renderLibrary(){
-  libraryList.innerHTML='';
-  if(!capsules.length){document.getElementById('empty-state').style.display='block';}
-  else{
-    document.getElementById('empty-state').style.display='none';
-    capsules.forEach((c,i)=>{
-      const div=document.createElement('div'); div.className='capsule-card';
-      div.innerHTML=`<div style="font-weight:600;">${c.title}</div>
-                     <div class="muted" style="font-size:0.8rem;">${c.tags.join(', ')}</div>
-                     <div style="margin-top:6px;display:flex;gap:4px;">
-                       <button onclick="editCapsule(${i})" class="btn-pill" style="background:var(--accent);flex:1;">Edit</button>
-                       <button onclick="deleteCapsule(${i})" class="btn-pill" style="background:red;flex:1;">Delete</button>
-                     </div>`;
-      libraryList.appendChild(div);
-    });
-  }
-  capsuleCount.textContent=capsules.length;
-  updateStudySelect();
-}
-function editCapsule(i){
-  const c=capsules[i];
-  editingIndex.value=i;
-  document.getElementById('capsule-title').value=c.title;
-  document.getElementById('capsule-tags').value=c.tags.join(',');
-  document.getElementById('capsule-type').value=c.type;
-  document.getElementById('capsule-content').value=c.content||'';
-  flashcardsWrapper.style.display=c.type==='flashcards'?'block':'none';
-  quizWrapper.style.display=c.type==='quiz'?'block':'none';
-  tempFlashcards = c.flashcards? [...c.flashcards] : [];
-  tempQuiz = c.quiz? [...c.quiz] : [];
-  renderFlashcards(tempFlashcards);
-  renderQuiz(tempQuiz);
-}
-function deleteCapsule(i){if(confirm('Delete this capsule?')){capsules.splice(i,1);saveToStorage();renderLibrary();logAction(`Deleted capsule`);}}
-function updateStudySelect(){
-  const sel=document.getElementById('study-capsule-select');
-  sel.innerHTML='<option value="">Choose capsule...</option>';
-  capsules.forEach((c,i)=>{sel.innerHTML+=`<option value="${i}">${c.title}</option>`;});
-}
-
-// --- Capsule Form ---
-document.getElementById('capsule-type').addEventListener('change',e=>{
-  const t=e.target.value;
-  flashcardsWrapper.style.display=t==='flashcards'?'block':'none';
-  quizWrapper.style.display=t==='quiz'?'block':'none';
-  document.getElementById('note-content-wrapper').style.display=t==='note'?'block':'none';
-});
-function renderFlashcards(list){fcListEl.innerHTML='';list.forEach((f,i)=>{const d=document.createElement('div');d.textContent=`${f.front} → ${f.back}`;fcListEl.appendChild(d);});}
-function renderQuiz(list){quizListEl.innerHTML='';list.forEach((q,i)=>{const d=document.createElement('div');d.textContent=`${q.text} [Answer: ${q.correct}]`;quizListEl.appendChild(d);});}
-
-document.getElementById('add-fc').addEventListener('click',()=>{
-  const front=document.getElementById('fc-front').value.trim();
-  const back=document.getElementById('fc-back').value.trim();
-  if(!front||!back)return;
-  tempFlashcards.push({front,back});
-  renderFlashcards(tempFlashcards);
-  document.getElementById('fc-front').value='';document.getElementById('fc-back').value='';
-});
-
-document.getElementById('add-q').addEventListener('click',()=>{
-  const text=document.getElementById('q-text').value;
-  const opt1=document.getElementById('q-opt1').value,opt2=document.getElementById('q-opt2').value,opt3=document.getElementById('q-opt3').value,opt4=document.getElementById('q-opt4').value;
-  const correct=document.getElementById('q-correct').value;
-  if(!text||!opt1||!opt2||!opt3||!opt4)return;
-  tempQuiz.push({text,options:[opt1,opt2,opt3,opt4],correct});
-  renderQuiz(tempQuiz);
-  document.getElementById('q-text').value='';document.getElementById('q-opt1').value='';document.getElementById('q-opt2').value='';document.getElementById('q-opt3').value='';document.getElementById('q-opt4').value='';
-});
-
-capsuleForm.addEventListener('submit',e=>{
-  e.preventDefault();
-  const title=document.getElementById('capsule-title').value.trim();
-  const tags=document.getElementById('capsule-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
-  const type=document.getElementById('capsule-type').value;
-  const content=document.getElementById('capsule-content').value;
-  const data = {
-    title,
-    tags,
-    type,
-    content,
-    flashcards: type==='flashcards' ? [...tempFlashcards] : [],
-    quiz: type==='quiz' ? [...tempQuiz] : []
-  };
-
-  if(editingIndex.value===''){ 
-    capsules.push(data); 
-    logAction(`Created capsule: ${title}`);
-  } else {
-    capsules[parseInt(editingIndex.value)] = data;
-    logAction(`Updated capsule: ${title}`);
-  }
-
-  editingIndex.value='';
-  capsuleForm.reset();
-  flashcardsWrapper.style.display='none';
-  quizWrapper.style.display='none';
-  document.getElementById('note-content-wrapper').style.display='block';
-  tempFlashcards = [];
-  tempQuiz = [];
-  saveToStorage();
-  renderLibrary();
-});
-
-// --- New / Cancel ---
-document.getElementById('new-capsule').addEventListener('click',()=>{
-  editingIndex.value=''; capsuleForm.reset();
-  flashcardsWrapper.style.display='none'; quizWrapper.style.display='none';
-  document.getElementById('note-content-wrapper').style.display='block';
-  tempFlashcards = [];
-  tempQuiz = [];
-});
-document.getElementById('cancel-edit').addEventListener('click',()=>{
-  editingIndex.value=''; capsuleForm.reset();
-  flashcardsWrapper.style.display='none'; quizWrapper.style.display='none';
-  document.getElementById('note-content-wrapper').style.display='block';
-  tempFlashcards = [];
-  tempQuiz = [];
-});
-
-// --- Export / Import ---
-document.getElementById('export-all').addEventListener('click',()=>{
-  const dataStr="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(capsules));
-  const dlAnchor=document.createElement('a'); 
-  dlAnchor.setAttribute('href',dataStr); 
-  dlAnchor.setAttribute('download','pocket_capsules.json'); 
-  dlAnchor.click();
-});
-document.getElementById('import-all').addEventListener('click',()=>{document.getElementById('file-import').click();});
-document.getElementById('file-import').addEventListener('change',e=>{
-  const file=e.target.files[0]; if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(ev){
-    try{
-      const imported=JSON.parse(ev.target.result);
-      if(Array.isArray(imported)){
-        capsules=imported; saveToStorage(); renderLibrary(); logAction('Imported capsules.');
-      }
-    }catch(err){alert('Invalid JSON file');}
-  }
-  reader.readAsText(file);
-});
-
-// --- Logs ---
-clearLogsBtn.addEventListener('click',()=>{logsEl.innerHTML='';});
-
-// --- Study Mode ---
+const capsuleForm=document.querySelector('.capsule-form');
+const flashcardsWrapper=document.getElementById('flashcards-wrapper');
+const quizWrapper=document.getElementById('quiz-wrapper');
+const capsuleList=document.getElementById('capsule-list');
 const studySelect=document.getElementById('study-capsule-select');
 const startStudyBtn=document.getElementById('start-study');
 const studyProgress=document.getElementById('study-progress');
-const studyArea=document.getElementById('study-area');
 const flashcardStudy=document.getElementById('flashcard-study');
 const fcFrontDisplay=document.getElementById('fc-front-display');
 const fcBackDisplay=document.getElementById('fc-back-display');
@@ -382,33 +158,172 @@ const qOptions=document.getElementById('q-options');
 const qFeedback=document.getElementById('q-feedback');
 const qNextBtn=document.getElementById('q-next');
 
+// --- Initialize Sample Capsules ---
+function initSampleCapsules(){
+  capsules = [
+    {
+      title:"ریاضی پایه",
+      tags:"math,algebra",
+      type:"flashcards",
+      content:"",
+      flashcards:[
+        {front:"جمع ۲+۲",back:"۴"},
+        {front:"تفریق ۵-۳",back:"۲"},
+        {front:"ضرب ۳×۳",back:"۹"},
+        {front:"تقسیم ۸÷۲",back:"۴"},
+        {front:"توان ۲³",back:"۸"}
+      ],
+      quiz:[]
+    },
+    {
+      title:"علوم پایه",
+      tags:"science,physics",
+      type:"quiz",
+      content:"",
+      flashcards:[],
+      quiz:[
+        {text:"نیروی گرانش زمین چیست؟",options:["۱۰N","۹.۸m/s²","100kg","5m/s²"],correct:2},
+        {text:"اتمسفر چیست؟",options:["هوا","آب","خاک","سنگ"],correct:1},
+        {text:"نور با چه سرعتی حرکت می‌کند؟",options:["3×10⁸ m/s","5×10⁸","10³","1500m/s"],correct:1}
+      ]
+    },
+    {
+      title:"زبان انگلیسی",
+      tags:"english,vocabulary",
+      type:"flashcards",
+      content:"",
+      flashcards:[
+        {front:"Hello",back:"سلام"},
+        {front:"Thank you",back:"متشکرم"},
+        {front:"Good morning",back:"صبح بخیر"},
+        {front:"Good night",back:"شب بخیر"},
+        {front:"Please",back:"لطفاً"}
+      ],
+      quiz:[]
+    },
+    {
+      title:"تاریخ",
+      tags:"history",
+      type:"quiz",
+      content:"",
+      flashcards:[],
+      quiz:[
+        {text:"چه کسی اعلامیه استقلال را امضا کرد؟",options:["جورج واشنگتن","توماس جفرسون","آبراهام لینکلن","بنجامین فرانکلین"],correct:2},
+        {text:"سال شروع جنگ جهانی دوم؟",options:["1939","1914","1945","1920"],correct:1}
+      ]
+    },
+    {
+      title:"زیست‌شناسی",
+      tags:"biology",
+      type:"flashcards",
+      content:"",
+      flashcards:[
+        {front:"بزرگ‌ترین اندام بدن",back:"پوست"},
+        {front:"سلول پایه همه موجودات",back:"سلول"},
+        {front:"محل تولید انرژی سلول",back:"میتوکندری"},
+        {front:"مولکول حامل ژن",back:"DNA"},
+        {front:"عملکرد ریه‌ها",back:"تنفس"}
+      ],
+      quiz:[]
+    }
+  ];
+  saveToStorage();
+}
+if(capsules.length===0) initSampleCapsules();
+
+// --- Render Library ---
+function renderLibrary(){
+  capsuleList.innerHTML='';
+  studySelect.innerHTML='<option value="">انتخاب کپسول</option>';
+  capsules.forEach((c,i)=>{
+    const div=document.createElement('div');
+    div.className='capsule-item';
+    div.innerHTML=`<span>${c.title}</span>
+    <div>
+      <button onclick="editCapsule(${i})">ویرایش</button>
+      <button onclick="deleteCapsule(${i})">حذف</button>
+    </div>`;
+    capsuleList.appendChild(div);
+    const opt=document.createElement('option');
+    opt.value=i;
+    opt.textContent=c.title;
+    studySelect.appendChild(opt);
+  });
+}
+window.renderLibrary=renderLibrary;
+
+// --- Capsule CRUD ---
+window.editCapsule=function(idx){
+  const c=capsules[idx];
+  document.getElementById('capsule-title').value=c.title;
+  document.getElementById('capsule-tags').value=c.tags;
+  document.getElementById('capsule-type').value=c.type;
+  document.getElementById('capsule-content').value=c.content;
+  editingIndex=idx;
+  tempFlashcards=[...c.flashcards];
+  tempQuiz=[...c.quiz];
+  flashcardsWrapper.style.display=c.type==='flashcards'?'block':'none';
+  quizWrapper.style.display=c.type==='quiz'?'block':'none';
+};
+window.deleteCapsule=function(idx){
+  if(confirm('حذف شود؟')){capsules.splice(idx,1);saveToStorage();renderLibrary();}
+};
+
+// --- Form Interactions ---
+document.getElementById('capsule-type').addEventListener('change',e=>{
+  flashcardsWrapper.style.display=e.target.value==='flashcards'?'block':'none';
+  quizWrapper.style.display=e.target.value==='quiz'?'block':'none';
+});
+document.getElementById('add-flashcard').addEventListener('click',()=>{
+  const f=document.getElementById('fc-front').value;
+  const b=document.getElementById('fc-back').value;
+  if(f&&b){tempFlashcards.push({front:f,back:b});document.getElementById('fc-front').value='';document.getElementById('fc-back').value='';renderFlashcardsList();}
+});
+document.getElementById('add-quiz').addEventListener('click',()=>{
+  const t=document.getElementById('q-text').value;
+  const o1=document.getElementById('q-opt1').value;
+  const o2=document.getElementById('q-opt2').value;
+  const o3=document.getElementById('q-opt3').value;
+  const o4=document.getElementById('q-opt4').value;
+  const c=parseInt(document.getElementById('q-correct').value);
+  if(t&&o1&&o2&&o3&&o4&&[1,2,3,4].includes(c)){
+    tempQuiz.push({text:t,options:[o1,o2,o3,o4],correct:c});
+    document.getElementById('q-text').value='';document.getElementById('q-opt1').value='';document.getElementById('q-opt2').value='';document.getElementById('q-opt3').value='';document.getElementById('q-opt4').value='';document.getElementById('q-correct').value='';renderQuizList();
+  }
+});
+
+function renderFlashcardsList(){/*optional: show temp flashcards*/ }
+function renderQuizList(){/*optional: show temp quiz*/ }
+
+document.getElementById('save-capsule').addEventListener('click',()=>{
+  const title=document.getElementById('capsule-title').value;
+  const tags=document.getElementById('capsule-tags').value;
+  const type=document.getElementById('capsule-type').value;
+  const content=document.getElementById('capsule-content').value;
+  const data={title,tags,type,content,flashcards:type==='flashcards'?tempFlashcards:[],quiz:type==='quiz'?tempQuiz:[]};
+  if(editingIndex===''){capsules.push(data);}else{capsules[editingIndex]=data;}
+  saveToStorage();editingIndex='';capsuleForm.reset();flashcardsWrapper.style.display='none';quizWrapper.style.display='none';renderLibrary();
+});
+document.getElementById('cancel-edit').addEventListener('click',()=>{editingIndex='';capsuleForm.reset();flashcardsWrapper.style.display='none';quizWrapper.style.display='none';});
+
+// --- Study Mode ---
 function startStudy(){
   const idx=studySelect.value; 
-  if(idx===''){alert('Select a capsule'); return;}
-  const capsule=capsules[idx]; 
-  currentStudyIndex=0;
-  if(capsule.type==='flashcards'){
-    studyCards=[...capsule.flashcards];
-    studyMode='flashcards';
-    flashcardStudy.style.display='block';
-    quizStudy.style.display='none';
-    fcBackDisplay.style.display='none';
-    renderFlashcard();
-  }
-  if(capsule.type==='quiz'){
-    studyCards=[...capsule.quiz];
-    studyMode='quiz';
-    flashcardStudy.style.display='none';
-    quizStudy.style.display='block';
-    renderQuizQuestion();
-  }
+  if(idx===''){alert('انتخاب کنید');return;}
+  const capsule=capsules[idx]; currentStudyIndex=0;
+  if(capsule.type==='flashcards'){studyCards=[...capsule.flashcards];studyMode='flashcards';flashcardStudy.style.display='block';quizStudy.style.display='none';fcBackDisplay.style.display='none';renderFlashcard();}
+  if(capsule.type==='quiz'){studyCards=[...capsule.quiz];studyMode='quiz';flashcardStudy.style.display='none';quizStudy.style.display='block';renderQuizQuestion();}
   studyProgress.textContent=`${currentStudyIndex+1}/${studyCards.length}`;
-  document.getElementById('study-mode').textContent=capsule.type;
 }
+startStudyBtn.addEventListener('click',startStudy);
+document.getElementById('shuffle-study').addEventListener('click',()=>{
+  studyCards.sort(()=>Math.random()-0.5);currentStudyIndex=0;
+  if(studyMode==='flashcards') renderFlashcard(); if(studyMode==='quiz') renderQuizQuestion();
+});
 
 function renderFlashcard(){
-  if(studyCards.length===0){fcFrontDisplay.textContent='No cards!'; fcBackDisplay.style.display='none'; return;}
-  if(currentStudyIndex>=studyCards.length){alert('Finished!'); return;}
+  if(studyCards.length===0){fcFrontDisplay.textContent='کارت موجود نیست'; fcBackDisplay.style.display='none';return;}
+  if(currentStudyIndex>=studyCards.length){alert('تمام شد');return;}
   const c=studyCards[currentStudyIndex];
   fcFrontDisplay.textContent=c.front;
   fcBackDisplay.textContent=c.back;
@@ -429,42 +344,66 @@ nextCardBtn.addEventListener('click',()=>{
 });
 
 function renderQuizQuestion(){
-  if(studyCards.length===0){qTextDisplay.textContent='No questions!'; qOptions.innerHTML=''; return;}
-  if(currentStudyIndex>=studyCards.length){alert('Finished!'); return;}
-  const q=studyCards[currentStudyIndex];
-  qTextDisplay.textContent=q.text;
-  qOptions.innerHTML='';
-  q.options.forEach((opt,i)=>{
-    const btn=document.createElement('button'); 
-    btn.className='btn-pill'; 
-    btn.textContent=opt; 
-    btn.style.background='rgba(255,255,255,0.1)'; 
-    btn.addEventListener('click',()=>{
-      qFeedback.textContent=(i+1==q.correct)?'Correct!':'Wrong!';
+  if(studyCards.length===0){qTextDisplay.textContent='کوییز موجود نیست'; qOptions.innerHTML=''; return;}
+  if(currentStudyIndex>=studyCards.length){alert('تمامشد'); return;}
+  const q = studyCards[currentStudyIndex];
+  qTextDisplay.textContent = q.text;
+  qOptions.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-pill';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => {
+      qFeedback.textContent = (i + 1 === q.correct) ? 'صحیح!' : 'غلط!';
     });
     qOptions.appendChild(btn);
   });
-  qFeedback.textContent='';
-  studyProgress.textContent=`${currentStudyIndex+1}/${studyCards.length}`;
+  qFeedback.textContent = '';
+  studyProgress.textContent = `${currentStudyIndex + 1}/${studyCards.length}`;
 }
 
-qNextBtn.addEventListener('click',()=>{
-  if(studyCards.length===0) return;
-  currentStudyIndex=(currentStudyIndex+1)%studyCards.length;
+qNextBtn.addEventListener('click', () => {
+  if(studyCards.length === 0) return;
+  currentStudyIndex = (currentStudyIndex + 1) % studyCards.length;
   renderQuizQuestion();
 });
 
-startStudyBtn.addEventListener('click',startStudy);
-document.getElementById('shuffle-study').addEventListener('click',()=>{
-  studyCards.sort(()=>Math.random()-0.5);
-  currentStudyIndex=0;
-  if(studyMode==='flashcards') renderFlashcard();
-  if(studyMode==='quiz') renderQuizQuestion();
+// --- Export / Import ---
+document.getElementById('export-all').addEventListener('click', () => {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(capsules));
+  const dlAnchor = document.createElement('a');
+  dlAnchor.setAttribute('href', dataStr);
+  dlAnchor.setAttribute('download', 'pocket_capsules.json');
+  dlAnchor.click();
+});
+
+document.getElementById('import-all').addEventListener('click', () => {
+  document.getElementById('file-import').click();
+});
+
+document.getElementById('file-import').addEventListener('change', e => {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if(Array.isArray(imported)) {
+        capsules = imported; saveToStorage(); renderLibrary();
+        alert('کپسول‌ها با موفقیت وارد شدند!');
+      }
+    } catch(err) {
+      alert('فایل JSON نامعتبر است!');
+    }
+  }
+  reader.readAsText(file);
 });
 
 // --- Initialize ---
 renderLibrary();
+
 </script>
 </body>
 </html>
-                                     
+
+
+                                                 
