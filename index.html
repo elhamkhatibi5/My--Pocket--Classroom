@@ -131,38 +131,174 @@
       <div class="d-flex align-items-center gap-3">
         <div class="brand">🎓 Pocket Classroom</div>
         <nav>
-          <button class="active" data-section="library">Library</button>
-          <button data-section="author">Create</button>
-          <button data-section="learn">Study</button>
-        </nav>
-      </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🎓 Pocket Classroom — Professional Redesign</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0f172a;
+    --glass:rgba(255,255,255,0.08);
+    --card:rgba(255,255,255,0.06);
+    --accent:#00d4ff;
+    --muted:#a8b2c2;
+  }
+  body {
+    background:linear-gradient(180deg,#0f172a 0%,#1e293b 100%);
+    color:#f8fafc;
+    font-family:"Inter",sans-serif;
+    min-height:100vh;
+  }
 
-      <div class="d-flex align-items-center gap-2 flex-wrap">
-        <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search..." />
-        <select id="sort-select" class="form-select form-select-sm small-input" style="width:160px;">
-          <option value="date-desc">Newest</option>
-          <option value="date-asc">Oldest</option>
-          <option value="title-asc">A → Z</option>
-          <option value="title-desc">Z → A</option>
-        </select>
-        <button class="btn btn-sm btn-accent btn-pill">Export</button>
-        <button class="btn btn-sm btn-secondary btn-pill">Import</button>
-      </div>
-    </header>
+  /* ---- Navbar ---- */
+  .navbar-pro {
+    position:sticky;
+    top:0;
+    z-index:10;
+    backdrop-filter:blur(14px);
+    background:rgba(15,23,42,0.75);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    padding:0.75rem 1.5rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .navbar-pro .brand {
+    font-weight:700;
+    font-size:1.4rem;
+    background:linear-gradient(90deg,#00d4ff,#4df9b2);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .navbar-pro nav a {
+    color:#e2e8f0;
+    margin:0 12px;
+    font-weight:500;
+    text-decoration:none;
+    transition:color 0.3s;
+  }
+  .navbar-pro nav a:hover,
+  .navbar-pro nav a.active {
+    color:var(--accent);
+    text-shadow:0 0 8px var(--accent);
+  }
 
-    <div class="app-shell">
-      <div class="card-panel">
-        <h4>📚 Your Library</h4>
-        <p class="text-muted">View and manage your study capsules.</p>
-      </div>
+  /* ---- Layout ---- */
+  .container-main {
+    max-width:1200px;
+    margin:auto;
+    padding:2rem 1rem;
+  }
 
-      <div class="card-panel">
-        <h4>🗒️ Notes</h4>
-        <textarea id="notes" class="form-control bg-transparent text-light" rows="10" placeholder="Write your study notes here..."></textarea>
+  /* ---- Library Section ---- */
+  .library-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:1rem;
+    margin-top:1rem;
+  }
+  .capsule-card {
+    background:var(--card);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px;
+    padding:1rem;
+    transition:transform 0.25s, box-shadow 0.25s;
+    cursor:pointer;
+  }
+  .capsule-card:hover {
+    transform:translateY(-5px);
+    box-shadow:0 8px 25px rgba(0,0,0,0.3);
+    border-color:var(--accent);
+  }
+  .capsule-card h5 {
+    font-weight:600;
+  }
+  .capsule-card p {
+    color:var(--muted);
+    font-size:0.9rem;
+  }
+
+  /* ---- Sidebar ---- */
+  .sidebar {
+    background:var(--glass);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    padding:1rem;
+    color:#e2e8f0;
+  }
+
+  /* ---- Buttons ---- */
+  .btn-accent {
+    background:linear-gradient(90deg,#00d4ff,#00ffa3);
+    border:none;
+    color:#000;
+    font-weight:600;
+    border-radius:999px;
+    padding:6px 16px;
+  }
+  .btn-accent:hover {
+    opacity:0.9;
+    box-shadow:0 0 10px rgba(0,212,255,0.4);
+  }
+
+  footer {
+    margin-top:2rem;
+    text-align:center;
+    color:var(--muted);
+    font-size:0.85rem;
+  }
+</style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <header class="navbar-pro">
+    <div class="brand">🎓 Pocket Classroom</div>
+    <nav>
+      <a href="#" class="active">Library</a>
+      <a href="#">Create</a>
+      <a href="#">Study</a>
+    </nav>
+    <div class="d-flex align-items-center gap-2">
+      <input class="form-control form-control-sm" style="width:180px;background:rgba(255,255,255,0.08);border:none;color:#fff;" placeholder="Search...">
+      <button class="btn-accent btn-sm">Import</button>
+      <button class="btn btn-outline-light btn-sm rounded-pill">Export</button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <div class="container-main">
+    <h3 class="mb-3">📚 Your Library</h3>
+    <p class="text-muted">Here are your recent learning capsules.</p>
+
+    <div class="library-grid">
+      <div class="capsule-card">
+        <h5>🌍 World Geography</h5>
+        <p>Explore countries, capitals, and continents with interactive flashcards.</p>
+        <button class="btn-accent btn-sm mt-2">Start</button>
+      </div>
+      <div class="capsule-card">
+        <h5>🧮 Algebra Basics</h5>
+        <p>Understand linear equations, variables, and problem-solving fundamentals.</p>
+        <button class="btn-accent btn-sm mt-2">Start</button>
+      </div>
+      <div class="capsule-card">
+        <h5>🧬 Biology 101</h5>
+        <p>Dive into the study of life — cells, DNA, and ecosystems.</p>
+        <button class="btn-accent btn-sm mt-2">Start</button>
+      </div>
+      <div class="capsule-card">
+        <h5>💡 Physics Principles</h5>
+        <p>Master motion, forces, and energy with short visual notes.</p>
+        <button class="btn-accent btn-sm mt-2">Start</button>
       </div>
     </div>
 
-    <footer class="text-center mt-4">© 2025 Pocket Classroom — Designed with ❤️ for learners.</footer>
+    <footer>© 2025 Pocket Classroom — Designed for Smart Learning</footer>
   </div>
 </body>
 </html>
