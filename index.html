@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -8,21 +8,29 @@
 <style>
   /* --- Colors & Theme --- */
   :root{
-    --bg-gradient: linear-gradient(135deg,#0f1720,#0a1a2a);
-    --card-bg: rgba(15,23,32,0.85);
-    --card-border: rgba(255,255,255,0.05);
-    --muted:#9aa4b2;
     --accent:#0ea5a4;
     --accent-hover:#14b8a6;
+    --muted:#d1d5db;
   }
 
-  /* --- Body & Font --- */
+  /* --- Body & Background Image --- */
   body{
     margin:0;
     padding:0;
-    background: var(--bg-gradient);
-    color:#e6eef6;
     font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color:#f1f5f9;
+    background: url('bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+  }
+
+  /* --- Overlay to Darken Background --- */
+  body::before{
+    content:'';
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:-1;
   }
 
   /* --- App Shell --- */
@@ -39,37 +47,30 @@
     gap:18px;
   }
 
-  /* --- Header / Navbar --- */
+  /* --- Navbar / Header --- */
   header.navbar{
-    background: rgba(8,48,66,0.9);
-    border-radius:16px;
-    padding:14px 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.65);
+    border-radius:12px;
+    padding:12px 20px;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
   }
-  .navbar:hover{
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
-  }
-
   .brand{
+    font-size:1.5rem;
     font-weight:700;
-    font-size:1.3rem;
-    color:#fff;
+    color:#f1f5f9;
   }
-
   nav .btn{
-    border:1px solid rgba(255,255,255,0.15);
-    color:#e6eef6;
-    background:rgba(255,255,255,0.02);
+    margin-left:6px;
+    background: rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.2);
+    color:#f1f5f9;
     border-radius:999px;
-    padding:6px 14px;
-    margin-right:6px;
-    transition: all 0.3s ease;
-    font-size:0.9rem;
+    transition:0.3s;
+    padding:6px 16px;
   }
   nav .btn:hover, nav .btn.active{
     background: var(--accent);
@@ -77,51 +78,64 @@
     color:#fff;
   }
 
+  /* --- Search & Controls --- */
+  .controls{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .controls input, .controls select{
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color:#f1f5f9;
+    padding:4px 10px;
+  }
+  .btn-pill{
+    border-radius:999px;
+    padding:6px 14px;
+    transition:0.3s;
+  }
+  .btn-pill:hover{
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+
   /* --- Card Panels --- */
   .card-panel{
-    background: var(--card-bg);
+    background: rgba(0,0,0,0.6);
     border-radius:16px;
     padding:18px;
-    border:1px solid var(--card-border);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    transition:0.3s;
   }
   .card-panel:hover{
-    box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.7);
   }
 
-  /* --- Inputs & Select --- */
-  input.form-control, select.form-select{
+  /* --- Library Grid --- */
+  .library-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:14px;
+  }
+  .capsule-card{
     background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.15);
-    color:#e6eef6;
-    border-radius:12px;
-    padding:6px 12px;
-    transition: all 0.3s ease;
-    font-size:0.85rem;
+    border-radius:14px;
+    padding:16px;
+    transition:0.3s;
+    border:1px solid rgba(255,255,255,0.1);
   }
-  input.form-control:focus, select.form-select:focus{
-    border-color: var(--accent);
-    box-shadow: 0 0 8px rgba(14,165,164,0.5);
-    outline:none;
-    background: rgba(255,255,255,0.08);
-  }
-
-  /* --- Muted Text & Tags --- */
-  .muted{color:var(--muted); font-size:0.9rem;}
-  .tag{
-    background: rgba(255,255,255,0.04);
-    color:var(--muted);
-    border-radius:999px;
-    padding:4px 8px;
-    font-size:0.75rem;
-    margin-right:6px;
+  .capsule-card:hover{
+    box-shadow:0 8px 22px rgba(0,0,0,0.7);
   }
 
   /* --- Notes Panel --- */
   .notes-panel{
-    background: rgba(255,255,255,0.02);
-    border-radius:16px;
+    background: rgba(0,0,0,0.5);
+    border-radius:14px;
     padding:16px;
     height:calc(100vh - 160px);
     overflow:auto;
@@ -129,57 +143,30 @@
   textarea#notes{
     width:100%;
     min-height:320px;
-    resize:vertical;
     background:transparent;
-    color:inherit;
-    border:1px dashed rgba(255,255,255,0.04);
+    color:#f1f5f9;
+    border:1px dashed rgba(255,255,255,0.2);
     padding:12px;
     border-radius:12px;
     font-size:0.95rem;
+    resize:vertical;
   }
-
-  /* --- Flashcards / Library --- */
-  .library-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-    gap:14px;
-  }
-  .capsule-card{
-    background: var(--card-bg);
-    border-radius:12px;
-    padding:14px;
-    border:1px solid var(--card-border);
-    transition: all 0.3s ease;
-  }
-  .capsule-card:hover{
-    box-shadow: 0 8px 22px rgba(0,0,0,0.35);
-  }
-
-  /* --- Buttons --- */
-  .btn-pill{border-radius:999px; transition:0.3s;}
-  .btn-pill:hover{background: var(--accent-hover); border-color: var(--accent-hover);}
 
   /* --- Footer --- */
   footer{
-    opacity:0.6;
-    font-size:0.85rem;
     text-align:center;
-  }
-
-  /* --- Keyboard style --- */
-  .kbd{
-    background:rgba(255,255,255,0.03);
-    padding:4px 8px;
-    border-radius:6px;
-    font-size:0.9rem;
+    font-size:0.85rem;
+    opacity:0.6;
+    margin-top:20px;
   }
 
   /* --- Responsive --- */
-  @media (max-width:900px){
-    .app-shell{grid-template-columns: 1fr; padding:12px;}
+  @media(max-width:900px){
+    .app-shell{grid-template-columns:1fr; padding:12px;}
     .notes-panel{height:280px;}
     nav .btn{margin-bottom:6px;}
   }
+
 </style>
 </head>
 <body>
@@ -188,28 +175,26 @@
     <!-- LEFT / MAIN COLUMN -->
     <div class="main-col">
 
-      <!-- Header / Nav -->
-      <header class="navbar card-panel d-flex align-items-center justify-content-between">
-        <div class="d-flex gap-3 align-items-center">
+      <!-- Navbar -->
+      <header class="navbar">
+        <div class="d-flex align-items-center gap-3">
           <div class="brand">🎓 Pocket Classroom</div>
           <nav>
-            <button class="btn btn-sm nav-btn active" data-section="library">Library</button>
-            <button class="btn btn-sm nav-btn" data-section="author">Create</button>
-            <button class="btn btn-sm nav-btn" data-section="learn">Study</button>
+            <button class="btn nav-btn active" data-section="library">Library</button>
+            <button class="btn nav-btn" data-section="author">Create</button>
+            <button class="btn nav-btn" data-section="learn">Study</button>
           </nav>
         </div>
-
-        <div class="d-flex gap-2 align-items-center">
-          <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..." />
-          <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">
+        <div class="controls">
+          <input type="text" placeholder="Search capsules, tags..." />
+          <select>
             <option value="date-desc">Newest first</option>
             <option value="date-asc">Oldest first</option>
             <option value="title-asc">Title A→Z</option>
             <option value="title-desc">Title Z→A</option>
           </select>
-          <button id="export-all" class="btn btn-sm btn-success btn-pill">Export</button>
-          <button id="import-all" class="btn btn-sm btn-secondary btn-pill">Import</button>
-          <input id="file-import" type="file" accept=".json" style="display:none">
+          <button class="btn btn-success btn-pill">Export</button>
+          <button class="btn btn-secondary btn-pill">Import</button>
         </div>
       </header>
 
