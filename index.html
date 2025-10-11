@@ -1,48 +1,58 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎓 Pocket Classroom — آفلاین</title>
+<title>📚 Pocket Classroom — Offline</title>
 <style>
-/* --- Reset & Base --- */
-* {margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
-body {background:#f0f4f8; color:#111; min-height:100vh;}
-button {cursor:pointer; transition:0.2s;}
-button:hover {opacity:0.8;}
+/* --- Base & Reset --- */
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f4f8; color:#111; }
 
 /* --- Navbar --- */
-nav {display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:#0ea5a4;color:#fff;}
-nav h1 {font-size:1.5rem;}
-nav .nav-buttons button {margin-left:0.5rem;padding:0.4rem 0.8rem;border:none;border-radius:5px;background:#06b6d4;color:#fff;}
+nav {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:1rem 2rem; background:#0ea5a4; color:#fff; border-bottom:4px solid #06b6d4;
+}
+nav h1 { font-size:1.6rem; display:flex; align-items:center; }
+nav h1 img { width:40px; height:40px; margin-right:0.5rem; }
+nav .nav-buttons button {
+  margin-left:0.5rem; padding:0.5rem 1rem;
+  border:none; border-radius:6px; background:#06b6d4; color:#fff; font-weight:bold;
+  cursor:pointer; transition:0.2s;
+}
+nav .nav-buttons button:hover { opacity:0.85; }
 
-/* --- Main Layout --- */
-.container {display:flex;gap:1rem;padding:1rem;}
-.library, .study, .capsule-form {background:#fff;padding:1rem;border-radius:10px;flex:1;box-shadow:0 4px 8px rgba(0,0,0,0.1);}
-.library h2, .study h2, .capsule-form h2 {margin-bottom:0.5rem;}
+/* --- Layout --- */
+.container { display:flex; gap:1rem; padding:1rem; }
+.library, .study, .capsule-form {
+  background:#fff; padding:1rem; border-radius:12px; box-shadow:0 6px 15px rgba(0,0,0,0.1); flex:1; overflow:auto; max-height:80vh;
+}
 
-/* --- Capsule List --- */
-.capsule-item {padding:0.5rem; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;}
-.capsule-item:last-child {border:none;}
-.capsule-item button {padding:0.2rem 0.5rem;background:#0ea5a4;color:#fff;border:none;border-radius:4px;font-size:0.8rem;}
+/* --- Library --- */
+.capsule-item { padding:0.6rem; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center; }
+.capsule-item:last-child { border:none; }
+.capsule-item button { padding:0.3rem 0.7rem; background:#0ea5a4; color:#fff; border:none; border-radius:5px; font-size:0.85rem; cursor:pointer; }
+.capsule-item button:hover { opacity:0.85; }
 
-/* --- Flashcards & Quiz --- */
-.flashcard, .quiz {margin-top:1rem;padding:1rem;border:1px solid #ddd;border-radius:8px;background:#f9fafb;}
-.flashcard div {margin-bottom:0.5rem;}
-#fc-front-display,#fc-back-display,#q-text-display {font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;}
-.btn-pill {margin:0.2rem;padding:0.4rem 0.8rem;border:none;border-radius:20px;background:rgba(14,165,164,0.2);color:#111;}
+/* --- Study --- */
+.flashcard, .quiz { margin-top:1rem; padding:1rem; border-radius:10px; background:#f9fafb; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+#fc-front-display,#fc-back-display,#q-text-display { font-weight:bold; font-size:1.1rem; margin-bottom:0.5rem; }
+.btn-pill { margin:0.2rem; padding:0.4rem 0.8rem; border:none; border-radius:20px; background:#0ea5a4; color:#fff; cursor:pointer; transition:0.2s; }
+.btn-pill:hover { opacity:0.85; }
 
 /* --- Forms --- */
-.capsule-form input, .capsule-form textarea, .capsule-form select {width:100%;margin-bottom:0.5rem;padding:0.4rem;border:1px solid #ccc;border-radius:5px;}
-.capsule-form button {background:#0ea5a4;color:#fff;border:none;padding:0.5rem 1rem;border-radius:5px;margin-top:0.5rem;}
+.capsule-form input, .capsule-form textarea, .capsule-form select { width:100%; margin-bottom:0.5rem; padding:0.5rem; border:1px solid #ccc; border-radius:6px; }
+.capsule-form button { background:#0ea5a4; color:#fff; border:none; padding:0.5rem 1rem; border-radius:6px; margin-top:0.5rem; font-weight:bold; cursor:pointer; transition:0.2s; }
+.capsule-form button:hover { opacity:0.85; }
 </style>
 </head>
 <body>
 
 <nav>
-  <h1>🎓 Pocket Classroom</h1>
+  <h1><img src="logo.png" alt="Logo">Pocket Classroom</h1>
   <div class="nav-buttons">
-    <button id="new-capsule">کپسول جدید</button>
+    <button id="new-capsule">New Capsule</button>
     <button id="export-all">Export</button>
     <button id="import-all">Import</button>
     <input type="file" id="file-import" style="display:none">
@@ -56,93 +66,209 @@ nav .nav-buttons button {margin-left:0.5rem;padding:0.4rem 0.8rem;border:none;bo
     <div id="capsule-list"></div>
   </div>
 
-  <!-- Study Area -->
+  <!-- Study -->
   <div class="study">
     <h2>Study Mode</h2>
-    <select id="study-capsule-select">
-      <option value="">انتخاب کپسول</option>
-    </select>
-    <button id="start-study">شروع مطالعه</button>
+    <select id="study-capsule-select"><option value="">Select Capsule</option></select>
+    <button id="start-study">Start</button>
     <button id="shuffle-study">Shuffle</button>
     <div id="study-progress"></div>
 
-    <!-- Flashcard -->
     <div class="flashcard" id="flashcard-study" style="display:none">
       <div id="fc-front-display"></div>
       <div id="fc-back-display" style="display:none"></div>
       <div id="fc-meta"></div>
-      <button id="show-answer">نمایش جواب</button>
-      <button id="mark-learned">یادگرفته</button>
-      <button id="next-card">بعدی</button>
+      <button id="show-answer">Show Answer</button>
+      <button id="mark-learned">Mark Learned</button>
+      <button id="next-card">Next</button>
     </div>
 
-    <!-- Quiz -->
     <div class="quiz" id="quiz-study" style="display:none">
       <div id="q-text-display"></div>
       <div id="q-options"></div>
       <div id="q-feedback" style="margin-top:0.5rem;font-weight:bold;"></div>
-      <button id="q-next">بعدی</button>
+      <button id="q-next">Next</button>
     </div>
   </div>
 
   <!-- Capsule Form -->
   <div class="capsule-form">
-    <h2>ایجاد / ویرایش کپسول</h2>
-    <input type="text" id="capsule-title" placeholder="عنوان">
-    <input type="text" id="capsule-tags" placeholder="تگ‌ها (با کاما جدا شود)">
+    <h2>Create / Edit Capsule</h2>
+    <input type="text" id="capsule-title" placeholder="Title">
+    <input type="text" id="capsule-tags" placeholder="Tags (comma separated)">
     <select id="capsule-type">
       <option value="note">Note</option>
       <option value="flashcards">Flashcards</option>
       <option value="quiz">Quiz</option>
     </select>
-    <textarea id="capsule-content" rows="3" placeholder="محتوا"></textarea>
+    <textarea id="capsule-content" rows="3" placeholder="Content"></textarea>
 
     <div id="flashcards-wrapper" style="display:none">
-      <h3>فلش‌کارت‌ها</h3>
+      <h3>Flashcards</h3>
       <div id="flashcards-list"></div>
       <input type="text" id="fc-front" placeholder="Front">
       <input type="text" id="fc-back" placeholder="Back">
-      <button id="add-flashcard">اضافه کردن فلش‌کارت</button>
+      <button id="add-flashcard">Add Flashcard</button>
     </div>
 
     <div id="quiz-wrapper" style="display:none">
-      <h3>کوییز</h3>
+      <h3>Quiz</h3>
       <div id="quiz-list"></div>
-      <input type="text" id="q-text" placeholder="سوال">
-      <input type="text" id="q-opt1" placeholder="گزینه 1">
-      <input type="text" id="q-opt2" placeholder="گزینه 2">
-      <input type="text" id="q-opt3" placeholder="گزینه 3">
-      <input type="text" id="q-opt4" placeholder="گزینه 4">
-      <input type="number" id="q-correct" placeholder="شماره گزینه صحیح (1-4)">
-      <button id="add-quiz">اضافه کردن سوال</button>
+      <input type="text" id="q-text" placeholder="Question">
+      <input type="text" id="q-opt1" placeholder="Option 1">
+      <input type="text" id="q-opt2" placeholder="Option 2">
+      <input type="text" id="q-opt3" placeholder="Option 3">
+      <input type="text" id="q-opt4" placeholder="Option 4">
+      <input type="number" id="q-correct" placeholder="Correct Option (1-4)">
+      <button id="add-quiz">Add Question</button>
     </div>
 
-    <button id="save-capsule">ذخیره کپسول</button>
-    <button id="cancel-edit">لغو</button>
+    <button id="save-capsule">Save Capsule</button>
+    <button id="cancel-edit">Cancel</button>
   </div>
 </div>
 
 <script type="module">
-// --- Storage ---
+// --- JS: Full Functionality ---
 let capsules = [];
-function saveToStorage(){localStorage.setItem('pocketCapsules',JSON.stringify(capsules));}
-function loadFromStorage(){const data=localStorage.getItem('pocketCapsules');if(data) capsules=JSON.parse(data);}
-loadFromStorage();
+let tempFlashcards=[], tempQuiz=[], editingIndex='';
+let studyCards=[], currentStudyIndex=0, studyMode='';
 
-// --- State ---
-let tempFlashcards = [];
-let tempQuiz = [];
-let editingIndex = '';
-let studyCards = [];
-let currentStudyIndex = 0;
-let studyMode = '';
+// Sample capsules
+function initSampleCapsules(){
+  capsules=[
+    {title:"Basic Math", tags:"math,algebra", type:"flashcards", content:"", flashcards:[
+      {front:"2+2", back:"4"}, {front:"5-3", back:"2"}, {front:"3×3", back:"9"}, {front:"8÷2", back:"4"}, {front:"2³", back:"8"}
+    ], quiz:[]},
+    {title:"Basic Science", tags:"science,physics", type:"quiz", content:"", flashcards:[], quiz:[
+      {text:"Earth gravity?", options:["10N","9.8m/s²","100kg","5m/s²"], correct:2},
+      {text:"What is atmosphere?", options:["Air","Water","Soil","Rock"], correct:1},
+      {text:"Speed of light?", options:["3×10⁸ m/s","5×10⁸","10³","1500m/s"], correct:1}
+    ]},
+    {title:"English Vocabulary", tags:"english,vocab", type:"flashcards", content:"", flashcards:[
+      {front:"Hello", back:"سلام"}, {front:"Thank you", back:"متشکرم"}, {front:"Good morning", back:"صبح بخیر"}, {front:"Good night", back:"شب بخیر"}, {front:"Please", back:"لطفاً"}
+    ], quiz:[]},
+    {title:"History", tags:"history", type:"quiz", content:"", flashcards:[], quiz:[
+      {text:"Who signed the Declaration of Independence?", options:["George Washington","Thomas Jefferson","Abraham Lincoln","Benjamin Franklin"], correct:2},
+      {text:"Start of WWII?", options:["1939","1914","1945","1920"], correct:1}
+    ]},
+    {title:"Biology Basics", tags:"biology", type:"flashcards", content:"", flashcards:[
+      {front:"Largest organ", back:"Skin"}, {front:"Basic cell unit", back:"Cell"}, {front:"Cell power house", back:"Mitochondria"}, {front:"DNA carrier", back:"DNA"}, {front:"Lung function", back:"Breathing"}
+    ], quiz:[]}
+  ];
+  localStorage.setItem('pocket_capsules', JSON.stringify(capsules));
+}
 
-// --- Elements ---
-const capsuleForm=document.querySelector('.capsule-form');
-const flashcardsWrapper=document.getElementById('flashcards-wrapper');
-const quizWrapper=document.getElementById('quiz-wrapper');
-const capsuleList=document.getElementById('capsule-list');
-const studySelect=document.getElementById('study-capsule-select');
+// --- Storage ---
+function saveToStorage(){ localStorage.setItem('pocket_capsules', JSON.stringify(capsules)); }
+function loadFromStorage(){
+  const stored = localStorage.getItem('pocket_capsules');
+  if(stored) capsules = JSON.parse(stored);
+  else initSampleCapsules();
+}
+
+// --- Render Library ---
+const capsuleListEl = document.getElementById('capsule-list');
+const studySelect = document.getElementById('study-capsule-select');
+
+function renderLibrary(){
+  capsuleListEl.innerHTML=''; studySelect.innerHTML='<option value="">Select Capsule</option>';
+  capsules.forEach((c,i)=>{
+    // Library list
+    const div = document.createElement('div'); div.className='capsule-item';
+    div.innerHTML=`<span>${c.title} (${c.type})</span>`;
+    const editBtn = document.createElement('button'); editBtn.textContent='Edit';
+    editBtn.addEventListener('click',()=>editCapsule(i));
+    div.appendChild(editBtn);
+    capsuleListEl.appendChild(div);
+    // Study select
+    const opt = document.createElement('option'); opt.value=i; opt.textContent=c.title; studySelect.appendChild(opt);
+  });
+}
+
+// --- Edit Capsule ---
+function editCapsule(idx){
+  const c = capsules[idx]; editingIndex=idx;
+  document.getElementById('capsule-title').value=c.title;
+  document.getElementById('capsule-tags').value=c.tags;
+  document.getElementById('capsule-type').value=c.type;
+  document.getElementById('capsule-content').value=c.content;
+  if(c.type==='flashcards'){ flashcardsWrapper.style.display='block'; tempFlashcards=[...c.flashcards]; }
+  else flashcardsWrapper.style.display='none';
+  if(c.type==='quiz'){ quizWrapper.style.display='block'; tempQuiz=[...c.quiz]; }
+  else quizWrapper.style.display='none';
+}
+
+// --- Form Actions ---
+const capsuleForm = document.querySelector('.capsule-form');
+const flashcardsWrapper = document.getElementById('flashcards-wrapper');
+const quizWrapper = document.getElementById('quiz-wrapper');
+
+document.getElementById('capsule-type').addEventListener('change', e=>{
+  flashcardsWrapper.style.display = e.target.value==='flashcards'?'block':'none';
+  quizWrapper.style.display = e.target.value==='quiz'?'block':'none';
+});
+
+document.getElementById('add-flashcard').addEventListener('click', ()=>{
+  const f=document.getElementById('fc-front').value;
+  const b=document.getElementById('fc-back').value;
+  if(f && b){ tempFlashcards.push({front:f, back:b}); document.getElementById('fc-front').value=''; document.getElementById('fc-back').value=''; }
+});
+
+document.getElementById('add-quiz').addEventListener('click', ()=>{
+  const t=document.getElementById('q-text').value;
+  const o1=document.getElementById('q-opt1').value;
+  const o2=document.getElementById('q-opt2').value;
+  const o3=document.getElementById('q-opt3').value;
+  const o4=document.getElementById('q-opt4').value;
+  const c=parseInt(document.getElementById('q-correct').value);
+  if(t && o1 && o2 && o3 && o4 && [1,2,3,4].includes(c)){
+    tempQuiz.push({text:t, options:[o1,o2,o3,o4], correct:c}); 
+    document.getElementById('q-text').value=''; document.getElementById('q-opt1').value=''; document.getElementById('q-opt2').value='';
+    document.getElementById('q-opt3').value=''; document.getElementById('q-opt4').value=''; document.getElementById('q-correct').value='';
+  }
+});
+
+document.getElementById('save-capsule').addEventListener('click', ()=>{
+  const title = document.getElementById('capsule-title').value;
+  const tags = document.getElementById('capsule-tags').value;
+  const type = document.getElementById('capsule-type').value;
+  const content = document.getElementById('capsule-content').value;
+  const data = {title,tags,type,content, flashcards:type==='flashcards'?tempFlashcards:[], quiz:type==='quiz'?tempQuiz:[]};
+  if(editingIndex==='') capsules.push(data);
+  else capsules[editingIndex]=data;
+  saveToStorage(); editingIndex=''; capsuleForm.reset(); flashcardsWrapper.style.display='none'; quizWrapper.style.display='none'; tempFlashcards=[]; tempQuiz=[];
+  renderLibrary();
+});
+
+document.getElementById('cancel-edit').addEventListener('click', ()=>{
+  editingIndex=''; capsuleForm.reset(); flashcardsWrapper.style.display='none'; quizWrapper.style.display='none'; tempFlashcards=[]; tempQuiz=[];
+});
+
+document.getElementById('new-capsule').addEventListener('click', ()=>{
+  editingIndex=''; capsuleForm.reset(); flashcardsWrapper.style.display='none'; quizWrapper.style.display='none'; tempFlashcards=[]; tempQuiz=[];
+});
+
+// --- Export / Import ---
+document.getElementById('export-all').addEventListener('click', ()=>{
+  const dataStr="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(capsules));
+  const dlAnchor=document.createElement('a'); dlAnchor.setAttribute('href',dataStr); dlAnchor.setAttribute('download','pocket_capsules.json'); dlAnchor.click();
+});
+
+document.getElementById('import-all').addEventListener('click', ()=>{ document.getElementById('file-import').click(); });
+document.getElementById('file-import').addEventListener('change', e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const imported=JSON.parse(ev.target.result);
+      if(Array.isArray(imported)){ capsules=imported; saveToStorage(); renderLibrary(); alert('Capsules imported!'); }
+    }catch(err){ alert('Invalid JSON file'); }
+  }
+  reader.readAsText(file);
+});
+
+// --- Study Mode ---
 const startStudyBtn=document.getElementById('start-study');
 const studyProgress=document.getElementById('study-progress');
 const flashcardStudy=document.getElementById('flashcard-study');
@@ -158,252 +284,54 @@ const qOptions=document.getElementById('q-options');
 const qFeedback=document.getElementById('q-feedback');
 const qNextBtn=document.getElementById('q-next');
 
-// --- Initialize Sample Capsules ---
-function initSampleCapsules(){
-  capsules = [
-    {
-      title:"ریاضی پایه",
-      tags:"math,algebra",
-      type:"flashcards",
-      content:"",
-      flashcards:[
-        {front:"جمع ۲+۲",back:"۴"},
-        {front:"تفریق ۵-۳",back:"۲"},
-        {front:"ضرب ۳×۳",back:"۹"},
-        {front:"تقسیم ۸÷۲",back:"۴"},
-        {front:"توان ۲³",back:"۸"}
-      ],
-      quiz:[]
-    },
-    {
-      title:"علوم پایه",
-      tags:"science,physics",
-      type:"quiz",
-      content:"",
-      flashcards:[],
-      quiz:[
-        {text:"نیروی گرانش زمین چیست؟",options:["۱۰N","۹.۸m/s²","100kg","5m/s²"],correct:2},
-        {text:"اتمسفر چیست؟",options:["هوا","آب","خاک","سنگ"],correct:1},
-        {text:"نور با چه سرعتی حرکت می‌کند؟",options:["3×10⁸ m/s","5×10⁸","10³","1500m/s"],correct:1}
-      ]
-    },
-    {
-      title:"زبان انگلیسی",
-      tags:"english,vocabulary",
-      type:"flashcards",
-      content:"",
-      flashcards:[
-        {front:"Hello",back:"سلام"},
-        {front:"Thank you",back:"متشکرم"},
-        {front:"Good morning",back:"صبح بخیر"},
-        {front:"Good night",back:"شب بخیر"},
-        {front:"Please",back:"لطفاً"}
-      ],
-      quiz:[]
-    },
-    {
-      title:"تاریخ",
-      tags:"history",
-      type:"quiz",
-      content:"",
-      flashcards:[],
-      quiz:[
-        {text:"چه کسی اعلامیه استقلال را امضا کرد؟",options:["جورج واشنگتن","توماس جفرسون","آبراهام لینکلن","بنجامین فرانکلین"],correct:2},
-        {text:"سال شروع جنگ جهانی دوم؟",options:["1939","1914","1945","1920"],correct:1}
-      ]
-    },
-    {
-      title:"زیست‌شناسی",
-      tags:"biology",
-      type:"flashcards",
-      content:"",
-      flashcards:[
-        {front:"بزرگ‌ترین اندام بدن",back:"پوست"},
-        {front:"سلول پایه همه موجودات",back:"سلول"},
-        {front:"محل تولید انرژی سلول",back:"میتوکندری"},
-        {front:"مولکول حامل ژن",back:"DNA"},
-        {front:"عملکرد ریه‌ها",back:"تنفس"}
-      ],
-      quiz:[]
-    }
-  ];
-  saveToStorage();
-}
-if(capsules.length===0) initSampleCapsules();
-
-// --- Render Library ---
-function renderLibrary(){
-  capsuleList.innerHTML='';
-  studySelect.innerHTML='<option value="">انتخاب کپسول</option>';
-  capsules.forEach((c,i)=>{
-    const div=document.createElement('div');
-    div.className='capsule-item';
-    div.innerHTML=`<span>${c.title}</span>
-    <div>
-      <button onclick="editCapsule(${i})">ویرایش</button>
-      <button onclick="deleteCapsule(${i})">حذف</button>
-    </div>`;
-    capsuleList.appendChild(div);
-    const opt=document.createElement('option');
-    opt.value=i;
-    opt.textContent=c.title;
-    studySelect.appendChild(opt);
-  });
-}
-window.renderLibrary=renderLibrary;
-
-// --- Capsule CRUD ---
-window.editCapsule=function(idx){
-  const c=capsules[idx];
-  document.getElementById('capsule-title').value=c.title;
-  document.getElementById('capsule-tags').value=c.tags;
-  document.getElementById('capsule-type').value=c.type;
-  document.getElementById('capsule-content').value=c.content;
-  editingIndex=idx;
-  tempFlashcards=[...c.flashcards];
-  tempQuiz=[...c.quiz];
-  flashcardsWrapper.style.display=c.type==='flashcards'?'block':'none';
-  quizWrapper.style.display=c.type==='quiz'?'block':'none';
-};
-window.deleteCapsule=function(idx){
-  if(confirm('حذف شود؟')){capsules.splice(idx,1);saveToStorage();renderLibrary();}
-};
-
-// --- Form Interactions ---
-document.getElementById('capsule-type').addEventListener('change',e=>{
-  flashcardsWrapper.style.display=e.target.value==='flashcards'?'block':'none';
-  quizWrapper.style.display=e.target.value==='quiz'?'block':'none';
-});
-document.getElementById('add-flashcard').addEventListener('click',()=>{
-  const f=document.getElementById('fc-front').value;
-  const b=document.getElementById('fc-back').value;
-  if(f&&b){tempFlashcards.push({front:f,back:b});document.getElementById('fc-front').value='';document.getElementById('fc-back').value='';renderFlashcardsList();}
-});
-document.getElementById('add-quiz').addEventListener('click',()=>{
-  const t=document.getElementById('q-text').value;
-  const o1=document.getElementById('q-opt1').value;
-  const o2=document.getElementById('q-opt2').value;
-  const o3=document.getElementById('q-opt3').value;
-  const o4=document.getElementById('q-opt4').value;
-  const c=parseInt(document.getElementById('q-correct').value);
-  if(t&&o1&&o2&&o3&&o4&&[1,2,3,4].includes(c)){
-    tempQuiz.push({text:t,options:[o1,o2,o3,o4],correct:c});
-    document.getElementById('q-text').value='';document.getElementById('q-opt1').value='';document.getElementById('q-opt2').value='';document.getElementById('q-opt3').value='';document.getElementById('q-opt4').value='';document.getElementById('q-correct').value='';renderQuizList();
-  }
-});
-
-function renderFlashcardsList(){/*optional: show temp flashcards*/ }
-function renderQuizList(){/*optional: show temp quiz*/ }
-
-document.getElementById('save-capsule').addEventListener('click',()=>{
-  const title=document.getElementById('capsule-title').value;
-  const tags=document.getElementById('capsule-tags').value;
-  const type=document.getElementById('capsule-type').value;
-  const content=document.getElementById('capsule-content').value;
-  const data={title,tags,type,content,flashcards:type==='flashcards'?tempFlashcards:[],quiz:type==='quiz'?tempQuiz:[]};
-  if(editingIndex===''){capsules.push(data);}else{capsules[editingIndex]=data;}
-  saveToStorage();editingIndex='';capsuleForm.reset();flashcardsWrapper.style.display='none';quizWrapper.style.display='none';renderLibrary();
-});
-document.getElementById('cancel-edit').addEventListener('click',()=>{editingIndex='';capsuleForm.reset();flashcardsWrapper.style.display='none';quizWrapper.style.display='none';});
-
-// --- Study Mode ---
 function startStudy(){
-  const idx=studySelect.value; 
-  if(idx===''){alert('انتخاب کنید');return;}
+  const idx=studySelect.value; if(idx===''){ alert('Select a capsule'); return; }
   const capsule=capsules[idx]; currentStudyIndex=0;
-  if(capsule.type==='flashcards'){studyCards=[...capsule.flashcards];studyMode='flashcards';flashcardStudy.style.display='block';quizStudy.style.display='none';fcBackDisplay.style.display='none';renderFlashcard();}
-  if(capsule.type==='quiz'){studyCards=[...capsule.quiz];studyMode='quiz';flashcardStudy.style.display='none';quizStudy.style.display='block';renderQuizQuestion();}
+  if(capsule.type==='flashcards'){ studyCards=[...capsule.flashcards]; studyMode='flashcards'; flashcardStudy.style.display='block'; quizStudy.style.display='none'; fcBackDisplay.style.display='none'; renderFlashcard(); }
+  if(capsule.type==='quiz'){ studyCards=[...capsule.quiz]; studyMode='quiz'; flashcardStudy.style.display='none'; quizStudy.style.display='block'; renderQuizQuestion(); }
   studyProgress.textContent=`${currentStudyIndex+1}/${studyCards.length}`;
 }
-startStudyBtn.addEventListener('click',startStudy);
-document.getElementById('shuffle-study').addEventListener('click',()=>{
-  studyCards.sort(()=>Math.random()-0.5);currentStudyIndex=0;
+startStudyBtn.addEventListener('click', startStudy);
+
+document.getElementById('shuffle-study').addEventListener('click', ()=>{
+  studyCards.sort(()=>Math.random()-0.5); currentStudyIndex=0;
   if(studyMode==='flashcards') renderFlashcard(); if(studyMode==='quiz') renderQuizQuestion();
 });
 
 function renderFlashcard(){
-  if(studyCards.length===0){fcFrontDisplay.textContent='کارت موجود نیست'; fcBackDisplay.style.display='none';return;}
-  if(currentStudyIndex>=studyCards.length){alert('تمام شد');return;}
-  const c=studyCards[currentStudyIndex];
-  fcFrontDisplay.textContent=c.front;
-  fcBackDisplay.textContent=c.back;
-  fcBackDisplay.style.display='none';
+  if(studyCards.length===0){ fcFrontDisplay.textContent='No cards!'; fcBackDisplay.style.display='none'; return; }
+  if(currentStudyIndex>=studyCards.length){ alert('Finished!'); return; }
+  const c=studyCards[currentStudyIndex]; fcFrontDisplay.textContent=c.front; fcBackDisplay.textContent=c.back; fcBackDisplay.style.display='none';
   fcMeta.textContent=`Card ${currentStudyIndex+1}/${studyCards.length}`;
   studyProgress.textContent=`${currentStudyIndex+1}/${studyCards.length}`;
 }
-showAnswerBtn.addEventListener('click',()=>{fcBackDisplay.style.display='block';});
-markLearnedBtn.addEventListener('click',()=>{
-  studyCards.splice(currentStudyIndex,1);
-  if(currentStudyIndex>=studyCards.length) currentStudyIndex=0;
-  renderFlashcard();
+showAnswerBtn.addEventListener('click', ()=>{ fcBackDisplay.style.display='block'; });
+markLearnedBtn.addEventListener('click', ()=>{
+  studyCards.splice(currentStudyIndex,1); if(currentStudyIndex>=studyCards.length) currentStudyIndex=0; renderFlashcard();
 });
-nextCardBtn.addEventListener('click',()=>{
-  if(studyCards.length===0) return;
-  currentStudyIndex=(currentStudyIndex+1)%studyCards.length;
-  renderFlashcard();
+nextCardBtn.addEventListener('click', ()=>{
+  if(studyCards.length===0) return; currentStudyIndex=(currentStudyIndex+1)%studyCards.length; renderFlashcard();
 });
 
 function renderQuizQuestion(){
-  if(studyCards.length===0){qTextDisplay.textContent='کوییز موجود نیست'; qOptions.innerHTML=''; return;}
-  if(currentStudyIndex>=studyCards.length){alert('تمامشد'); return;}
-  const q = studyCards[currentStudyIndex];
-  qTextDisplay.textContent = q.text;
-  qOptions.innerHTML = '';
-  q.options.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'btn-pill';
-    btn.textContent = opt;
-    btn.addEventListener('click', () => {
-      qFeedback.textContent = (i + 1 === q.correct) ? 'صحیح!' : 'غلط!';
-    });
+  if(studyCards.length===0){ qTextDisplay.textContent='No questions!'; qOptions.innerHTML=''; return; }
+  if(currentStudyIndex>=studyCards.length){ alert('Finished!'); return; }
+  const q=studyCards[currentStudyIndex]; qTextDisplay.textContent=q.text; qOptions.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const btn=document.createElement('button'); btn.className='btn-pill'; btn.textContent=opt;
+    btn.addEventListener('click', ()=>{ qFeedback.textContent=(i+1===q.correct)?'Correct!':'Wrong!'; });
     qOptions.appendChild(btn);
   });
-  qFeedback.textContent = '';
-  studyProgress.textContent = `${currentStudyIndex + 1}/${studyCards.length}`;
+  qFeedback.textContent=''; studyProgress.textContent=`${currentStudyIndex+1}/${studyCards.length}`;
 }
-
-qNextBtn.addEventListener('click', () => {
-  if(studyCards.length === 0) return;
-  currentStudyIndex = (currentStudyIndex + 1) % studyCards.length;
-  renderQuizQuestion();
+qNextBtn.addEventListener('click', ()=>{
+  if(studyCards.length===0) return; currentStudyIndex=(currentStudyIndex+1)%studyCards.length; renderQuizQuestion();
 });
 
-// --- Export / Import ---
-document.getElementById('export-all').addEventListener('click', () => {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(capsules));
-  const dlAnchor = document.createElement('a');
-  dlAnchor.setAttribute('href', dataStr);
-  dlAnchor.setAttribute('download', 'pocket_capsules.json');
-  dlAnchor.click();
-});
-
-document.getElementById('import-all').addEventListener('click', () => {
-  document.getElementById('file-import').click();
-});
-
-document.getElementById('file-import').addEventListener('change', e => {
-  const file = e.target.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    try {
-      const imported = JSON.parse(ev.target.result);
-      if(Array.isArray(imported)) {
-        capsules = imported; saveToStorage(); renderLibrary();
-        alert('کپسول‌ها با موفقیت وارد شدند!');
-      }
-    } catch(err) {
-      alert('فایل JSON نامعتبر است!');
-    }
-  }
-  reader.readAsText(file);
-});
-
-// --- Initialize ---
-renderLibrary();
-
+// --- Init ---
+loadFromStorage(); renderLibrary();
 </script>
+
 </body>
 </html>
-
-
-                                                 
+                       
