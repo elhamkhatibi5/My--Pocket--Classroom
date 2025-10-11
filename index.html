@@ -312,44 +312,85 @@ button.btn-secondary.btn-pill:hover{
     </div>
   </form>
 </section>
+<!-- 🔹 Flashcards Builder -->
+<div id="flashcards-wrapper" class="card bg-dark-subtle text-light mb-3 d-none p-3 rounded-3 shadow-sm">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h6 class="mb-0 text-uppercase text-muted fw-bold">Flashcards</h6>
+    <span id="flashcard-count" class="badge bg-primary">0 cards</span>
+  </div>
 
-      <!-- Flashcards builder -->  
-      <div id="flashcards-wrapper" class="mb-2 d-none">  
-        <label class="muted">Flashcards</label>  
-        <div id="flashcards-list" class="mb-2"></div>  
-        <div class="d-flex gap-2">  
-          <input id="fc-front" class="form-control" placeholder="Front (question/term)">  
-          <input id="fc-back" class="form-control" placeholder="Back (answer/definition)">  
-          <button id="add-fc" type="button" class="btn btn-primary btn-pill">Add</button>  
-        </div>  
-      </div>  
+  <div id="flashcards-list" class="mb-3 small"></div>
 
-      <!-- Quiz builder -->  
-      <div id="quiz-wrapper" class="mb-2 d-none">  
-        <label class="muted">Quiz Questions</label>  
-        <div id="quiz-list" class="mb-2"></div>  
-        <div class="d-flex gap-2">  
-          <input id="q-text" class="form-control" placeholder="Question text">  
-          <input id="q-opt1" class="form-control" placeholder="Option A">  
-          <input id="q-opt2" class="form-control" placeholder="Option B">  
-        </div>  
-        <div class="d-flex gap-2 mt-2">  
-          <input id="q-opt3" class="form-control" placeholder="Option C (optional)">  
-          <input id="q-opt4" class="form-control" placeholder="Option D (optional)">  
-          <select id="q-correct" class="form-select" style="width:120px;">  
-            <option value="1">A</option><option value="2">B</option><option value="3">C</option><option value="4">D</option>  
-          </select>  
-          <button id="add-q" type="button" class="btn btn-primary btn-pill">Add Q</button>  
-        </div>  
-      </div>  
+  <div class="row g-2 align-items-center">
+    <div class="col-md-5">
+      <input id="fc-front" class="form-control form-control-sm" placeholder="Front (Question or Term)">
+    </div>
+    <div class="col-md-5">
+      <input id="fc-back" class="form-control form-control-sm" placeholder="Back (Answer or Definition)">
+    </div>
+    <div class="col-md-2 d-grid">
+      <button id="add-fc" type="button" class="btn btn-primary btn-sm rounded-pill">Add Card</button>
+    </div>
+  </div>
+</div>
 
-      <div class="d-flex gap-2 mt-3">  
-        <button class="btn btn-success btn-pill" type="submit">Save Capsule</button>  
-        <button id="cancel-edit" type="button" class="btn btn-outline-light btn-pill">Cancel</button>  
-        <button id="new-capsule" type="button" class="btn btn-secondary btn-pill ms-auto">New Capsule</button>  
-      </div>  
-    </form>  
-  </section>  
+<!-- 🔹 Quiz Builder -->
+<div id="quiz-wrapper" class="card bg-dark-subtle text-light mb-3 d-none p-3 rounded-3 shadow-sm">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h6 class="mb-0 text-uppercase text-muted fw-bold">Quiz Builder</h6>
+    <span id="quiz-count" class="badge bg-success">0 questions</span>
+  </div>
+
+  <div id="quiz-list" class="mb-3 small"></div>
+
+  <div class="row g-2">
+    <div class="col-md-6">
+      <input id="q-text" class="form-control form-control-sm" placeholder="Question text">
+    </div>
+    <div class="col-md-3">
+      <input id="q-opt1" class="form-control form-control-sm" placeholder="Option A">
+    </div>
+    <div class="col-md-3">
+      <input id="q-opt2" class="form-control form-control-sm" placeholder="Option B">
+    </div>
+  </div>
+
+  <div class="row g-2 mt-2">
+    <div class="col-md-3">
+      <input id="q-opt3" class="form-control form-control-sm" placeholder="Option C (optional)">
+    </div>
+    <div class="col-md-3">
+      <input id="q-opt4" class="form-control form-control-sm" placeholder="Option D (optional)">
+    </div>
+    <div class="col-md-3">
+      <select id="q-correct" class="form-select form-select-sm">
+        <option value="1">Correct: A</option>
+        <option value="2">Correct: B</option>
+        <option value="3">Correct: C</option>
+        <option value="4">Correct: D</option>
+      </select>
+    </div>
+    <div class="col-md-3 d-grid">
+      <button id="add-q" type="button" class="btn btn-success btn-sm rounded-pill">Add Question</button>
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 Form Buttons -->
+<div class="d-flex gap-2 mt-3">
+  <button class="btn btn-success rounded-pill px-4" type="submit">
+    <i class="bi bi-save"></i> Save Capsule
+  </button>
+  <button id="cancel-edit" type="button" class="btn btn-outline-light rounded-pill px-4">
+    <i class="bi bi-x-circle"></i> Cancel
+  </button>
+  <button id="new-capsule" type="button" class="btn btn-secondary rounded-pill px-4 ms-auto">
+    <i class="bi bi-plus-circle"></i> New Capsule
+  </button>
+</div>
+
+<!-- Optional icons: Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
   <!-- Learn / Study Section -->  
   <section id="learn" class="card-panel d-none">  
