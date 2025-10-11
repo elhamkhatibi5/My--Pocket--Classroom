@@ -1,543 +1,199 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎓 Pocket Classroom — Mini E-Learning Platform</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-:root{
-  --bg:#0f1720;
-  --card:#1a2230;
-  --muted:#9aa4b2;
-  --accent:#0ea5a4;
-  --accent-hover:#06b2b2;
-  --header-gradient:linear-gradient(90deg,#0b2540,#083042);
-}
-body{
-  background:var(--bg);
-  color:#e6eef6;
-  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  margin:0;
-}
-.app-shell{
-  min-height:100vh;
-  display:grid;
-  grid-template-columns: 1fr 360px;
-  gap:20px;
-  padding:20px;
-}
-.main-col{
-  display:flex;
-  flex-direction:column;
-  gap:20px;
-}
-header.navbar{
-  background:var(--header-gradient);
-  border-radius:16px;
-  padding:16px 24px;
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.5);
-}
-.brand{
-  display:flex;
-  align-items:center;
-  font-weight:700;
-  font-size:1.25rem;
-  gap:8px;
-}
-.brand svg{
-  width:28px;
-  height:28px;
-}
-nav{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-.nav-btn{
-  border-radius:999px;
-  transition:0.2s;
-}
-.nav-btn.active,
-.nav-btn:hover{
-  background:var(--accent);
-  border-color:var(--accent);
-  color:#fff !important;
-}
-.d-flex-gap{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  align-items:center;
-}
-input.small-input, select.small-input{
-  height:38px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.05);
-  color:#e6eef6;
-  padding:0 12px;
-  transition:0.2s;
-}
-input.small-input:focus, select.small-input:focus{
-  border-color:var(--accent);
-  outline:none;
-  background:rgba(0,0,0,0.15);
-}
-button.btn-pill{
-  border-radius:999px;
-  transition:0.2s;
-}
-button.btn-success.btn-pill:hover{
-  background:var(--accent-hover);
-  border-color:var(--accent-hover);
-}
-button.btn-secondary.btn-pill:hover{
-  background:rgba(255,255,255,0.1);
-}
-@media (max-width: 900px){
-  .app-shell{
-    grid-template-columns: 1fr;
-    padding:12px;
-  }
-  header.navbar{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-  .d-flex-gap{
-    width:100%;
-  }
-  input.small-input, select.small-input{
-    flex:1;
-  }
-}
-</style>
-</head>
-<body>
-<div class="container-fluid">
-  <div class="app-shell">
-    <div class="main-col">
-      <header class="navbar">
-        <div class="d-flex gap-3 align-items-center flex-wrap">
-          <div class="brand">
-            <!-- Inline SVG favicon -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L2 7l10 5 10-5-10-5zm0 13l-10-5v10l10 5 10-5V10l-10 5z"/>
-            </svg>
-            Pocket Classroom
-          </div>
-          <nav>
-            <button class="btn btn-sm btn-outline-light btn-pill nav-btn active" data-section="library">Library</button>
-            <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="author">Create</button>
-            <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="learn">Study</button>
-          </nav>
-        </div>
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+<meta charset="utf-8" />  
+<meta name="viewport" content="width=device-width,initial-scale=1" />  
+<title>🎓 Pocket Classroom — Mini E-Learning Platform</title>  
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">  
+<style>  
+  :root{  
+    --bg:#0f1720; --card:#0b1220; --muted:#9aa4b2; --accent:#0ea5a4;  
+  }  
+  body{background:var(--bg); color:#e6eef6; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}  
+  .app-shell{min-height:100vh; display:grid; grid-template-columns: 1fr 360px; gap:20px; padding:20px;}  
+  .main-col{display:flex; flex-direction:column; gap:18px;}  
+  header.navbar{background:linear-gradient(90deg,#083042,#0b2540); border-radius:12px; padding:12px 18px;}  
+  .brand{font-weight:700; font-size:1.15rem;}  
+  .card-panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.03);}  
+  .library-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}  
+  .capsule-card{background:var(--card); border-radius:10px; padding:12px; border:1px solid rgba(255,255,255,0.03);}  
+  .muted{color:var(--muted); font-size:0.9rem;}  
+  .tag{background:rgba(255,255,255,0.04); color:var(--muted); border-radius:999px; padding:4px 8px; font-size:0.75rem; margin-right:6px;}  
+  .btn-pill{border-radius:999px;}  
+  .small-input{height:36px;}  
+  .notes-panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04)); border-radius:12px; padding:12px; height:calc(100vh - 160px); overflow:auto;}  
+  textarea#notes{width:100%; min-height:320px; resize:vertical; background:transparent; color:inherit; border:1px dashed rgba(255,255,255,0.04); padding:12px; border-radius:8px;}  
+  .flashcard-item{background:rgba(255,255,255,0.02); padding:8px; border-radius:8px; margin-bottom:8px;}  
+  .learn-card{min-height:180px;}  
+  footer{opacity:0.6; font-size:0.85rem;}  
+  .kbd{background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px; font-size:0.9rem;}  
+  @media (max-width: 900px){  
+    .app-shell{grid-template-columns: 1fr; padding:12px;}  
+    .notes-panel{height:280px;}  
+  }  
+</style>  
+</head>  
+<body>  <div class="container-fluid">  
+  <div class="app-shell">  <!-- LEFT / MAIN COLUMN -->  
+<div class="main-col">  
 
-        <div class="d-flex-gap mt-2 mt-md-0">
-          <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..." />
-          <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">
-            <option value="date-desc">Newest first</option>
-            <option value="date-asc">Oldest first</option>
-            <option value="title-asc">Title A→Z</option>
-            <option value="title-desc">Title Z→A</option>
-          </select>
-          <button id="export-all" class="btn btn-sm btn-success btn-pill">Export</button>
-          <button id="import-all" class="btn btn-sm btn-secondary btn-pill">Import</button>
-          <input id="file-import" type="file" accept=".json" style="display:none">
-        </div>
-      </header>
-<!-- Library Section -->
-<section id="library" class="card-panel"
-         style="background:linear-gradient(180deg,#0b1220 0%,#0a1725 100%);
-                border:1px solid rgba(255,255,255,0.05);
-                border-radius:16px;
-                padding:26px 22px;
-                box-shadow:0 6px 20px rgba(0,0,0,0.45);
-                transition:all 0.3s ease;">
+  <!-- Header / Nav -->  
+  <header class="navbar card-panel d-flex align-items-center justify-content-between">  
+    <div class="d-flex gap-3 align-items-center">  
+      <div class="brand">🎓 Pocket Classroom</div>  
+      <nav>  
+        <button class="btn btn-sm btn-outline-light btn-pill nav-btn active" data-section="library">Library</button>  
+        <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="author">Create</button>  
+        <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="learn">Study</button>  
+      </nav>  
+    </div>  
 
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" 
-       style="border-color:rgba(255,255,255,0.05)!important;">
-    <h4 class="mb-0 fw-semibold" style="color:#0ee0e0;">Your Library</h4>
-    <div class="muted" style="font-size:0.9rem;">Capsules: <span id="capsule-count" style="color:#fff;">0</span></div>
-  </div>
+    <div class="d-flex gap-2 align-items-center">  
+      <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..." />  
+      <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">  
+        <option value="date-desc">Newest first</option>  
+        <option value="date-asc">Oldest first</option>  
+        <option value="title-asc">Title A→Z</option>  
+        <option value="title-desc">Title Z→A</option>  
+      </select>  
+      <button id="export-all" class="btn btn-sm btn-success btn-pill">Export</button>  
+      <button id="import-all" class="btn btn-sm btn-secondary btn-pill">Import</button>  
+      <input id="file-import" type="file" accept=".json" style="display:none">  
+    </div>  
+  </header>  
 
-  <!-- Toolbar / Filters -->
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2"
-       style="background:rgba(255,255,255,0.02); border-radius:10px; padding:10px 14px;">
-    <div class="d-flex gap-2 align-items-center">
-      <input type="text" id="library-search" class="form-control form-control-sm small-input"
-             placeholder="Search in your library..."
-             style="background:rgba(255,255,255,0.05); color:#e6eef6; border:none; width:240px;
-                    border-radius:8px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.5);">
-      <select id="filter-topic" class="form-select form-select-sm small-input"
-              style="width:150px; background:rgba(255,255,255,0.05); color:#e6eef6; border:none; border-radius:8px;">
-        <option value="">All Topics</option>
-        <option value="science">Science</option>
-        <option value="math">Math</option>
-        <option value="design">Design</option>
-        <option value="tech">Technology</option>
-      </select>
-    </div>
+  <!-- Library Section -->  
+  <section id="library" class="card-panel">  
+    <div class="d-flex justify-content-between align-items-center mb-3">  
+      <h4 class="mb-0">Your Library</h4>  
+      <div class="muted">Capsules: <span id="capsule-count">0</span></div>  
+    </div>  
 
-    <div>
-      <select id="sort-select" class="form-select form-select-sm small-input"
-              style="width:180px; background:rgba(255,255,255,0.05); color:#e6eef6; border:none; border-radius:8px;">
-        <option value="date-desc">Newest first</option>
-        <option value="date-asc">Oldest first</option>
-        <option value="title-asc">Title A→Z</option>
-        <option value="title-desc">Title Z→A</option>
-      </select>
-    </div>
-  </div>
+    <div id="library-list" class="library-grid"></div>  
 
-  <!-- Library Grid -->
-  <div id="library-list" class="library-grid"
-       style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:20px;">
-    
-    <!-- Example Capsule Card (Template Style) -->
-    <!--
-    <div class="capsule-card"
-         style="background:rgba(255,255,255,0.03); border-radius:12px; padding:18px;
-                transition:transform 0.25s ease, box-shadow 0.25s ease; cursor:pointer;">
-      <h6 class="fw-semibold mb-1" style="color:#e8f3fc;">HTML Essentials</h6>
-      <div class="muted" style="font-size:0.85rem;">12 lessons • Updated 3 days ago</div>
-      <div class="d-flex flex-wrap mt-2">
-        <span class="tag">#web</span>
-        <span class="tag">#html</span>
-      </div>
-    </div>
-    -->
-  </div>
+    <div id="empty-state" class="text-center muted mt-4">  
+      No capsules yet. Click <span class="kbd">Create</span> to add your first learning capsule.  
+    </div>  
+  </section>  
 
-  <!-- Empty State -->
-  <div id="empty-state" class="text-center muted mt-5"
-       style="padding:50px 0; opacity:0.75; border:1px dashed rgba(255,255,255,0.06); border-radius:12px;">
-    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486764.png" alt="Empty Library" width="90"
-         style="opacity:0.7; margin-bottom:12px;">
-    <p class="mb-0" style="font-size:0.95rem; color:#a7b2c3;">
-      No capsules yet.<br>
-      Click <span class="kbd" style="background:rgba(255,255,255,0.05); color:#0ee0e0;">Create</span> to add your first learning capsule.
-    </p>
-  </div>
-</section>
-<!-- Author / Create Section -->
-<section id="author" class="card-panel d-none"
-         style="background:linear-gradient(180deg,#0b1220 0%,#0a1827 100%);
-                border:1px solid rgba(255,255,255,0.05);
-                border-radius:16px;
-                padding:28px 24px;
-                box-shadow:0 6px 20px rgba(0,0,0,0.4);
-                transition:all 0.3s ease;">
+  <!-- Author / Create Section -->  
+  <section id="author" class="card-panel d-none">  
+    <div class="d-flex justify-content-between align-items-center mb-3">  
+      <h4 class="mb-0">Create / Edit Capsule</h4>  
+      <div class="muted">Type: <span id="capsule-type-label">Note</span></div>  
+    </div>  
 
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3"
-       style="border-color:rgba(255,255,255,0.06)!important;">
-    <h4 class="mb-0 fw-semibold" style="color:#0ee0e0;">Create / Edit Capsule</h4>
-    <div class="muted" style="font-size:0.9rem;">Type: <span id="capsule-type-label" style="color:#fff;">Note</span></div>
-  </div>
+    <form id="capsule-form">  
+      <input type="hidden" id="editing-index" value="">  
+      <div class="mb-2">  
+        <label class="muted">Title</label>  
+        <input id="capsule-title" class="form-control" placeholder="e.g., Intro to Photosynthesis" required>  
+      </div>  
 
-  <!-- Form -->
-  <form id="capsule-form">
-    <input type="hidden" id="editing-index" value="">
+      <div class="mb-2 d-flex gap-2">  
+        <div style="flex:1">  
+          <label class="muted">Tags (comma separated)</label>  
+          <input id="capsule-tags" class="form-control" placeholder="e.g., Biology, Plant">  
+        </div>  
+        <div style="width:200px">  
+          <label class="muted">Capsule type</label>  
+          <select id="capsule-type" class="form-select">  
+            <option value="note">Note</option>  
+            <option value="flashcards">Flashcards</option>  
+            <option value="quiz">Quiz (multiple choice)</option>  
+          </select>  
+        </div>  
+      </div>  
 
-    <!-- Title -->
-    <div class="mb-3">
-      <label class="muted fw-semibold mb-1">Title</label>
-      <input id="capsule-title" class="form-control"
-             placeholder="e.g., Intro to Photosynthesis" required
-             style="background:rgba(255,255,255,0.05);
-                    color:#e6eef6; border:none; border-radius:10px;
-                    box-shadow:inset 0 1px 3px rgba(0,0,0,0.5);">
-    </div>
+      <div id="note-content-wrapper" class="mb-2">  
+        <label class="muted">Content (for Notes)</label>  
+        <textarea id="capsule-content" class="form-control" rows="4" placeholder="Write summary, lecture notes, or instructions..."></textarea>  
+      </div>  
 
-    <!-- Tags + Type + Difficulty -->
-    <div class="mb-3 d-flex flex-wrap gap-3">
-      <div style="flex:1;">
-        <label class="muted fw-semibold mb-1">Tags (comma separated)</label>
-        <input id="capsule-tags" class="form-control"
-               placeholder="e.g., Biology, Plant"
-               style="background:rgba(255,255,255,0.05);
-                      color:#e6eef6; border:none; border-radius:10px;
-                      box-shadow:inset 0 1px 3px rgba(0,0,0,0.5);">
-      </div>
+      <!-- Flashcards builder -->  
+      <div id="flashcards-wrapper" class="mb-2 d-none">  
+        <label class="muted">Flashcards</label>  
+        <div id="flashcards-list" class="mb-2"></div>  
+        <div class="d-flex gap-2">  
+          <input id="fc-front" class="form-control" placeholder="Front (question/term)">  
+          <input id="fc-back" class="form-control" placeholder="Back (answer/definition)">  
+          <button id="add-fc" type="button" class="btn btn-primary btn-pill">Add</button>  
+        </div>  
+      </div>  
 
-      <div style="width:180px;">
-        <label class="muted fw-semibold mb-1">Capsule Type</label>
-        <select id="capsule-type" class="form-select"
-                style="background:rgba(255,255,255,0.05);
-                       color:#e6eef6; border:none; border-radius:10px;">
-          <option value="note">Note</option>
-          <option value="flashcards">Flashcards</option>
-          <option value="quiz">Quiz (Multiple Choice)</option>
-          <option value="assignment">Assignment</option>
-        </select>
-      </div>
+      <!-- Quiz builder -->  
+      <div id="quiz-wrapper" class="mb-2 d-none">  
+        <label class="muted">Quiz Questions</label>  
+        <div id="quiz-list" class="mb-2"></div>  
+        <div class="d-flex gap-2">  
+          <input id="q-text" class="form-control" placeholder="Question text">  
+          <input id="q-opt1" class="form-control" placeholder="Option A">  
+          <input id="q-opt2" class="form-control" placeholder="Option B">  
+        </div>  
+        <div class="d-flex gap-2 mt-2">  
+          <input id="q-opt3" class="form-control" placeholder="Option C (optional)">  
+          <input id="q-opt4" class="form-control" placeholder="Option D (optional)">  
+          <select id="q-correct" class="form-select" style="width:120px;">  
+            <option value="1">A</option><option value="2">B</option><option value="3">C</option><option value="4">D</option>  
+          </select>  
+          <button id="add-q" type="button" class="btn btn-primary btn-pill">Add Q</button>  
+        </div>  
+      </div>  
 
-      <div style="width:180px;">
-        <label class="muted fw-semibold mb-1">Difficulty</label>
-        <select id="capsule-difficulty" class="form-select"
-                style="background:rgba(255,255,255,0.05);
-                       color:#e6eef6; border:none; border-radius:10px;">
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="advanced">Advanced</option>
-        </select>
-      </div>
-    </div>
+      <div class="d-flex gap-2 mt-3">  
+        <button class="btn btn-success btn-pill" type="submit">Save Capsule</button>  
+        <button id="cancel-edit" type="button" class="btn btn-outline-light btn-pill">Cancel</button>  
+        <button id="new-capsule" type="button" class="btn btn-secondary btn-pill ms-auto">New Capsule</button>  
+      </div>  
+    </form>  
+  </section>  
 
-    <!-- Content (Notes) -->
-    <div id="note-content-wrapper" class="mb-3">
-      <label class="muted fw-semibold mb-1">Content (for Notes)</label>
-      <textarea id="capsule-content" class="form-control" rows="6"
-                placeholder="Write summary, lecture notes, or learning materials..."
-                style="background:rgba(255,255,255,0.05);
-                       color:#e6eef6; border:none; border-radius:10px;
-                       resize:vertical;
-                       box-shadow:inset 0 1px 3px rgba(0,0,0,0.5);"></textarea>
-    </div>
+  <!-- Learn / Study Section -->  
+  <section id="learn" class="card-panel d-none">  
+    <div class="d-flex justify-content-between align-items-center mb-3">  
+      <h4 class="mb-0">Study</h4>  
+      <div class="muted">Mode: <span id="study-mode">Flashcards</span></div>  
+    </div>  
 
-    <!-- Action Buttons -->
-    <div class="d-flex justify-content-end gap-3 mt-4">
-      <button type="reset" class="btn btn-sm btn-secondary btn-pill"
-              style="background:rgba(255,255,255,0.08); border:none;">Clear</button>
-      <button type="button" id="preview-capsule" class="btn btn-sm btn-outline-info btn-pill">Preview</button>
-      <button type="submit" id="save-capsule" class="btn btn-sm btn-success btn-pill px-4"
-              style="font-weight:500;">Save Capsule</button>
-    </div>
-  </form>
-</section>
-<!-- 🔹 Flashcards Builder -->
-<div id="flashcards-wrapper" class="card bg-dark-subtle text-light mb-3 d-none p-3 rounded-3 shadow-sm">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h6 class="mb-0 text-uppercase text-muted fw-bold">Flashcards</h6>
-    <span id="flashcard-count" class="badge bg-primary">0 cards</span>
-  </div>
+    <div id="study-controls" class="mb-3 d-flex gap-2 align-items-center">  
+      <select id="study-capsule-select" class="form-select" style="width:300px;">  
+        <option value="">Choose a capsule to study...</option>  
+      </select>  
+      <button id="start-study" class="btn btn-primary btn-pill">Start</button>  
+      <button id="shuffle-study" class="btn btn-outline-light btn-pill">Shuffle</button>  
+      <div class="muted ms-auto">Progress: <span id="study-progress">0 / 0</span></div>  
+    </div>  
 
-  <div id="flashcards-list" class="mb-3 small"></div>
+    <div id="study-area" class="learn-card card-panel">  
+      <div id="study-empty" class="muted">Select a capsule and press Start to begin studying flashcards or quizzes.</div>  
 
-  <div class="row g-2 align-items-center">
-    <div class="col-md-5">
-      <input id="fc-front" class="form-control form-control-sm" placeholder="Front (Question or Term)">
-    </div>
-    <div class="col-md-5">
-      <input id="fc-back" class="form-control form-control-sm" placeholder="Back (Answer or Definition)">
-    </div>
-    <div class="col-md-2 d-grid">
-      <button id="add-fc" type="button" class="btn btn-primary btn-sm rounded-pill">Add Card</button>
-    </div>
-  </div>
-</div>
+      <div id="flashcard-study" class="d-none">  
+        <div class="mb-2 muted small" id="fc-meta"></div>  
+        <div id="fc-front-display" class="h5 fw-bold mb-2"></div>  
+        <div id="fc-back-display" class="muted mb-3" style="display:none"></div>  
+        <div class="d-flex gap-2">  
+          <button id="show-answer" class="btn btn-outline-light btn-pill">Show Answer</button>  
+          <button id="mark-learned" class="btn btn-success btn-pill">Mark Learned</button>  
+          <button id="next-card" class="btn btn-secondary btn-pill ms-auto">Next</button>  
+        </div>  
+      </div>  
 
-<!-- 🔹 Quiz Builder -->
-<div id="quiz-wrapper" class="card bg-dark-subtle text-light mb-3 d-none p-3 rounded-3 shadow-sm">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h6 class="mb-0 text-uppercase text-muted fw-bold">Quiz Builder</h6>
-    <span id="quiz-count" class="badge bg-success">0 questions</span>
-  </div>
+      <div id="quiz-study" class="d-none">  
+        <div id="q-text-display" class="h5 fw-bold mb-2"></div>  
+        <div id="q-options" class="d-flex flex-column gap-2 mb-3"></div>  
+        <div class="d-flex gap-2">  
+          <button id="q-next" class="btn btn-secondary btn-pill ms-auto">Next</button>  
+        </div>  
+        <div id="q-feedback" class="mt-2 muted"></div>  
+      </div>  
 
-  <div id="quiz-list" class="mb-3 small"></div>
+    </div>  
+  </section>  
 
-  <div class="row g-2">
-    <div class="col-md-6">
-      <input id="q-text" class="form-control form-control-sm" placeholder="Question text">
-    </div>
-    <div class="col-md-3">
-      <input id="q-opt1" class="form-control form-control-sm" placeholder="Option A">
-    </div>
-    <div class="col-md-3">
-      <input id="q-opt2" class="form-control form-control-sm" placeholder="Option B">
-    </div>
-  </div>
+  <footer class="text-center muted mt-2">  
+    © 2025 Pocket Classroom — Offline · LocalStorage · Export/Import JSON  
+  </footer>  
+</div>  
 
-  <div class="row g-2 mt-2">
-    <div class="col-md-3">
-      <input id="q-opt3" class="form-control form-control-sm" placeholder="Option C (optional)">
-    </div>
-    <div class="col-md-3">
-      <input id="q-opt4" class="form-control form-control-sm" placeholder="Option D (optional)">
-    </div>
-    <div class="col-md-3">
-      <select id="q-correct" class="form-select form-select-sm">
-        <option value="1">Correct: A</option>
-        <option value="2">Correct: B</option>
-        <option value="3">Correct: C</option>
-        <option value="4">Correct: D</option>
-      </select>
-    </div>
-    <div class="col-md-3 d-grid">
-      <button id="add-q" type="button" class="btn btn-success btn-sm rounded-pill">Add Question</button>
-    </div>
-  </div>
-</div>
-
-<!-- 🔹 Form Buttons -->
-<div class="d-flex gap-2 mt-3">
-  <button class="btn btn-success rounded-pill px-4" type="submit">
-    <i class="bi bi-save"></i> Save Capsule
-  </button>
-  <button id="cancel-edit" type="button" class="btn btn-outline-light rounded-pill px-4">
-    <i class="bi bi-x-circle"></i> Cancel
-  </button>
-  <button id="new-capsule" type="button" class="btn btn-secondary rounded-pill px-4 ms-auto">
-    <i class="bi bi-plus-circle"></i> New Capsule
-  </button>
-</div>
-
-<!-- Optional icons: Bootstrap Icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<!-- 🔹 Learn / Study Section -->
-<section id="learn" class="card-panel d-none p-3 rounded-3 shadow-sm bg-dark-subtle text-light">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">Study</h4>
-    <div class="muted">Mode: <span id="study-mode">Flashcards</span></div>
-  </div>
-
-  <div id="study-controls" class="mb-3 d-flex gap-2 align-items-center flex-wrap">
-    <select id="study-capsule-select" class="form-select" style="width:300px;">
-      <option value="">Choose a capsule to study...</option>
-    </select>
-    <button id="start-study" class="btn btn-primary btn-pill">Start</button>
-    <button id="shuffle-study" class="btn btn-outline-light btn-pill">Shuffle</button>
-    <div class="muted ms-auto">Progress: <span id="study-progress">0 / 0</span></div>
-  </div>
-
-  <div id="study-area" class="learn-card card-panel p-3 bg-dark rounded-3">
-    <div id="study-empty" class="muted">Select a capsule and press Start to begin studying flashcards or quizzes.</div>
-
-    <!-- 🔹 Flashcard Study -->
-    <div id="flashcard-study" class="d-none">
-      <div class="mb-2 muted small" id="fc-meta"></div>
-      <div id="fc-front-display" class="h5 fw-bold mb-2"></div>
-      <div id="fc-back-display" class="muted mb-3" style="display:none"></div>
-      <div class="d-flex gap-2 flex-wrap">
-        <button id="show-answer" class="btn btn-outline-light btn-pill">Show Answer</button>
-        <button id="mark-learned" class="btn btn-success btn-pill">Mark Learned</button>
-        <button id="next-card" class="btn btn-secondary btn-pill ms-auto">Next</button>
-      </div>
-    </div>
-
-    <!-- 🔹 Quiz Study -->
-    <div id="quiz-study" class="d-none">
-      <div id="q-text-display" class="h5 fw-bold mb-2"></div>
-      <div id="q-options" class="d-flex flex-column gap-2 mb-3"></div>
-      <div class="d-flex gap-2">
-        <button id="q-next" class="btn btn-secondary btn-pill ms-auto">Next</button>
-      </div>
-      <div id="q-feedback" class="mt-2 muted"></div>
-    </div>
-  </div>
-</section>
-
-<footer class="text-center muted mt-2 small">
-  © 2025 Pocket Classroom — Offline · LocalStorage · Export/Import JSON
-</footer>
-
-<!-- 🔹 JS for Learn / Study -->
-<script>
-let studyCapsules = [];
-let currentCapsule = null;
-let studyIndex = 0;
-let flashcardsMode = true;
-
-// Load capsules from localStorage
-function loadCapsules() {
-  studyCapsules = JSON.parse(localStorage.getItem('capsules') || '[]');
-  const select = document.querySelector('#study-capsule-select');
-  select.innerHTML = '<option value="">Choose a capsule to study...</option>';
-  studyCapsules.forEach((cap, idx) => {
-    select.innerHTML += `<option value="${idx}">${cap.title}</option>`;
-  });
-}
-
-loadCapsules();
-
-// Start Study
-document.querySelector('#start-study').addEventListener('click', () => {
-  const idx = document.querySelector('#study-capsule-select').value;
-  if(idx === '') return alert('Please select a capsule.');
-  currentCapsule = studyCapsules[idx];
-  studyIndex = 0;
-
-  flashcardsMode = currentCapsule.flashcards && currentCapsule.flashcards.length > 0;
-  document.querySelector('#study-mode').innerText = flashcardsMode ? 'Flashcards' : 'Quiz';
-
-  document.querySelector('#study-empty').classList.add('d-none');
-  document.querySelector('#flashcard-study').classList.toggle('d-none', !flashcardsMode);
-  document.querySelector('#quiz-study').classList.toggle('d-none', flashcardsMode);
-
-  updateStudyDisplay();
-});
-
-// Shuffle Study
-document.querySelector('#shuffle-study').addEventListener('click', () => {
-  if(!currentCapsule) return;
-  const arr = flashcardsMode ? currentCapsule.flashcards : currentCapsule.quiz;
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  studyIndex = 0;
-  updateStudyDisplay();
-});
-
-// Update Flashcard / Quiz Display
-function updateStudyDisplay() {
-  if(flashcardsMode){
-    const fc = currentCapsule.flashcards[studyIndex];
-    document.querySelector('#fc-meta').innerText = `Card ${studyIndex + 1} of ${currentCapsule.flashcards.length}`;
-    document.querySelector('#fc-front-display').innerText = fc.front;
-    document.querySelector('#fc-back-display').style.display = 'none';
-    document.querySelector('#fc-back-display').innerText = fc.back;
-    document.querySelector('#study-progress').innerText = `${studyIndex+1} / ${currentCapsule.flashcards.length}`;
-  } else {
-    const q = currentCapsule.quiz[studyIndex];
-    document.querySelector('#q-text-display').innerText = q.q;
-    const opts = document.querySelector('#q-options');
-    opts.innerHTML = '';
-    q.opts.forEach((o,i)=>{
-      opts.innerHTML += `<button class="btn btn-outline-light btn-sm q-option" data-index="${i}">${o}</button>`;
-    });
-    document.querySelector('#q-feedback').innerText = '';
-    document.querySelector('#study-progress').innerText = `${studyIndex+1} / ${currentCapsule.quiz.length}`;
-  }
-}
-
-// Flashcard Buttons
-document.querySelector('#show-answer').addEventListener('click', ()=>{
-  document.querySelector('#fc-back-display').style.display = 'block';
-});
-
-document.querySelector('#mark-learned').addEventListener('click', ()=>{
-  alert('Marked as learned!'); // برای آینده می‌توان در localStorage ذخیره کرد
-});
-
-document.querySelector('#next-card').addEventListener('click', ()=>{
-  studyIndex++;
-  if(studyIndex >= currentCapsule.flashcards.length) studyIndex = 0;
-  updateStudyDisplay();
-});
-
-// Quiz Buttons
-document.querySelector('#q-options').addEventListener('click', (e)=>{
-  if(!e.target.classList.contains('q-option')) return;
-  const idx = parseInt(e.target.dataset.index);
-  const correct = currentCapsule.quiz[studyIndex].correct-1;
-  const feedback = document.querySelector('#q-feedback');
-  feedback.innerText = idx === correct ? '✅ Correct!' : `❌ Wrong! Correct: ${currentCapsule.quiz[studyIndex].opts[correct]}`;
-});
-
-document.querySelector('#q-next').addEventListener('click', ()=>{
-  studyIndex++;
-  if(studyIndex >= currentCapsule.quiz.length) studyIndex = 0;
-  updateStudyDisplay();
-});
-      </script>
 <!-- RIGHT / NOTES PANEL -->  
 <aside class="notes-panel">  
   <div class="d-flex justify-content-between align-items-center mb-2">  
@@ -558,7 +214,7 @@ document.querySelector('#q-next').addEventListener('click', ()=>{
   </div>  
 </div>  <script type="module">  
 /*  
-  Pocket Classroom â€” single file JS  
+  Pocket Classroom — single file JS  
   Features implemented:  
   - LocalStorage persistence for capsules + notes  
   - Create / Edit / Delete / Duplicate capsules  
@@ -579,154 +235,74 @@ let app = {
 };  
   
 function uid(){ return Math.random().toString(36).slice(2,9); }  
-const shuffleBtn = document.getElementById('shuffle-study');  
-const studyArea = document.getElementById('study-area');  
-const studyEmpty = document.getElementById('study-empty');  /* --- Storage Keys --- */
-const LS_KEY = 'pc_capsules_v1';    // کپسول‌ها
-const LS_NOTES = 'pc_notes_v3';     // یادداشت‌ها (Notes Panel)
-const LS_IOLOG = 'pc_logs_v3';      // Import/Export logs
-
-/* --- Application State --- */
-window.app = window.app || {};
-app.capsules = app.capsules || [];
-app.notes = app.notes || '';
-app.ioLog = app.ioLog || [];
-/* --- Storage --- */
-function loadState(){
-try{
-const raw = localStorage.getItem(LS_KEY);
-app.capsules = raw ? JSON.parse(raw) : [];
-}catch(e){ app.capsules = []; }
-app.notes = localStorage.getItem(LS_NOTES) || '';
-try{ app.ioLog = JSON.parse(localStorage.getItem(LS_IOLOG)) || []; }catch(e){ app.ioLog = []; }
-}
-function saveState(){
-localStorage.setItem(LS_KEY, JSON.stringify(app.capsules));
-}
-function saveNotes(){
-localStorage.setItem(LS_NOTES, app.notes);
-}
-function saveIoLog(){
-localStorage.setItem(LS_IOLOG, JSON.stringify(app.ioLog));
-}
-
-/* --- UI refs --- */
-const sections = {
-library: document.getElementById('library'),
-author: document.getElementById('author'),
-learn: document.getElementById('learn')
-};
-const navBtns = document.querySelectorAll('.nav-btn');
-const libraryList = document.getElementById('library-list');
-const capsuleCount = document.getElementById('capsule-count');
-const emptyState = document.getElementById('empty-state');
-const globalSearch = document.getElementById('global-search');
-const sortSelect = document.getElementById('sort-select');
-const exportAllBtn = document.getElementById('export-all');
-const importAllBtn = document.getElementById('import-all');
-const fileImport = document.getElementById('file-import');
-
-/* Author elements */
-const capsuleForm = document.getElementById('capsule-form');
-const editingIndex = document.getElementById('editing-index');
-const titleInput = document.getElementById('capsule-title');
-const tagsInput = document.getElementById('capsule-tags');
-const typeSelect = document.getElementById('capsule-type');
-const typeLabel = document.getElementById('capsule-type-label');
-const noteContentWrapper = document.getElementById('note-content-wrapper');
-const capsuleContent = document.getElementById('capsule-content');
-const flashWrapper = document.getElementById('flashcards-wrapper');
-const flashList = document.getElementById('flashcards-list');
-const fcFront = document.getElementById('fc-front');
-const fcBack = document.getElementById('fc-back');
-const addFcBtn = document.getElementById('add-fc');
-const quizWrapper = document.getElementById('quiz-wrapper');
-const quizList = document.getElementById('quiz-list');
-const qText = document.getElementById('q-text');
-const qOpt1 = document.getElementById('q-opt1');
-const qOpt2 = document.getElementById('q-opt2');
-const qOpt3 = document.getElementById('q-opt3');
-const qOpt4 = document.getElementById('q-opt4');
-const qCorrect = document.getElementById('q-correct');
-const addQBtn = document.getElementById('add-q');
-const cancelEditBtn = document.getElementById('cancel-edit');
-const newCapsuleBtn = document.getElementById('new-capsule')  
-
-
-/* --- Flashcards --- */
-const flashWrapper = document.getElementById('flashcards-wrapper');
-const flashList = document.getElementById('flashcards-list');
-const fcFront = document.getElementById('fc-front');
-const fcBack = document.getElementById('fc-back');
-const addFcBtn = document.getElementById('add-fc');
-
-/* --- Quiz --- */
-const quizWrapper = document.getElementById('quiz-wrapper');
-const quizList = document.getElementById('quiz-list');
-const qText = document.getElementById('q-text');
-const qOpt1 = document.getElementById('q-opt1');
-const qOpt2 = document.getElementById('q-opt2');
-const qOpt3 = document.getElementById('q-opt3');
-const qOpt4 = document.getElementById('q-opt4');
-const qCorrect = document.getElementById('q-correct');
-const addQBtn = document.getElementById('add-q');
-
-/* --- Buttons --- */
-const cancelEditBtn = document.getElementById('cancel-edit');
-const newCapsuleBtn = document.getElementById('new-capsule');
-
-/* --- Notes Panel --- */
-const notesBox = document.getElementById('notes');
-const logList = document.getElementById('io-log');
-const clearLogsBtn = document.getElementById('clear-logs');
-
-/* --- Utility Functions --- */
-function addLog(message) {
-  const timestamp = new Date().toLocaleString();
-  app.ioLog.unshift(`${timestamp} — ${message}`);
-  if(app.ioLog.length > 30) app.ioLog.pop();
-  saveIoLog();
-  renderLogs();
-}
-
-function renderLogs() {
-  if(!logList) return;
-  if(!app.ioLog.length) {
-    logList.innerHTML = `<li class="text-muted fst-italic">No logs yet.</li>`;
-    return;
-  }
-  logList.innerHTML = app.ioLog
-    .map(log => `<li class="border-bottom py-1"><i class="bi bi-clock me-2 text-info"></i>${log}</li>`)
-    .join('');
-}
-
-/* --- Initialize Notes Panel --- */
-if(notesBox) {
-  notesBox.value = app.notes;
-  notesBox.addEventListener('input', () => {
-    app.notes = notesBox.value;
-    saveNotes();
-  });
-}
-
-if(clearLogsBtn) {
-  clearLogsBtn.addEventListener('click', () => {
-    if(confirm("🗑️ Clear all logs?")) {
-      app.ioLog = [];
-      saveIoLog();
-      renderLogs();
-    }
-  });
-}
-
-/* --- Initial Load --- */
-loadState();
-renderLogs();  
+  
+/* --- Storage --- */  
+function loadState(){  
+  try{  
+    const raw = localStorage.getItem(LS_KEY);  
+    app.capsules = raw ? JSON.parse(raw) : [];  
+  }catch(e){ app.capsules = []; }  
+  app.notes = localStorage.getItem(LS_NOTES) || '';  
+  try{ app.ioLog = JSON.parse(localStorage.getItem(LS_IOLOG)) || []; }catch(e){ app.ioLog = []; }  
+}  
+function saveState(){  
+  localStorage.setItem(LS_KEY, JSON.stringify(app.capsules));  
+}  
+function saveNotes(){  
+  localStorage.setItem(LS_NOTES, app.notes);  
+}  
+function saveIoLog(){  
+  localStorage.setItem(LS_IOLOG, JSON.stringify(app.ioLog));  
+}  
+  
+/* --- UI refs --- */  
+const sections = {  
+  library: document.getElementById('library'),  
+  author: document.getElementById('author'),  
+  learn: document.getElementById('learn')  
+};  
+const navBtns = document.querySelectorAll('.nav-btn');  
+const libraryList = document.getElementById('library-list');  
+const capsuleCount = document.getElementById('capsule-count');  
+const emptyState = document.getElementById('empty-state');  
+const globalSearch = document.getElementById('global-search');  
+const sortSelect = document.getElementById('sort-select');  
+const exportAllBtn = document.getElementById('export-all');  
+const importAllBtn = document.getElementById('import-all');  
+const fileImport = document.getElementById('file-import');  
+  
+/* Author elements */  
+const capsuleForm = document.getElementById('capsule-form');  
+const editingIndex = document.getElementById('editing-index');  
+const titleInput = document.getElementById('capsule-title');  
+const tagsInput = document.getElementById('capsule-tags');  
+const typeSelect = document.getElementById('capsule-type');  
+const typeLabel = document.getElementById('capsule-type-label');  
+const noteContentWrapper = document.getElementById('note-content-wrapper');  
+const capsuleContent = document.getElementById('capsule-content');  
+const flashWrapper = document.getElementById('flashcards-wrapper');  
+const flashList = document.getElementById('flashcards-list');  
+const fcFront = document.getElementById('fc-front');  
+const fcBack = document.getElementById('fc-back');  
+const addFcBtn = document.getElementById('add-fc');  
+const quizWrapper = document.getElementById('quiz-wrapper');  
+const quizList = document.getElementById('quiz-list');  
+const qText = document.getElementById('q-text');  
+const qOpt1 = document.getElementById('q-opt1');  
+const qOpt2 = document.getElementById('q-opt2');  
+const qOpt3 = document.getElementById('q-opt3');  
+const qOpt4 = document.getElementById('q-opt4');  
+const qCorrect = document.getElementById('q-correct');  
+const addQBtn = document.getElementById('add-q');  
+const cancelEditBtn = document.getElementById('cancel-edit');  
+const newCapsuleBtn = document.getElementById('new-capsule');  
   
 /* Learn elements */  
 const studySelect = document.getElementById('study-capsule-select');  
 const startStudyBtn = document.getElementById('start-study');  
-
+const shuffleBtn = document.getElementById('shuffle-study');  
+const studyArea = document.getElementById('study-area');  
+const studyEmpty = document.getElementById('study-empty');  
 const flashStudy = document.getElementById('flashcard-study');  
 const fcMeta = document.getElementById('fc-meta');  
 const fcFrontDisplay = document.getElementById('fc-front-display');  
@@ -820,7 +396,7 @@ function renderStudySelect(){
   app.capsules.forEach(c => {  
     const opt = document.createElement('option');  
     opt.value = c.id;  
-    opt.textContent = `${c.title} â€” ${c.type}`;  
+    opt.textContent = `${c.title} — ${c.type}`;  
     studySelect.appendChild(opt);  
   });  
 }  
@@ -1122,8 +698,8 @@ function renderStudyCard(){
       btn.dataset.opt = i+1;  
       btn.addEventListener('click', ()=>{  
         const chosen = Number(btn.dataset.opt);  
-        if(chosen === cur.correct){ qFeedback.textContent = 'Correct âœ…'; qFeedback.style.color = 'lightgreen'; }  
-        else { qFeedback.textContent = `Wrong â€” correct is ${String.fromCharCode(64+cur.correct)}.`; qFeedback.style.color = '#ffb3b3'; }  
+        if(chosen === cur.correct){ qFeedback.textContent = 'Correct ✅'; qFeedback.style.color = 'lightgreen'; }  
+        else { qFeedback.textContent = `Wrong — correct is ${String.fromCharCode(64+cur.correct)}.`; qFeedback.style.color = '#ffb3b3'; }  
         // disable options  
         Array.from(qOptions.children).forEach(b=>b.disabled=true);  
       });  
@@ -1189,13 +765,13 @@ newCapsuleBtn.addEventListener('click', clearAuthorForm);
 function initSampleIfEmpty(){  
   if(app.capsules.length===0){  
     const sample = [  
-      {id:uid(), title:'Biology â€” Photosynthesis', tags:['Biology','Plants'], type:'note', content:'Photosynthesis is the process by which plants convert light to energy...', data:[], createdAt:Date.now()-86400000, updatedAt:Date.now()-86400000},  
-      {id:uid(), title:'Basic Spanish â€” Vocabulary', tags:['Spanish','Vocab'], type:'flashcards', content:'', data:[  
+      {id:uid(), title:'Biology — Photosynthesis', tags:['Biology','Plants'], type:'note', content:'Photosynthesis is the process by which plants convert light to energy...', data:[], createdAt:Date.now()-86400000, updatedAt:Date.now()-86400000},  
+      {id:uid(), title:'Basic Spanish — Vocabulary', tags:['Spanish','Vocab'], type:'flashcards', content:'', data:[  
         {id:uid(), front:'Hello', back:'Hola'},  
         {id:uid(), front:'Thank you', back:'Gracias'},  
         {id:uid(), front:'Please', back:'Por favor'}  
       ], createdAt:Date.now()-3600000, updatedAt:Date.now()-3600000},  
-      {id:uid(), title:'JS Quiz â€” Basics', tags:['JS','Quiz'], type:'quiz', content:'', data:[  
+      {id:uid(), title:'JS Quiz — Basics', tags:['JS','Quiz'], type:'quiz', content:'', data:[  
         {id:uid(), text:'Which keyword declares a variable block-scoped?', opts:['var','let','function','const'], correct:2, id:uid()},  
         {id:uid(), text:'Which method converts JSON string to object?', opts:['JSON.parse','JSON.stringify','Object.fromJSON','parseJSON'], correct:1, id:uid()}  
       ], createdAt:Date.now()-1800000, updatedAt:Date.now()-1800000}  
