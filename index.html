@@ -3,68 +3,73 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>pocket-classroom — Offline</title>
+<title>pocket-classroom — Offline (Modern)</title>
 <style>
-  /* ---- Reset & base ---- */
+  /* ===== Reset + Base ===== */
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-    background: linear-gradient(180deg,#071026 0%, #0b1320 60%, #071026 100%);
-    color:#e6eef8; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: #071026;
+    color: #e6eef8;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
     display:flex;flex-direction:column;
+    min-height:100vh;
   }
 
-  /* ---- Topbar ---- */
-  header{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:14px 20px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-bottom:1px solid rgba(255,255,255,0.03);backdrop-filter: blur(6px);
+  /* ===== Background: inline SVG bookshelf (data URI) ===== */
+  :root{--panel-bg: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));}
+  body::before{
+    content:"";
+    position:fixed;inset:0;z-index:-1;
+    background:
+      radial-gradient(1200px 600px at 10% 10%, rgba(0,120,255,0.06), transparent 12%),
+      radial-gradient(900px 400px at 90% 85%, rgba(0,210,255,0.03), transparent 12%),
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="%2305182a"/><stop offset="1" stop-color="%230b2333"/></linearGradient></defs><rect width="100%" height="100%" fill="url(%23g)"/><g opacity="0.08"><rect x="60" y="60" width="240" height="28" rx="6" fill="%23fff"/><rect x="60" y="110" width="240" height="220" rx="6" fill="%23fff"/></g><g opacity="0.05"><rect x="340" y="80" width="200" height="14" rx="6" fill="%23fff"/><rect x="340" y="110" width="200" height="260" rx="6" fill="%23fff"/></g><g opacity="0.06"><rect x="560" y="60" width="700" height="18" rx="6" fill="%23fff"/></g></svg>') center/cover no-repeat;
+    filter: blur(22px) saturate(110%);
+    transform: scale(1.05);
   }
+
+  /* ===== Topbar ===== */
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:transparent;border-bottom:1px solid rgba(255,255,255,0.03)}
   .brand{display:flex;align-items:center;gap:12px}
   .logo{
-    width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(135deg,#00d4ff,#0066ff);box-shadow:0 8px 30px rgba(0,102,255,0.18);
+    width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#00d4ff,#0066ff);box-shadow:0 10px 30px rgba(0,102,255,0.12);
   }
-  .brand h1{font-size:18px;color:white;letter-spacing:-0.2px}
+  .brand h1{font-size:18px;color:#fff;letter-spacing:-0.3px}
   .brand p{font-size:12px;color:rgba(230,238,248,0.7);margin-top:2px}
 
   .top-actions{display:flex;align-items:center;gap:8px}
-  .btn{background:linear-gradient(90deg,#06b6d4,#0ea5a4);color:#042028;border:none;padding:9px 12px;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(6,182,212,0.12);transition:transform .14s ease,opacity .12s}
+  .btn{background:linear-gradient(90deg,#06b6d4,#0ea5a4);color:#042028;border:none;padding:9px 12px;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(6,182,212,0.09);transition:transform .14s ease}
   .btn:hover{transform:translateY(-3px)}
   .btn.ghost{background:transparent;color:#cde7ff;border:1px solid rgba(255,255,255,0.04);box-shadow:none}
   .small{padding:7px 10px;font-size:13px;border-radius:8px}
 
-  /* ---- Layout ---- */
-  main{display:grid;grid-template-columns:320px 1fr 420px;gap:18px;padding:18px;align-items:start;flex:1}
-  @media (max-width:1100px){ main{grid-template-columns:1fr; padding:12px} .right-col{order:3}.center-col{order:2}.left-col{order:1} }
+  /* ===== Layout ===== */
+  main{display:grid;grid-template-columns:320px 1fr 460px;gap:18px;padding:18px;align-items:start;flex:1}
+  @media (max-width:1100px){ main{grid-template-columns:1fr;padding:12px} .right-col{order:3} .center-col{order:2} .left-col{order:1} }
 
-  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border-radius:14px;padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 12px 40px rgba(6,12,20,0.35)}
+  .panel{background:var(--panel-bg);padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 30px rgba(2,6,23,0.45)}
   h2{font-size:15px;margin-bottom:8px;color:#e9f6ff}
 
-  /* ---- Left: library ---- */
-  .capsule-list{display:flex;flex-direction:column;gap:10px;max-height:74vh;overflow:auto;padding-right:6px}
-  .capsule-card{
-    display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-    border:1px solid rgba(255,255,255,0.02);
-    transition:transform .12s ease, box-shadow .12s;
-  }
+  /* ===== Library (left) ===== */
+  .capsule-list{display:flex;flex-direction:column;gap:12px;max-height:74vh;overflow:auto;padding-right:6px}
+  .capsule-card{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.02);transition:transform .12s,box-shadow .12s}
   .capsule-card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(2,8,23,0.6)}
-  .capsule-title{font-weight:700}
+  .capsule-title{font-weight:800}
   .capsule-meta{font-size:12px;color:rgba(230,238,248,0.6)}
-
   .card-actions{display:flex;gap:8px;align-items:center}
-  .icon{background:transparent;border:none;color:rgba(230,238,248,0.8);padding:8px;border-radius:8px;cursor:pointer}
+  .icon{background:transparent;border:none;color:rgba(230,238,248,0.85);padding:8px;border-radius:8px;cursor:pointer}
   .icon:hover{background:rgba(255,255,255,0.02)}
 
-  /* ---- Center: Study ---- */
-  .center-col{min-height:60vh}
-  .controls-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+  /* ===== Center: study ===== */
+  .controls-row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
   select{padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:#dff4ff}
   .progress-wrap{margin-left:auto;display:flex;align-items:center;gap:10px}
   .progress-bar{width:220px;height:10px;border-radius:20px;background:rgba(255,255,255,0.03);overflow:hidden}
-  .progress-bar > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#00d4ff,#00aaff);transition:width .25s ease}
+  .progress-bar>i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#00d4ff,#00aaff);transition:width .25s ease}
 
   .study-area{display:flex;flex-direction:column;gap:12px}
   .card-large{padding:20px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
@@ -73,21 +78,19 @@
   .fc-meta{font-size:13px;color:rgba(230,238,248,0.6);margin-top:8px}
   .study-controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 
-  /* quiz buttons */
   .q-option{display:block;padding:12px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.03);text-align:left;color:#cfefff;cursor:pointer}
   .q-option:hover{background:rgba(255,255,255,0.02);transform:translateY(-3px)}
 
-  /* ---- Right: form ---- */
+  /* ===== Right: form ===== */
   label{font-size:13px;color:#e9f6ff;font-weight:700;margin-bottom:6px}
   input,textarea,select{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:10px;color:#dff4ff}
   textarea{min-height:76px;resize:vertical}
   .subpanel{margin-top:10px;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0))}
-
   .mini-list{display:flex;flex-direction:column;gap:8px;max-height:180px;overflow:auto;padding-right:6px}
   .mini-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
   .muted{color:rgba(230,238,248,0.55);font-size:13px}
 
-  /* ---- toast/modal ---- */
+  /* toast & modal */
   .toast{position:fixed;right:20px;bottom:20px;background:linear-gradient(90deg,#00d4ff,#00aaff);color:#021222;padding:12px 16px;border-radius:10px;box-shadow:0 12px 40px rgba(0,80,150,0.2);display:none;z-index:999}
   .modal{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(2,6,23,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;display:none}
   .modal .mcard{background:#071025;padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);width:360px}
@@ -100,11 +103,12 @@
 <header>
   <div class="brand">
     <div class="logo" aria-hidden>
-      <!-- svg badge -->
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- modern book/library SVG logo -->
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
         <rect x="2" y="3" width="20" height="14" rx="2" fill="white" opacity="0.06"/>
-        <path d="M7 17v-6h6v6" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M16 6l3 2-3 2" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6 7h12" stroke="white" stroke-opacity="0.2" stroke-width="1.2"/>
+        <path d="M7 17v-8h5v8" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 17v-8h5v8" stroke="white" stroke-opacity="0.9" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
     <div>
@@ -116,25 +120,26 @@
   <div class="top-actions">
     <button id="new-capsule" class="btn small">New Capsule</button>
     <button id="export-all" class="btn small">Export</button>
+    <button id="download-sample" class="btn small ghost">Download Sample JSON</button>
     <button id="import-all" class="btn small ghost">Import</button>
     <input id="file-import" type="file" accept=".json" style="display:none" />
   </div>
 </header>
 
 <main>
-  <!-- Left: library -->
+  <!-- Left -->
   <section class="left-col panel">
     <h2>Library</h2>
-    <div class="muted" style="margin-bottom:10px">5 - 6 sample capsules included — edit or create your own.</div>
+    <div class="muted" style="margin-bottom:10px">5 sample capsules included — edit or create your own.</div>
     <div id="capsule-list" class="capsule-list"></div>
   </section>
 
-  <!-- Center: study -->
+  <!-- Center -->
   <section class="center-col panel">
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div>
         <h2>Study Mode</h2>
-        <div class="muted-small">Select a capsule and press Start (or press Enter).</div>
+        <div class="muted-small">Select a capsule and press Start — or press Enter.</div>
       </div>
     </div>
 
@@ -170,7 +175,7 @@
     </div>
   </section>
 
-  <!-- Right: create/edit -->
+  <!-- Right -->
   <aside class="right-col panel">
     <h2>Create / Edit Capsule</h2>
     <div class="muted-small" style="margin-bottom:10px">Title, tags, choose type, add flashcards or quiz questions, then Save.</div>
@@ -232,25 +237,20 @@
 
 <footer>pocket-classroom • Offline • Data saved locally in your browser</footer>
 
-<!-- toast + modal elements -->
 <div id="toast" class="toast"></div>
 <div id="confirm-modal" class="modal"><div class="mcard"><div id="modal-text" class="muted-small"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button id="modal-cancel" class="btn small ghost">Cancel</button><button id="modal-accept" class="btn small">OK</button></div></div></div>
 
 <script type="module">
-/* ===== pocket-classroom (single file, offline) ===== */
+/* ===== final pocket-classroom (Modern) ===== */
+const LS_KEY = 'pocket_classroom_final_v1';
+let capsules=[], tempFlashcards=[], tempQuiz=[], editingIndex=null;
+let studyCards=[], currentStudyIndex=0, studyMode='';
 
-const LS_KEY = 'pocket_classroom_v2';
-let capsules = [], tempFlashcards = [], tempQuiz = [], editingIndex = null;
-let studyCards = [], currentStudyIndex = 0, studyMode = '';
-
-/* DOM helpers */
+// DOM helper
 const $ = id => document.getElementById(id);
-const toast = (msg, time=2200) => {
-  const t = $('toast'); t.textContent = msg; t.style.display = 'block'; t.style.opacity = '1';
-  setTimeout(()=>{ t.style.transition='opacity .4s'; t.style.opacity='0'; setTimeout(()=>t.style.display='none',400) }, time);
-};
+const toast = (msg, t=1800) => { const el = $('toast'); el.textContent = msg; el.style.display='block'; el.style.opacity='1'; setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity='0'; setTimeout(()=>el.style.display='none',400); }, t); };
 
-/* sample data */
+// sample data (already realistic)
 function sample() {
   return [
     { title:"Basic Math", tags:"math,arithmetic", type:"flashcards", content:"Simple arithmetic", flashcards:[
@@ -274,7 +274,7 @@ function sample() {
   ];
 }
 
-/* load/save */
+// load/save
 function load(){
   const raw = localStorage.getItem(LS_KEY);
   if(!raw){ capsules = sample(); save(); } else {
@@ -283,10 +283,9 @@ function load(){
 }
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(capsules)); }
 
-/* render library */
+// render library
 function renderLibrary(){
-  const list = $('capsule-list'); list.innerHTML = '';
-  const select = $('study-capsule-select'); select.innerHTML = `<option value="">— Select capsule —</option>`;
+  const list = $('capsule-list'); list.innerHTML=''; const select = $('study-capsule-select'); select.innerHTML = `<option value="">— Select capsule —</option>`;
   capsules.forEach((c,i)=>{
     const card = document.createElement('div'); card.className='capsule-card';
     const info = document.createElement('div'); info.style.display='flex'; info.style.flexDirection='column';
@@ -295,12 +294,9 @@ function renderLibrary(){
     info.appendChild(t); info.appendChild(m);
 
     const actions = document.createElement('div'); actions.className='card-actions';
-    const open = document.createElement('button'); open.className='btn small'; open.textContent='Study';
-    open.addEventListener('click', ()=>{ $('study-capsule-select').value = i; startStudy(); });
-    const edit = document.createElement('button'); edit.className='icon'; edit.title='Edit'; edit.textContent='✏️';
-    edit.addEventListener('click', ()=> openForEdit(i));
-    const del = document.createElement('button'); del.className='icon'; del.title='Delete'; del.textContent='🗑️';
-    del.addEventListener('click', ()=> confirmAction(`Delete "${c.title}"?`, ()=>{ capsules.splice(i,1); save(); renderLibrary(); toast('Deleted'); }));
+    const open = document.createElement('button'); open.className='btn small'; open.textContent='Study'; open.addEventListener('click', ()=>{ $('study-capsule-select').value = i; startStudy(); });
+    const edit = document.createElement('button'); edit.className='icon'; edit.textContent='✏️'; edit.title='Edit'; edit.addEventListener('click', ()=> openForEdit(i));
+    const del = document.createElement('button'); del.className='icon'; del.textContent='🗑️'; del.title='Delete'; del.addEventListener('click', ()=> confirmAction(`Delete "${c.title}"?`, ()=>{ capsules.splice(i,1); save(); renderLibrary(); toast('Deleted'); }));
     actions.appendChild(open); actions.appendChild(edit); actions.appendChild(del);
 
     card.appendChild(info); card.appendChild(actions); list.appendChild(card);
@@ -309,12 +305,11 @@ function renderLibrary(){
   });
 }
 
-/* open for edit */
+// open edit
 function openForEdit(idx){
   const c = capsules[idx];
   editingIndex = idx;
-  $('capsule-title').value = c.title; $('capsule-tags').value = c.tags || '';
-  $('capsule-type').value = c.type; $('capsule-content').value = c.content || '';
+  $('capsule-title').value = c.title; $('capsule-tags').value = c.tags || ''; $('capsule-type').value = c.type; $('capsule-content').value = c.content || '';
   tempFlashcards = c.flashcards ? [...c.flashcards] : []; tempQuiz = c.quiz ? [...c.quiz] : [];
   renderTempLists();
   $('flashcards-wrapper').style.display = c.type === 'flashcards' ? 'block' : 'none';
@@ -322,79 +317,51 @@ function openForEdit(idx){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* reset form */
-function resetForm(){
-  editingIndex = null; tempFlashcards = []; tempQuiz = [];
-  $('capsule-title').value=''; $('capsule-tags').value=''; $('capsule-type').value='note'; $('capsule-content').value='';
-  renderTempLists(); $('flashcards-wrapper').style.display='none'; $('quiz-wrapper').style.display='none';
-}
+// reset
+function resetForm(){ editingIndex = null; tempFlashcards=[]; tempQuiz=[]; $('capsule-title').value=''; $('capsule-tags').value=''; $('capsule-type').value='note'; $('capsule-content').value=''; renderTempLists(); $('flashcards-wrapper').style.display='none'; $('quiz-wrapper').style.display='none'; }
 
-/* handle UI interactions */
-$('capsule-type').addEventListener('change', e=>{
-  $('flashcards-wrapper').style.display = e.target.value === 'flashcards' ? 'block' : 'none';
-  $('quiz-wrapper').style.display = e.target.value === 'quiz' ? 'block' : 'none';
-});
+// listeners
+$('capsule-type').addEventListener('change', e => { $('flashcards-wrapper').style.display = e.target.value === 'flashcards' ? 'block' : 'none'; $('quiz-wrapper').style.display = e.target.value === 'quiz' ? 'block' : 'none'; });
 
-/* flashcard add/remove */
 $('add-flashcard').addEventListener('click', ()=>{
   const f = $('fc-front').value.trim(), b = $('fc-back').value.trim();
   if(!f || !b){ toast('Fill front & back'); return; }
   tempFlashcards.push({front:f,back:b}); $('fc-front').value=''; $('fc-back').value=''; renderTempLists();
 });
-$('clear-flashcards').addEventListener('click', ()=>{ if(confirm('Clear temporary flashcards?')){ tempFlashcards = []; renderTempLists(); } });
+$('clear-flashcards').addEventListener('click', ()=>{ if(confirm('Clear temporary flashcards?')){ tempFlashcards=[]; renderTempLists(); } });
 
-/* quiz add/remove */
 $('add-quiz').addEventListener('click', ()=>{
-  const t = $('q-text').value.trim(); const o1 = $('q-opt1').value.trim(); const o2 = $('q-opt2').value.trim();
-  const o3 = $('q-opt3').value.trim(); const o4 = $('q-opt4').value.trim(); const c = parseInt($('q-correct').value,10);
+  const t=$('q-text').value.trim(); const o1=$('q-opt1').value.trim(); const o2=$('q-opt2').value.trim(); const o3=$('q-opt3').value.trim(); const o4=$('q-opt4').value.trim(); const c=parseInt($('q-correct').value,10);
   if(!t||!o1||!o2||!o3||!o4||![1,2,3,4].includes(c)){ toast('Fill question, 4 options and correct index (1-4)'); return; }
   tempQuiz.push({text:t,options:[o1,o2,o3,o4],correct:c}); $('q-text').value=''; $('q-opt1').value=''; $('q-opt2').value=''; $('q-opt3').value=''; $('q-opt4').value=''; $('q-correct').value=''; renderTempLists();
 });
 $('clear-quiz').addEventListener('click', ()=>{ if(confirm('Clear temporary quiz questions?')){ tempQuiz=[]; renderTempLists(); } });
 
-/* render temp lists */
 function renderTempLists(){
-  const fl = $('flashcards-list'); fl.innerHTML=''; tempFlashcards.forEach((f,i)=>{
-    const row = document.createElement('div'); row.className='mini-item';
-    const left = document.createElement('div'); left.innerHTML = `<strong>${escapeHtml(f.front)}</strong><div class="muted-small">${escapeHtml(f.back)}</div>`;
-    const right = document.createElement('div'); const del = document.createElement('button'); del.className='btn small ghost'; del.textContent='Remove'; del.addEventListener('click', ()=>{ tempFlashcards.splice(i,1); renderTempLists(); });
-    right.appendChild(del); row.appendChild(left); row.appendChild(right); fl.appendChild(row);
-  });
-  if(tempFlashcards.length===0) fl.innerHTML = `<div class="muted-small">No flashcards yet</div>`;
+  const fl=$('flashcards-list'); fl.innerHTML=''; tempFlashcards.forEach((f,i)=>{ const row=document.createElement('div'); row.className='mini-item'; const left=document.createElement('div'); left.innerHTML=`<strong>${escapeHtml(f.front)}</strong><div class="muted-small">${escapeHtml(f.back)}</div>`; const right=document.createElement('div'); const del=document.createElement('button'); del.className='btn small ghost'; del.textContent='Remove'; del.addEventListener('click', ()=>{ tempFlashcards.splice(i,1); renderTempLists(); }); right.appendChild(del); row.appendChild(left); row.appendChild(right); fl.appendChild(row); }); if(tempFlashcards.length===0) fl.innerHTML=`<div class="muted-small">No flashcards yet</div>`;
 
-  const ql = $('quiz-list'); ql.innerHTML=''; tempQuiz.forEach((q,i)=>{
-    const row = document.createElement('div'); row.className='mini-item';
-    const left = document.createElement('div'); left.innerHTML = `<strong>${escapeHtml(q.text)}</strong><div class="muted-small">${escapeHtml(q.options.join(' • '))}</div>`;
-    const right = document.createElement('div'); const del = document.createElement('button'); del.className='btn small ghost'; del.textContent='Remove'; del.addEventListener('click', ()=>{ tempQuiz.splice(i,1); renderTempLists(); });
-    right.appendChild(del); row.appendChild(left); row.appendChild(right); ql.appendChild(row);
-  });
-  if(tempQuiz.length===0) ql.innerHTML = `<div class="muted-small">No questions yet</div>`;
+  const ql=$('quiz-list'); ql.innerHTML=''; tempQuiz.forEach((q,i)=>{ const row=document.createElement('div'); row.className='mini-item'; const left=document.createElement('div'); left.innerHTML=`<strong>${escapeHtml(q.text)}</strong><div class="muted-small">${escapeHtml(q.options.join(' • '))}</div>`; const right=document.createElement('div'); const del=document.createElement('button'); del.className='btn small ghost'; del.textContent='Remove'; del.addEventListener('click', ()=>{ tempQuiz.splice(i,1); renderTempLists(); }); right.appendChild(del); row.appendChild(left); row.appendChild(right); ql.appendChild(row); }); if(tempQuiz.length===0) ql.innerHTML=`<div class="muted-small">No questions yet</div>`;
 }
 
-/* save capsule */
+// save capsule
 $('save-capsule').addEventListener('click', ()=>{
-  const title = $('capsule-title').value.trim(); if(!title){ toast('Enter a title'); return; }
-  const tags = $('capsule-tags').value.trim(); const type = $('capsule-type').value; const content = $('capsule-content').value.trim();
+  const title=$('capsule-title').value.trim(); if(!title){ toast('Enter a title'); return; }
+  const tags=$('capsule-tags').value.trim(); const type=$('capsule-type').value; const content=$('capsule-content').value.trim();
   const data = {title,tags,type,content, flashcards: type==='flashcards' ? tempFlashcards : [], quiz: type==='quiz' ? tempQuiz : []};
   if(editingIndex === null) capsules.push(data); else capsules[editingIndex] = data;
   save(); renderLibrary(); resetForm(); toast('Saved');
 });
-
-/* cancel edit */
 $('cancel-edit').addEventListener('click', ()=>{ if(confirm('Cancel editing?')) resetForm(); });
-
-/* new capsule */
 $('new-capsule').addEventListener('click', ()=>{ resetForm(); window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}); });
 
-/* export/import */
+// export/import + sample download
 $('export-all').addEventListener('click', ()=>{
-  const blob = new Blob([JSON.stringify(capsules,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'pocket_capsules.json'; a.click(); URL.revokeObjectURL(url);
+  const blob = new Blob([JSON.stringify(capsules,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='pocket_capsules_export.json'; a.click(); URL.revokeObjectURL(url);
 });
 $('import-all').addEventListener('click', ()=> $('file-import').click());
-$('file-import').addEventListener('change', (ev)=>{
+$('file-import').addEventListener('change', ev => {
   const file = ev.target.files[0]; if(!file) return;
-  const reader = new FileReader(); reader.onload = (e)=>{
+  const reader = new FileReader(); reader.onload = e => {
     try{
       const data = JSON.parse(e.target.result); if(!Array.isArray(data)) throw 'bad';
       if(!confirm('Import will replace your current library. Continue?')) return;
@@ -402,18 +369,23 @@ $('file-import').addEventListener('change', (ev)=>{
     }catch(err){ toast('Invalid JSON file'); }
   }; reader.readAsText(file);
 });
+// sample JSON download
+$('download-sample').addEventListener('click', ()=>{
+  const sampleData = sample(); const blob = new Blob([JSON.stringify(sampleData,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'pocket_sample_capsules.json'; a.click(); URL.revokeObjectURL(url);
+});
 
-/* confirm modal helper */
+// confirm modal
 function confirmAction(text, okcb){
   $('modal-text').textContent = text; $('confirm-modal').style.display = 'flex';
   const ok = $('modal-accept'), cancel = $('modal-cancel');
-  const cleanup = ()=>{ $('confirm-modal').style.display = 'none'; ok.removeEventListener('click',onOk); cancel.removeEventListener('click',onCancel); };
-  function onOk(){ cleanup(); okcb?.(); }
-  function onCancel(){ cleanup(); }
+  const onOk = ()=>{ cleanup(); okcb?.(); };
+  const onCancel = ()=> cleanup();
+  function cleanup(){ $('confirm-modal').style.display = 'none'; ok.removeEventListener('click', onOk); cancel.removeEventListener('click', onCancel); }
   ok.addEventListener('click', onOk); cancel.addEventListener('click', onCancel);
 }
 
-/* Study mode */
+// Study mode
 function startStudy(){
   const idx = parseInt($('study-capsule-select').value,10);
   if(Number.isNaN(idx)){ toast('Select a capsule'); return; }
@@ -432,68 +404,42 @@ function startStudy(){
 $('start-study').addEventListener('click', startStudy);
 $('study-capsule-select').addEventListener('keydown', (e)=>{ if(e.key==='Enter') startStudy(); });
 
-/* shuffle */
-$('shuffle-study').addEventListener('click', ()=>{
-  if(!studyCards || studyCards.length===0){ toast('Nothing to shuffle'); return; }
-  studyCards.sort(()=>Math.random()-0.5); currentStudyIndex = 0;
-  if(studyMode === 'flashcards') renderFlashcard(); else renderQuizQuestion();
-  toast('Shuffled');
-});
+// shuffle
+$('shuffle-study').addEventListener('click', ()=>{ if(!studyCards || studyCards.length===0){ toast('Nothing to shuffle'); return; } studyCards.sort(()=>Math.random()-0.5); currentStudyIndex=0; if(studyMode==='flashcards') renderFlashcard(); else renderQuizQuestion(); toast('Shuffled'); });
 
-/* flashcards */
+// flashcards
 function renderFlashcard(){
   if(!studyCards || studyCards.length===0){ $('fc-front-display').textContent='No cards'; $('fc-back-display').style.display='none'; updateProgress(); return; }
   if(currentStudyIndex >= studyCards.length){ toast('Finished'); return; }
-  const c = studyCards[currentStudyIndex];
-  $('fc-front-display').textContent = c.front; $('fc-back-display').textContent = c.back; $('fc-back-display').style.display = 'none';
-  $('fc-meta').textContent = `Card ${currentStudyIndex+1} / ${studyCards.length}`;
-  updateProgress();
+  const c = studyCards[currentStudyIndex]; $('fc-front-display').textContent = c.front; $('fc-back-display').textContent = c.back; $('fc-back-display').style.display='none'; $('fc-meta').textContent = `Card ${currentStudyIndex+1} / ${studyCards.length}`; updateProgress();
 }
 $('show-answer').addEventListener('click', ()=> $('fc-back-display').style.display = 'block');
-$('mark-learned').addEventListener('click', ()=>{
-  if(!studyCards || studyCards.length===0) return;
-  studyCards.splice(currentStudyIndex,1);
-  if(currentStudyIndex >= studyCards.length) currentStudyIndex = 0;
-  renderFlashcard();
-});
+$('mark-learned').addEventListener('click', ()=>{ if(!studyCards || studyCards.length===0) return; studyCards.splice(currentStudyIndex,1); if(currentStudyIndex >= studyCards.length) currentStudyIndex = 0; renderFlashcard(); });
 $('next-card').addEventListener('click', ()=>{ if(!studyCards || studyCards.length===0) return; currentStudyIndex = (currentStudyIndex+1)%studyCards.length; renderFlashcard(); });
 
-/* quiz */
+// quiz
 function renderQuizQuestion(){
   if(!studyCards || studyCards.length===0){ $('q-text-display').textContent='No questions'; $('q-options').innerHTML=''; updateProgress(); return; }
   if(currentStudyIndex >= studyCards.length){ toast('Finished'); return; }
-  const q = studyCards[currentStudyIndex];
-  $('q-text-display').textContent = q.text; $('q-options').innerHTML = ''; $('q-feedback').textContent = '';
-  q.options.forEach((opt,i)=>{
-    const b = document.createElement('button'); b.className='q-option'; b.textContent = opt;
-    b.addEventListener('click', ()=>{ $('q-feedback').textContent = (i+1 === q.correct) ? 'Correct!' : `Wrong — correct: ${q.options[q.correct-1]}`; });
-    $('q-options').appendChild(b);
-  });
+  const q = studyCards[currentStudyIndex]; $('q-text-display').textContent = q.text; $('q-options').innerHTML = ''; $('q-feedback').textContent = '';
+  q.options.forEach((opt,i)=>{ const b = document.createElement('button'); b.className='q-option'; b.textContent = opt; b.addEventListener('click', ()=>{ $('q-feedback').textContent = (i+1 === q.correct) ? 'Correct!' : `Wrong — correct: ${q.options[q.correct-1]}`; }); $('q-options').appendChild(b); });
   updateProgress();
 }
 $('q-next').addEventListener('click', ()=>{ if(!studyCards || studyCards.length===0) return; currentStudyIndex = (currentStudyIndex+1)%studyCards.length; renderQuizQuestion(); });
 
-/* progress UI */
-function updateProgress(){
-  const total = (studyCards && studyCards.length) || 0;
-  const cur = Math.min(Math.max(currentStudyIndex+1, 0), total);
-  $('study-progress').textContent = total? `${cur}/${total}` : '0/0';
-  const pct = total ? Math.round((cur / total) * 100) : 0;
-  $('progress-fill').style.width = `${pct}%`;
-}
+// progress
+function updateProgress(){ const total = (studyCards && studyCards.length) || 0; const cur = Math.min(Math.max(currentStudyIndex+1,0), total); $('study-progress').textContent = total? `${cur}/${total}` : '0/0'; const pct = total ? Math.round((cur / total) * 100) : 0; $('progress-fill').style.width = `${pct}%`; }
 
-/* keyboard shortcuts */
-document.addEventListener('keydown', (e)=>{
-  if(e.key === ' ' && studyMode === 'flashcards'){ e.preventDefault(); const back = $('fc-back-display'); back.style.display = (back.style.display==='none') ? 'block' : 'none'; }
-  if(e.key === 'ArrowRight'){ if(studyMode === 'flashcards') $('next-card').click(); else if(studyMode === 'quiz') $('q-next').click(); }
-  if(e.key === 'n'){ $('new-capsule').click(); }
-});
+// keyboard
+document.addEventListener('keydown',(e)=>{ if(e.key===' ' && studyMode==='flashcards'){ e.preventDefault(); const back=$('fc-back-display'); back.style.display = (back.style.display==='none') ? 'block' : 'none'; } if(e.key==='ArrowRight'){ if(studyMode==='flashcards') $('next-card').click(); else if(studyMode==='quiz') $('q-next').click(); } if(e.key==='n'){ $('new-capsule').click(); } });
 
-/* helpers */
+// helpers
 function escapeHtml(s){ return (s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-/* init */
-load(); renderLibrary(); renderTempLists();
+// init
+function init(){ load(); renderLibrary(); renderTempLists(); }
+init();
+
 </script>
 </body>
 </html>
