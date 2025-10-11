@@ -151,20 +151,81 @@ button.btn-secondary.btn-pill:hover{
           <input id="file-import" type="file" accept=".json" style="display:none">
         </div>
       </header>
+<!-- Library Section -->
+<section id="library" class="card-panel"
+         style="background:linear-gradient(180deg,#0b1220 0%,#0a1725 100%);
+                border:1px solid rgba(255,255,255,0.05);
+                border-radius:16px;
+                padding:26px 22px;
+                box-shadow:0 6px 20px rgba(0,0,0,0.45);
+                transition:all 0.3s ease;">
 
-  <!-- Library Section -->  
-  <section id="library" class="card-panel">  
-    <div class="d-flex justify-content-between align-items-center mb-3">  
-      <h4 class="mb-0">Your Library</h4>  
-      <div class="muted">Capsules: <span id="capsule-count">0</span></div>  
-    </div>  
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3" 
+       style="border-color:rgba(255,255,255,0.05)!important;">
+    <h4 class="mb-0 fw-semibold" style="color:#0ee0e0;">Your Library</h4>
+    <div class="muted" style="font-size:0.9rem;">Capsules: <span id="capsule-count" style="color:#fff;">0</span></div>
+  </div>
 
-    <div id="library-list" class="library-grid"></div>  
+  <!-- Toolbar / Filters -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2"
+       style="background:rgba(255,255,255,0.02); border-radius:10px; padding:10px 14px;">
+    <div class="d-flex gap-2 align-items-center">
+      <input type="text" id="library-search" class="form-control form-control-sm small-input"
+             placeholder="Search in your library..."
+             style="background:rgba(255,255,255,0.05); color:#e6eef6; border:none; width:240px;
+                    border-radius:8px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.5);">
+      <select id="filter-topic" class="form-select form-select-sm small-input"
+              style="width:150px; background:rgba(255,255,255,0.05); color:#e6eef6; border:none; border-radius:8px;">
+        <option value="">All Topics</option>
+        <option value="science">Science</option>
+        <option value="math">Math</option>
+        <option value="design">Design</option>
+        <option value="tech">Technology</option>
+      </select>
+    </div>
 
-    <div id="empty-state" class="text-center muted mt-4">  
-      No capsules yet. Click <span class="kbd">Create</span> to add your first learning capsule.  
-    </div>  
-  </section>  
+    <div>
+      <select id="sort-select" class="form-select form-select-sm small-input"
+              style="width:180px; background:rgba(255,255,255,0.05); color:#e6eef6; border:none; border-radius:8px;">
+        <option value="date-desc">Newest first</option>
+        <option value="date-asc">Oldest first</option>
+        <option value="title-asc">Title A→Z</option>
+        <option value="title-desc">Title Z→A</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Library Grid -->
+  <div id="library-list" class="library-grid"
+       style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:20px;">
+    
+    <!-- Example Capsule Card (Template Style) -->
+    <!--
+    <div class="capsule-card"
+         style="background:rgba(255,255,255,0.03); border-radius:12px; padding:18px;
+                transition:transform 0.25s ease, box-shadow 0.25s ease; cursor:pointer;">
+      <h6 class="fw-semibold mb-1" style="color:#e8f3fc;">HTML Essentials</h6>
+      <div class="muted" style="font-size:0.85rem;">12 lessons • Updated 3 days ago</div>
+      <div class="d-flex flex-wrap mt-2">
+        <span class="tag">#web</span>
+        <span class="tag">#html</span>
+      </div>
+    </div>
+    -->
+  </div>
+
+  <!-- Empty State -->
+  <div id="empty-state" class="text-center muted mt-5"
+       style="padding:50px 0; opacity:0.75; border:1px dashed rgba(255,255,255,0.06); border-radius:12px;">
+    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486764.png" alt="Empty Library" width="90"
+         style="opacity:0.7; margin-bottom:12px;">
+    <p class="mb-0" style="font-size:0.95rem; color:#a7b2c3;">
+      No capsules yet.<br>
+      Click <span class="kbd" style="background:rgba(255,255,255,0.05); color:#0ee0e0;">Create</span> to add your first learning capsule.
+    </p>
+  </div>
+</section>
 
   <!-- Author / Create Section -->  
   <section id="author" class="card-panel d-none">  
