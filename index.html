@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>pocket-classroom — Offline (Modern)</title>
+<title>pocket-classroom — Offline (Final)</title>
 <style>
   /* ===== Reset + Base ===== */
   *{box-sizing:border-box;margin:0;padding:0}
@@ -38,7 +38,7 @@
     width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;
     background:linear-gradient(135deg,#00d4ff,#0066ff);box-shadow:0 10px 30px rgba(0,102,255,0.12);
   }
-  .brand h1{font-size:18px;color:#fff;letter-spacing:-0.3px}
+  .brand h1{font-size:18px;color:#fff;letter-spacing:-0.3px;text-transform:lowercase}
   .brand p{font-size:12px;color:rgba(230,238,248,0.7);margin-top:2px}
 
   .top-actions{display:flex;align-items:center;gap:8px}
@@ -103,12 +103,14 @@
 <header>
   <div class="brand">
     <div class="logo" aria-hidden>
-      <!-- modern book/library SVG logo -->
+      <!-- Library / books SVG icon (inline) -->
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-        <rect x="2" y="3" width="20" height="14" rx="2" fill="white" opacity="0.06"/>
-        <path d="M6 7h12" stroke="white" stroke-opacity="0.2" stroke-width="1.2"/>
-        <path d="M7 17v-8h5v8" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M12 17v-8h5v8" stroke="white" stroke-opacity="0.9" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="1.5" y="3" width="7" height="16" rx="1.2" fill="white" opacity="0.06"/>
+        <rect x="9.5" y="3" width="7" height="16" rx="1.2" fill="white" opacity="0.06"/>
+        <rect x="17.5" y="3" width="5" height="16" rx="1.2" fill="white" opacity="0.06"/>
+        <path d="M4 6h4" stroke="white" stroke-opacity="0.18" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M12 6h4" stroke="white" stroke-opacity="0.18" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M20 6h2" stroke="white" stroke-opacity="0.18" stroke-width="1.2" stroke-linecap="round"/>
       </svg>
     </div>
     <div>
@@ -120,7 +122,6 @@
   <div class="top-actions">
     <button id="new-capsule" class="btn small">New Capsule</button>
     <button id="export-all" class="btn small">Export</button>
-    <button id="download-sample" class="btn small ghost">Download Sample JSON</button>
     <button id="import-all" class="btn small ghost">Import</button>
     <input id="file-import" type="file" accept=".json" style="display:none" />
   </div>
@@ -241,16 +242,16 @@
 <div id="confirm-modal" class="modal"><div class="mcard"><div id="modal-text" class="muted-small"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button id="modal-cancel" class="btn small ghost">Cancel</button><button id="modal-accept" class="btn small">OK</button></div></div></div>
 
 <script type="module">
-/* ===== final pocket-classroom (Modern) ===== */
-const LS_KEY = 'pocket_classroom_final_v1';
+/* ===== final pocket-classroom (Final) ===== */
+const LS_KEY = 'pocket_classroom_final_v2';
 let capsules=[], tempFlashcards=[], tempQuiz=[], editingIndex=null;
 let studyCards=[], currentStudyIndex=0, studyMode='';
 
 // DOM helper
 const $ = id => document.getElementById(id);
-const toast = (msg, t=1800) => { const el = $('toast'); el.textContent = msg; el.style.display='block'; el.style.opacity='1'; setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity='0'; setTimeout(()=>el.style.display='none',400); }, t); };
+const toast = (msg, t=1600) => { const el = $('toast'); el.textContent = msg; el.style.display = 'block'; el.style.opacity = '1'; setTimeout(()=>{ el.style.transition='opacity .35s'; el.style.opacity='0'; setTimeout(()=>el.style.display='none',350); }, t); };
 
-// sample data (already realistic)
+// sample data
 function sample() {
   return [
     { title:"Basic Math", tags:"math,arithmetic", type:"flashcards", content:"Simple arithmetic", flashcards:[
@@ -268,8 +269,12 @@ function sample() {
         {text:"Who wrote the Declaration of Independence?", options:["George Washington","Thomas Jefferson","Abraham Lincoln","Benjamin Franklin"], correct:2},
         {text:"WWII began in?", options:["1939","1914","1945","1920"], correct:1}
       ] },
-    { title:"Biology Essentials", tags:"biology", type:"flashcards", content:"Key facts", flashcards:[
-        {front:"Largest human organ", back:"Skin"}, {front:"Basic unit of life", back:"Cell"}, {front:"Powerhouse of cell", back:"Mitochondria"}, {front:"Genetic material", back:"DNA"}, {front:"Primary lung function", back:"Gas exchange"}
+    { title:"Programming Intro", tags:"programming,js", type:"flashcards", content:"JS basics", flashcards:[
+        {front:"What does DOM stand for?", back:"Document Object Model"},
+        {front:"JS is single-threaded? (Y/N)", back:"Yes (with event loop)"},
+        {front:"Use 'let' or 'var' — which has block scope?", back:"let"},
+        {front:"JSON stands for?", back:"JavaScript Object Notation"},
+        {front:"Array method to loop: map or foreach?", back:"Both, map returns new array"}
       ], quiz:[] }
   ];
 }
@@ -354,7 +359,7 @@ $('save-capsule').addEventListener('click', ()=>{
 $('cancel-edit').addEventListener('click', ()=>{ if(confirm('Cancel editing?')) resetForm(); });
 $('new-capsule').addEventListener('click', ()=>{ resetForm(); window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}); });
 
-// export/import + sample download
+// export/import
 $('export-all').addEventListener('click', ()=>{
   const blob = new Blob([JSON.stringify(capsules,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='pocket_capsules_export.json'; a.click(); URL.revokeObjectURL(url);
 });
@@ -368,11 +373,6 @@ $('file-import').addEventListener('change', ev => {
       capsules = data; save(); renderLibrary(); resetForm(); toast('Imported');
     }catch(err){ toast('Invalid JSON file'); }
   }; reader.readAsText(file);
-});
-// sample JSON download
-$('download-sample').addEventListener('click', ()=>{
-  const sampleData = sample(); const blob = new Blob([JSON.stringify(sampleData,null,2)],{type:'application/json'});
-  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'pocket_sample_capsules.json'; a.click(); URL.revokeObjectURL(url);
 });
 
 // confirm modal
@@ -411,7 +411,10 @@ $('shuffle-study').addEventListener('click', ()=>{ if(!studyCards || studyCards.
 function renderFlashcard(){
   if(!studyCards || studyCards.length===0){ $('fc-front-display').textContent='No cards'; $('fc-back-display').style.display='none'; updateProgress(); return; }
   if(currentStudyIndex >= studyCards.length){ toast('Finished'); return; }
-  const c = studyCards[currentStudyIndex]; $('fc-front-display').textContent = c.front; $('fc-back-display').textContent = c.back; $('fc-back-display').style.display='none'; $('fc-meta').textContent = `Card ${currentStudyIndex+1} / ${studyCards.length}`; updateProgress();
+  const c = studyCards[currentStudyIndex];
+  $('fc-front-display').textContent = c.front; $('fc-back-display').textContent = c.back; $('fc-back-display').style.display = 'none';
+  $('fc-meta').textContent = `Card ${currentStudyIndex+1} / ${studyCards.length}`;
+  updateProgress();
 }
 $('show-answer').addEventListener('click', ()=> $('fc-back-display').style.display = 'block');
 $('mark-learned').addEventListener('click', ()=>{ if(!studyCards || studyCards.length===0) return; studyCards.splice(currentStudyIndex,1); if(currentStudyIndex >= studyCards.length) currentStudyIndex = 0; renderFlashcard(); });
