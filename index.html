@@ -1,65 +1,171 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-<meta charset="utf-8" />  
-<meta name="viewport" content="width=device-width,initial-scale=1" />  
-<title>🎓 Pocket Classroom — Mini E-Learning Platform</title>  
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">  
-<style>  
-  :root{  
-    --bg:#0f1720; --card:#0b1220; --muted:#9aa4b2; --accent:#0ea5a4;  
-  }  
-  body{background:var(--bg); color:#e6eef6; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}  
-  .app-shell{min-height:100vh; display:grid; grid-template-columns: 1fr 360px; gap:20px; padding:20px;}  
-  .main-col{display:flex; flex-direction:column; gap:18px;}  
-  header.navbar{background:linear-gradient(90deg,#083042,#0b2540); border-radius:12px; padding:12px 18px;}  
-  .brand{font-weight:700; font-size:1.15rem;}  
-  .card-panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.03);}  
-  .library-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}  
-  .capsule-card{background:var(--card); border-radius:10px; padding:12px; border:1px solid rgba(255,255,255,0.03);}  
-  .muted{color:var(--muted); font-size:0.9rem;}  
-  .tag{background:rgba(255,255,255,0.04); color:var(--muted); border-radius:999px; padding:4px 8px; font-size:0.75rem; margin-right:6px;}  
-  .btn-pill{border-radius:999px;}  
-  .small-input{height:36px;}  
-  .notes-panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04)); border-radius:12px; padding:12px; height:calc(100vh - 160px); overflow:auto;}  
-  textarea#notes{width:100%; min-height:320px; resize:vertical; background:transparent; color:inherit; border:1px dashed rgba(255,255,255,0.04); padding:12px; border-radius:8px;}  
-  .flashcard-item{background:rgba(255,255,255,0.02); padding:8px; border-radius:8px; margin-bottom:8px;}  
-  .learn-card{min-height:180px;}  
-  footer{opacity:0.6; font-size:0.85rem;}  
-  .kbd{background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px; font-size:0.9rem;}  
-  @media (max-width: 900px){  
-    .app-shell{grid-template-columns: 1fr; padding:12px;}  
-    .notes-panel{height:280px;}  
-  }  
-</style>  
-</head>  
-<body>  <div class="container-fluid">  
-  <div class="app-shell">  <!-- LEFT / MAIN COLUMN -->  
-<div class="main-col">  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🎓 Pocket Classroom — Modern E-Learning</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  /* --- Theme & Base --- */
+  :root {
+    --bg-dark: #0a0f1c;
+    --accent: #00d9ff;
+    --card: rgba(255,255,255,0.06);
+    --glass: rgba(255,255,255,0.08);
+    --blur: 20px;
+  }
 
-  <!-- Header / Nav -->  
-  <header class="navbar card-panel d-flex align-items-center justify-content-between">  
-    <div class="d-flex gap-3 align-items-center">  
-      <div class="brand">🎓 Pocket Classroom</div>  
-      <nav>  
-        <button class="btn btn-sm btn-outline-light btn-pill nav-btn active" data-section="library">Library</button>  
-        <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="author">Create</button>  
-        <button class="btn btn-sm btn-outline-light btn-pill nav-btn" data-section="learn">Study</button>  
-      </nav>  
-    </div>  
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: 
+      linear-gradient(rgba(10,15,28,0.9), rgba(10,15,28,0.95)),
+      url('https://images.unsplash.com/photo-1584697964403-72307bf1e16b?auto=format&fit=crop&w=1920&q=60')
+      center/cover no-repeat fixed;
+    color: #e8f1f8;
+    font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+    backdrop-filter: blur(var(--blur));
+  }
 
-    <div class="d-flex gap-2 align-items-center">  
-      <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search capsules, tags..." />  
-      <select id="sort-select" class="form-select form-select-sm small-input" style="width:170px;">  
-        <option value="date-desc">Newest first</option>  
-        <option value="date-asc">Oldest first</option>  
-        <option value="title-asc">Title A→Z</option>  
-        <option value="title-desc">Title Z→A</option>  
-      </select>  
-      <button id="export-all" class="btn btn-sm btn-success btn-pill">Export</button>  
-      <button id="import-all" class="btn btn-sm btn-secondary btn-pill">Import</button>  
-      <input id="file-import" type="file" accept=".json" style="display:none">  
-    </div>  
-  </header>  
+  /* --- Header --- */
+  header.navbar {
+    background: var(--glass);
+    backdrop-filter: blur(var(--blur));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 14px 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+
+  .brand {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #00d9ff, #4afcba);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  nav button {
+    border: none;
+    background: transparent;
+    color: #d7e2ea;
+    font-weight: 500;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+  }
+
+  nav button.active, nav button:hover {
+    color: #00eaff;
+    text-shadow: 0 0 10px rgba(0,234,255,0.6);
+  }
+
+  /* --- Inputs & Controls --- */
+  .small-input {
+    height: 36px;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .small-input:focus {
+    background: rgba(255,255,255,0.12);
+    box-shadow: 0 0 8px rgba(0,234,255,0.3);
+  }
+
+  select, input, button {
+    border-radius: 999px !important;
+  }
+
+  .btn-pill {
+    border-radius: 999px;
+    border: none;
+    transition: all 0.25s ease;
+  }
+
+  .btn-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 10px rgba(0,234,255,0.3);
+  }
+
+  .btn-accent {
+    background: linear-gradient(90deg, #00d9ff, #00ffa3);
+    color: #000;
+    font-weight: 600;
+  }
+
+  /* --- Layout --- */
+  .app-shell {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 20px;
+  }
+
+  .card-panel {
+    background: var(--card);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 18px;
+    transition: 0.3s;
+  }
+  .card-panel:hover {
+    border-color: rgba(0,234,255,0.3);
+  }
+
+  footer {
+    margin-top: 24px;
+    opacity: 0.6;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 900px) {
+    .app-shell { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+
+<body>
+  <div class="container-fluid p-3">
+    <header class="navbar d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <div class="brand">🎓 Pocket Classroom</div>
+        <nav>
+          <button class="active" data-section="library">Library</button>
+          <button data-section="author">Create</button>
+          <button data-section="learn">Study</button>
+        </nav>
+      </div>
+
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <input id="global-search" class="form-control form-control-sm small-input" placeholder="Search..." />
+        <select id="sort-select" class="form-select form-select-sm small-input" style="width:160px;">
+          <option value="date-desc">Newest</option>
+          <option value="date-asc">Oldest</option>
+          <option value="title-asc">A → Z</option>
+          <option value="title-desc">Z → A</option>
+        </select>
+        <button class="btn btn-sm btn-accent btn-pill">Export</button>
+        <button class="btn btn-sm btn-secondary btn-pill">Import</button>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <div class="card-panel">
+        <h4>📚 Your Library</h4>
+        <p class="text-muted">View and manage your study capsules.</p>
+      </div>
+
+      <div class="card-panel">
+        <h4>🗒️ Notes</h4>
+        <textarea id="notes" class="form-control bg-transparent text-light" rows="10" placeholder="Write your study notes here..."></textarea>
+      </div>
+    </div>
+
+    <footer class="text-center mt-4">© 2025 Pocket Classroom — Designed with ❤️ for learners.</footer>
+  </div>
+</body>
+</html>
 
   <!-- Library Section -->  
   <section id="library" class="card-panel">  
