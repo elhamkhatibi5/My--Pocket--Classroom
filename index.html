@@ -329,90 +329,93 @@
   }
 </style>
 
-      <!-- Flashcards builder -->  
-      <div id="flashcards-wrapper" class="mb-2 d-none">  
-        <label class="muted">Flashcards</label>  
-        <div id="flashcards-list" class="mb-2"></div>  
-        <div class="d-flex gap-2">  
-          <input id="fc-front" class="form-control" placeholder="Front (question/term)">  
-          <input id="fc-back" class="form-control" placeholder="Back (answer/definition)">  
-          <button id="add-fc" type="button" class="btn btn-primary btn-pill">Add</button>  
-        </div>  
-      </div>  
+<!-- Flashcards builder -->  
+<div id="flashcards-wrapper" class="mb-3 d-none p-3 border rounded bg-dark text-light">
+  <label class="form-label">Flashcards</label>
+  <div id="flashcards-list" class="mb-2"></div>
+  <div class="d-flex gap-2 flex-wrap">
+    <input id="fc-front" class="form-control flex-grow-1" placeholder="Front (question/term)">
+    <input id="fc-back" class="form-control flex-grow-1" placeholder="Back (answer/definition)">
+    <button id="add-fc" type="button" class="btn btn-primary btn-pill">Add</button>
+  </div>
+</div>
 
-      <!-- Quiz builder -->  
-      <div id="quiz-wrapper" class="mb-2 d-none">  
-        <label class="muted">Quiz Questions</label>  
-        <div id="quiz-list" class="mb-2"></div>  
-        <div class="d-flex gap-2">  
-          <input id="q-text" class="form-control" placeholder="Question text">  
-          <input id="q-opt1" class="form-control" placeholder="Option A">  
-          <input id="q-opt2" class="form-control" placeholder="Option B">  
-        </div>  
-        <div class="d-flex gap-2 mt-2">  
-          <input id="q-opt3" class="form-control" placeholder="Option C (optional)">  
-          <input id="q-opt4" class="form-control" placeholder="Option D (optional)">  
-          <select id="q-correct" class="form-select" style="width:120px;">  
-            <option value="1">A</option><option value="2">B</option><option value="3">C</option><option value="4">D</option>  
-          </select>  
-          <button id="add-q" type="button" class="btn btn-primary btn-pill">Add Q</button>  
-        </div>  
-      </div>  
+<!-- Quiz builder -->  
+<div id="quiz-wrapper" class="mb-3 d-none p-3 border rounded bg-dark text-light">
+  <label class="form-label">Quiz Questions</label>
+  <div id="quiz-list" class="mb-2"></div>
+  <div class="d-flex gap-2 flex-wrap">
+    <input id="q-text" class="form-control flex-grow-1" placeholder="Question text">
+    <input id="q-opt1" class="form-control" placeholder="Option A">
+    <input id="q-opt2" class="form-control" placeholder="Option B">
+  </div>
+  <div class="d-flex gap-2 flex-wrap mt-2">
+    <input id="q-opt3" class="form-control" placeholder="Option C (optional)">
+    <input id="q-opt4" class="form-control" placeholder="Option D (optional)">
+    <select id="q-correct" class="form-select" style="width:120px;">
+      <option value="1">A</option>
+      <option value="2">B</option>
+      <option value="3">C</option>
+      <option value="4">D</option>
+    </select>
+    <button id="add-q" type="button" class="btn btn-primary btn-pill">Add Q</button>
+  </div>
+</div>
 
-      <div class="d-flex gap-2 mt-3">  
-        <button class="btn btn-success btn-pill" type="submit">Save Capsule</button>  
-        <button id="cancel-edit" type="button" class="btn btn-outline-light btn-pill">Cancel</button>  
-        <button id="new-capsule" type="button" class="btn btn-secondary btn-pill ms-auto">New Capsule</button>  
-      </div>  
-    </form>  
-  </section>  
+<!-- Form action buttons -->  
+<div class="d-flex gap-2 mt-3 flex-wrap">
+  <button class="btn btn-success btn-pill" type="submit">Save Capsule</button>
+  <button id="cancel-edit" type="button" class="btn btn-outline-light btn-pill">Cancel</button>
+  <button id="new-capsule" type="button" class="btn btn-secondary btn-pill ms-auto">New Capsule</button>
+</div>
 
-  <!-- Learn / Study Section -->  
-  <section id="learn" class="card-panel d-none">  
-    <div class="d-flex justify-content-between align-items-center mb-3">  
-      <h4 class="mb-0">Study</h4>  
-      <div class="muted">Mode: <span id="study-mode">Flashcards</span></div>  
-    </div>  
+</form>
+</section>
 
-    <div id="study-controls" class="mb-3 d-flex gap-2 align-items-center">  
-      <select id="study-capsule-select" class="form-select" style="width:300px;">  
-        <option value="">Choose a capsule to study...</option>  
-      </select>  
-      <button id="start-study" class="btn btn-primary btn-pill">Start</button>  
-      <button id="shuffle-study" class="btn btn-outline-light btn-pill">Shuffle</button>  
-      <div class="muted ms-auto">Progress: <span id="study-progress">0 / 0</span></div>  
-    </div>  
+<!-- Learn / Study Section -->  
+<section id="learn" class="card-panel d-none p-3 bg-dark text-light rounded">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Study</h4>
+    <div class="muted">Mode: <span id="study-mode">Flashcards</span></div>
+  </div>
 
-    <div id="study-area" class="learn-card card-panel">  
-      <div id="study-empty" class="muted">Select a capsule and press Start to begin studying flashcards or quizzes.</div>  
+  <div id="study-controls" class="mb-3 d-flex gap-2 align-items-center flex-wrap">
+    <select id="study-capsule-select" class="form-select" style="width:300px;">
+      <option value="">Choose a capsule to study...</option>
+    </select>
+    <button id="start-study" class="btn btn-primary btn-pill">Start</button>
+    <button id="shuffle-study" class="btn btn-outline-light btn-pill">Shuffle</button>
+    <div class="muted ms-auto">Progress: <span id="study-progress">0 / 0</span></div>
+  </div>
 
-      <div id="flashcard-study" class="d-none">  
-        <div class="mb-2 muted small" id="fc-meta"></div>  
-        <div id="fc-front-display" class="h5 fw-bold mb-2"></div>  
-        <div id="fc-back-display" class="muted mb-3" style="display:none"></div>  
-        <div class="d-flex gap-2">  
-          <button id="show-answer" class="btn btn-outline-light btn-pill">Show Answer</button>  
-          <button id="mark-learned" class="btn btn-success btn-pill">Mark Learned</button>  
-          <button id="next-card" class="btn btn-secondary btn-pill ms-auto">Next</button>  
-        </div>  
-      </div>  
+  <div id="study-area" class="learn-card card-panel p-3 border rounded bg-secondary bg-opacity-10">
+    <div id="study-empty" class="muted">Select a capsule and press Start to begin studying flashcards or quizzes.</div>
 
-      <div id="quiz-study" class="d-none">  
-        <div id="q-text-display" class="h5 fw-bold mb-2"></div>  
-        <div id="q-options" class="d-flex flex-column gap-2 mb-3"></div>  
-        <div class="d-flex gap-2">  
-          <button id="q-next" class="btn btn-secondary btn-pill ms-auto">Next</button>  
-        </div>  
-        <div id="q-feedback" class="mt-2 muted"></div>  
-      </div>  
+    <div id="flashcard-study" class="d-none">
+      <div class="mb-2 muted small" id="fc-meta"></div>
+      <div id="fc-front-display" class="h5 fw-bold mb-2"></div>
+      <div id="fc-back-display" class="muted mb-3" style="display:none"></div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button id="show-answer" class="btn btn-outline-light btn-pill">Show Answer</button>
+        <button id="mark-learned" class="btn btn-success btn-pill">Mark Learned</button>
+        <button id="next-card" class="btn btn-secondary btn-pill ms-auto">Next</button>
+      </div>
+    </div>
 
-    </div>  
-  </section>  
+    <div id="quiz-study" class="d-none">
+      <div id="q-text-display" class="h5 fw-bold mb-2"></div>
+      <div id="q-options" class="d-flex flex-column gap-2 mb-3"></div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button id="q-next" class="btn btn-secondary btn-pill ms-auto">Next</button>
+      </div>
+      <div id="q-feedback" class="mt-2 muted"></div>
+    </div>
+  </div>
+</section>
 
-  <footer class="text-center muted mt-2">  
-    © 2025 Pocket Classroom — Offline · LocalStorage · Export/Import JSON  
-  </footer>  
-</div>  
+<footer class="text-center muted mt-3 p-2 border-top">
+  © 2025 Pocket Classroom — Offline · LocalStorage · Export/Import JSON
+</footer>
 
 <!-- RIGHT / NOTES PANEL -->  
 <aside class="notes-panel">  
